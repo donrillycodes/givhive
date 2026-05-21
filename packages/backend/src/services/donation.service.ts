@@ -280,6 +280,9 @@ export class DonationService {
     logger.info(`Stripe webhook received: ${event.type}`);
 
     switch (event.type) {
+      case 'checkout.session.completed':
+        await this.handleCheckoutCompleted(event.data.object);
+        break;
       case 'payment_intent.succeeded':
         await this.handlePaymentSuccess(event.data.object);
         break;
@@ -291,6 +294,58 @@ export class DonationService {
     }
 
     return { received: true };
+  }
+
+  // Handle a completed Checkout Session
+  // Fires when a donor finishes paying on Stripe's hosted page
+  private async handleCheckoutCompleted(session: any) {
+    const donation = await db.donation.findFirst({
+      where: { providerPaymentId: session.id },
+    });
+
+    if (!donation) {
+      logger.error(`No donation found for Checkout Session: ${session.id}`);
+      return;
+    }
+
+    if (donation.status === DonationStatus.COMPLETED) {
+      // Already processed — webhook retries are fine
+      return;
+    }
+
+    await db.donation.update({
+      where: { id: donation.id },
+      data: {
+        status: DonationStatus.COMPLETED,
+        providerTransferId: session.payment_intent,
+      },
+    });
+
+    logger.info(
+      `Donation completed via Checkout: ${donation.id} amount: ${donation.amount} ${donation.currency}`
+    );
+
+    // Send the GivHive donation receipt email
+    const donationWithDetails = await db.donation.findUnique({
+      where: { id: donation.id },
+      select: {
+        amount: true,
+        currency: true,
+        isAnonymous: true,
+        donor: { select: { email: true, firstName: true, lastName: true } },
+        ngo: { select: { name: true } },
+      },
+    });
+
+    if (donationWithDetails?.donor && !donationWithDetails.isAnonymous) {
+      await emailService.sendDonationReceipt(
+        donationWithDetails.donor.email,
+        `${donationWithDetails.donor.firstName} ${donationWithDetails.donor.lastName}`,
+        donationWithDetails.ngo.name,
+        Number(donationWithDetails.amount),
+        donationWithDetails.currency
+      );
+    }
   }
 
   // Handle successful payment
