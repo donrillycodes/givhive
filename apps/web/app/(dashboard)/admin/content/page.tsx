@@ -23,9 +23,10 @@ const STATUS_PILLS: { value: UpdateStatus; label: string }[] = [
 ];
 
 function formatType(type: string): string {
-  return type.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) =>
-    c.toUpperCase(),
-  );
+  return type
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export default function ContentPage() {
@@ -219,11 +220,7 @@ function UpdateCard({
               </div>
 
               {!update.isFlagged && !flagging && (
-                <Button
-                  size="sm"
-                  variant="danger-ghost"
-                  onClick={onStartFlag}
-                >
+                <Button size="sm" variant="danger-ghost" onClick={onStartFlag}>
                   <Flag className="w-3.5 h-3.5" /> Flag
                 </Button>
               )}
@@ -248,9 +245,14 @@ function UpdateCard({
                 <Eye className="w-3 h-3" /> {update.viewsCount} views
               </span>
               <span>·</span>
-              <span>
-                by {update.postedBy.firstName} {update.postedBy.lastName}
-              </span>
+              {update.postedBy && (
+                <>
+                  <span>·</span>
+                  <span>
+                    by {update.postedBy.firstName} {update.postedBy.lastName}
+                  </span>
+                </>
+              )}
             </div>
 
             {/* Summary preview */}
