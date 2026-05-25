@@ -869,7 +869,14 @@
     padding: 1rem 4%;
   }
   .gh-landing .nav-links {
+    gap: 0.75rem;
+  }
+  .gh-landing .nav-links a:not(.nav-cta) {
     display: none;
+  }
+  .gh-landing .nav-cta {
+    padding: 0.55rem 1rem;
+    font-size: 0.78rem !important;
   }
   .gh-landing section {
     padding: 4rem 4%;
