@@ -3,5 +3,7 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <main className="min-h-screen bg-gray-50">{children}</main>;
+  // Cream surface so the form panel feels like an extension of the landing
+  // page. Each auth page renders its own brand panel + form layout.
+  return <main className="min-h-screen bg-cream">{children}</main>;
 }

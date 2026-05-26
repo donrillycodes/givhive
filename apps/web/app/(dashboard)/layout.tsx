@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { SidebarProvider } from "@/components/shared/SidebarContext";
+import { Topbar } from "@/components/shared/Topbar";
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user, loading, error } = useAuth();
@@ -18,9 +19,8 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-page flex items-center justify-center">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center">
-          {/* Hexagon logo mark — inline so no extra import needed here */}
           <svg
             width="36"
             height="36"
@@ -34,7 +34,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             />
             <path
               d="M14 7L19.1962 10V16L14 19L8.80385 16V10L14 7Z"
-              fill="#4de69e"
+              fill="#4dbf83"
               opacity="0.9"
             />
           </svg>
@@ -46,12 +46,12 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-page flex items-center justify-center">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center max-w-sm px-4">
           <p className="text-red-600 text-sm">{error}</p>
           <button
             onClick={() => router.push("/login")}
-            className="mt-4 text-sm text-brand-green hover:underline"
+            className="mt-4 text-sm text-brand-green-dk hover:underline font-semibold"
           >
             Back to login
           </button>
@@ -63,11 +63,16 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   return (
-    <div className="flex min-h-screen bg-page">
+    <div className="flex min-h-screen bg-cream">
       <Sidebar />
-      {/* Main content — takes remaining space, scrollable independently */}
+      {/* Main column — topbar at top, scrollable content below */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <div className="flex-1 p-6 md:p-8 overflow-y-auto">{children}</div>
+        <Topbar />
+        <div className="flex-1 overflow-y-auto">
+          <div className="px-5 md:px-8 py-7 max-w-[1200px] mx-auto w-full">
+            {children}
+          </div>
+        </div>
       </main>
     </div>
   );

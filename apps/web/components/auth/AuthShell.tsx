@@ -1,8 +1,12 @@
+import { ReactNode } from "react";
 import { ShieldCheck } from "lucide-react";
 
 // AuthShell — shared pieces for /login, /register, and /download.
 // The brand panel sits on the left on desktop; on mobile it collapses to
 // a compact top logo + tagline. Everything references GivHive.
+//
+// Visual refresh matches landing: deep forest panel with hex texture,
+// Fraunces serif headline with italic accent, cream form panel.
 
 // ─── Hexagon hive logo mark ────────────────────────────────────────────────
 export function HiveMark({ size = 32 }: { size?: number }) {
@@ -17,7 +21,7 @@ export function HiveMark({ size = 32 }: { size?: number }) {
       <path d="M14 2L24.3923 8V20L14 26L3.60769 20V8L14 2Z" fill="#1a7a4a" />
       <path
         d="M14 7L19.1962 10V16L14 19L8.80385 16V10L14 7Z"
-        fill="#4de69e"
+        fill="#4dbf83"
         opacity="0.9"
       />
     </svg>
@@ -26,7 +30,8 @@ export function HiveMark({ size = 32 }: { size?: number }) {
 
 // ─── Dark brand panel (desktop left column) ────────────────────────────────
 export function BrandPanel({
-  heading = "Connecting food donors with the communities that need them most.",
+  heading = "Connecting donors with the communities that need them most.",
+  highlight = "donors",
   subheading = "The management dashboard for NGOs and administrators running food donation programmes in Winnipeg.",
   bullets = [
     "Verified NGO organisations only",
@@ -34,45 +39,72 @@ export function BrandPanel({
     "Secure, role-based access control",
   ],
 }: {
-  heading?: string;
-  subheading?: string;
+  heading?: ReactNode;
+  /** Optional substring inside `heading` to render as the italic accent. */
+  highlight?: string;
+  subheading?: ReactNode;
   bullets?: string[];
 }) {
+  // Render the heading with the highlighted substring wrapped in an italic
+  // serif accent so it picks up the landing-page treatment.
+  const renderHeading = () => {
+    if (typeof heading !== "string" || !highlight) return heading;
+    const idx = heading.indexOf(highlight);
+    if (idx === -1) return heading;
+    return (
+      <>
+        {heading.slice(0, idx)}
+        <em className="italic font-light text-green-400">{highlight}</em>
+        {heading.slice(idx + highlight.length)}
+      </>
+    );
+  };
+
   return (
     <div
-      className="hidden lg:flex lg:w-[420px] flex-col justify-between p-10 flex-shrink-0"
-      style={{ background: "#0b1c13" }}
+      className="hidden lg:flex lg:flex-col lg:justify-between p-10 xl:p-14 flex-shrink-0 auth-brand-hex-bg relative"
+      style={{
+        background: "#0d2e1c",
+        width: "42%",
+        minWidth: "440px",
+        maxWidth: "580px",
+      }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2.5 relative">
         <HiveMark size={28} />
-        <span className="text-white font-semibold text-sm tracking-tight">
+        <span className="font-serif text-white text-lg font-semibold tracking-tight">
           GivHive
         </span>
       </div>
 
       {/* Copy */}
-      <div>
-        <h2 className="text-2xl font-semibold text-white leading-snug mb-3">
-          {heading}
+      <div className="relative">
+        <h2 className="font-serif text-[34px] xl:text-[38px] font-semibold leading-[1.12] tracking-tight text-white mb-4">
+          {renderHeading()}
         </h2>
         <p
-          className="text-sm leading-relaxed"
-          style={{ color: "rgba(255,255,255,0.52)" }}
+          className="text-[15px] leading-relaxed max-w-[380px]"
+          style={{ color: "rgba(255,255,255,0.62)" }}
         >
           {subheading}
         </p>
 
-        <div className="mt-8 space-y-3">
+        <div className="mt-7 space-y-3">
           {bullets.map((point) => (
             <div key={point} className="flex items-center gap-3">
-              <ShieldCheck
-                className="w-3.5 h-3.5 flex-shrink-0"
-                style={{ color: "#4de69e" }}
-              />
+              <span
+                className="w-[22px] h-[22px] rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: "rgba(77,191,131,0.18)",
+                  color: "#4dbf83",
+                }}
+              >
+                <ShieldCheck className="w-3 h-3" />
+              </span>
               <p
-                className="text-xs"
-                style={{ color: "rgba(255,255,255,0.52)" }}
+                className="text-[13px]"
+                style={{ color: "rgba(255,255,255,0.7)" }}
               >
                 {point}
               </p>
@@ -81,7 +113,10 @@ export function BrandPanel({
         </div>
       </div>
 
-      <p className="text-xs" style={{ color: "rgba(255,255,255,0.22)" }}>
+      <p
+        className="text-xs tracking-wider relative"
+        style={{ color: "rgba(255,255,255,0.32)" }}
+      >
         GivHive — Winnipeg, Canada
       </p>
     </div>
@@ -91,14 +126,12 @@ export function BrandPanel({
 // ─── Mobile top logo (replaces the brand panel on small screens) ───────────
 export function MobileLogo() {
   return (
-    <div className="flex flex-col items-center mb-8 lg:hidden">
-      <div className="flex items-center gap-2.5 mb-1">
-        <HiveMark size={28} />
-        <span className="font-semibold text-ink text-base tracking-tight">
-          GivHive
-        </span>
-      </div>
-      <p className="text-xs text-ink-subtle text-center">
+    <div className="flex flex-col items-center gap-2 mb-7 lg:hidden">
+      <HiveMark size={36} />
+      <span className="font-serif font-semibold text-ink text-lg tracking-tight">
+        GivHive
+      </span>
+      <p className="text-[11px] text-ink-subtle text-center">
         NGO &amp; Admin Dashboard
       </p>
     </div>
@@ -134,12 +167,12 @@ export function GoogleSoonButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full flex items-center justify-center gap-2.5 h-10 px-4 rounded-xl border border-border-default bg-white text-sm font-medium text-ink hover:bg-surface-muted transition-colors relative"
+      className="w-full flex items-center justify-center gap-2.5 h-12 px-4 rounded-xl border-[1.5px] border-[rgba(13,46,28,0.14)] bg-[#fbfaf5] text-[13px] font-semibold text-ink-soft hover:border-brand-green hover:bg-white transition-colors relative"
     >
       <GoogleIcon />
       Continue with Google
-      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 font-medium">
-        Soon
+      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-600 font-bold tracking-wide">
+        SOON
       </span>
     </button>
   );
@@ -147,12 +180,12 @@ export function GoogleSoonButton({ onClick }: { onClick: () => void }) {
 
 export function OrDivider({ label = "or use email" }: { label?: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex-1 h-px bg-border-subtle" />
-      <span className="text-[11px] text-ink-subtle uppercase tracking-wide font-medium">
+    <div className="flex items-center gap-3 my-5">
+      <div className="flex-1 h-px bg-[rgba(13,46,28,0.10)]" />
+      <span className="text-[10.5px] text-ink-muted uppercase tracking-[0.12em] font-semibold">
         {label}
       </span>
-      <div className="flex-1 h-px bg-border-subtle" />
+      <div className="flex-1 h-px bg-[rgba(13,46,28,0.10)]" />
     </div>
   );
 }

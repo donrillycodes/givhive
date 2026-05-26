@@ -3,8 +3,9 @@ import { cn } from "@/lib/utils";
 
 // Badge — small status pill used everywhere a state needs naming.
 // Pick a tone explicitly OR pass a status string and let `statusToTone`
-// map it to the right colour family. Keeping this in one place stops
-// the codebase from drifting into "blue here, indigo there" inconsistency.
+// map it to the right colour family.
+//
+// Visual refresh: matches the redesign — warmer tones, uppercase letter-spacing.
 
 export type BadgeTone =
   | "neutral"
@@ -22,28 +23,28 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const TONE_CLASSES: Record<BadgeTone, string> = {
-  neutral: "bg-gray-100 text-gray-700",
-  success: "bg-emerald-50 text-emerald-700",
-  warning: "bg-amber-50 text-amber-700",
+  neutral: "bg-[rgba(13,46,28,0.06)] text-ink-muted",
+  success: "bg-green-50 text-green-700",
+  warning: "bg-amber-100 text-amber-600",
   danger: "bg-red-50 text-red-700",
-  info: "bg-blue-50 text-blue-700",
-  brand: "bg-brand-green-lt text-brand-green",
-  muted: "bg-gray-50 text-gray-500",
+  info: "bg-[#e8f0fb] text-[#1d4ed8]",
+  brand: "bg-[rgba(45,158,100,0.12)] text-green-700",
+  muted: "bg-[rgba(13,46,28,0.06)] text-ink-muted",
 };
 
 const DOT_CLASSES: Record<BadgeTone, string> = {
-  neutral: "bg-gray-400",
-  success: "bg-emerald-500",
+  neutral: "bg-ink-muted",
+  success: "bg-brand-green-mid",
   warning: "bg-amber-500",
   danger: "bg-red-500",
-  info: "bg-blue-500",
+  info: "bg-[#1d4ed8]",
   brand: "bg-brand-green",
-  muted: "bg-gray-300",
+  muted: "bg-ink-subtle",
 };
 
 const SIZE_CLASSES = {
-  sm: "text-[10px] px-1.5 py-0.5 gap-1",
-  md: "text-xs px-2 py-0.5 gap-1.5",
+  sm: "text-[10px] px-2 py-0.5 gap-1 tracking-[0.02em]",
+  md: "text-[11px] px-2.5 py-1 gap-1.5 tracking-[0.02em]",
 };
 
 export function Badge({
@@ -57,7 +58,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full font-medium leading-none",
+        "inline-flex items-center rounded-full font-semibold leading-none",
         TONE_CLASSES[tone],
         SIZE_CLASSES[size],
         className,
@@ -83,6 +84,7 @@ export function statusToTone(status: string): BadgeTone {
     case "CONFIRMED":
     case "ACTIVE":
     case "SUCCEEDED":
+    case "COMPLETED":
       return "success";
     case "PENDING":
     case "RESUBMITTED":

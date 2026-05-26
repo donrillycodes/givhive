@@ -2,9 +2,12 @@ import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
-// StatCard — four summary tiles at the top of dashboard pages.
-// Value reads first (large), label second (small/muted), optional
-// meta line anchors it to real-world meaning.
+// StatCard — summary tile shown above content on every dashboard page.
+//
+// Visual refresh:
+// - Uppercase tracked label (top-left), icon-pill chip (top-right)
+// - Value uses Fraunces serif so the number reads like a hero stat
+// - Meta row underneath; trend icon optional
 
 type Trend = "up" | "down" | "neutral";
 
@@ -14,6 +17,7 @@ interface StatCardProps {
   meta?: ReactNode;
   trend?: Trend;
   icon?: ReactNode;
+  /** Override the icon-pill colour. Defaults to the green tint. */
   iconClassName?: string;
   className?: string;
 }
@@ -22,13 +26,12 @@ const TREND_CONFIG: Record<
   Trend,
   {
     text: string;
-    bg: string;
     Icon: React.ComponentType<{ className?: string }>;
   }
 > = {
-  up: { text: "text-emerald-700", bg: "bg-emerald-50", Icon: TrendingUp },
-  down: { text: "text-red-600", bg: "bg-red-50", Icon: TrendingDown },
-  neutral: { text: "text-ink-subtle", bg: "bg-surface-muted", Icon: Minus },
+  up: { text: "text-brand-green-dk", Icon: TrendingUp },
+  down: { text: "text-red-600", Icon: TrendingDown },
+  neutral: { text: "text-ink-muted", Icon: Minus },
 };
 
 export function StatCard({
@@ -40,25 +43,25 @@ export function StatCard({
   iconClassName,
   className,
 }: StatCardProps) {
-  const { text, bg, Icon } = TREND_CONFIG[trend];
+  const { text, Icon } = TREND_CONFIG[trend];
 
   return (
     <div
       className={cn(
-        "bg-white rounded-2xl border border-border-subtle p-5",
-        "shadow-[0_1px_3px_rgba(13,26,18,0.05)]",
-        "hover:shadow-[0_4px_12px_rgba(13,26,18,0.07)] transition-shadow duration-200",
+        "bg-white rounded-[14px] border border-border-subtle p-5",
+        "shadow-[0_1px_2px_rgba(13,46,28,0.05)]",
+        "hover:border-green-200 transition-colors duration-150",
         className,
       )}
     >
-      <div className="flex items-start justify-between mb-3">
-        <p className="text-xs font-semibold text-ink-subtle uppercase tracking-widest">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-[0.08em]">
           {label}
         </p>
         {icon && (
           <div
             className={cn(
-              "w-8 h-8 rounded-xl bg-brand-green-lt text-brand-green flex items-center justify-center",
+              "w-9 h-9 rounded-xl bg-green-50 text-brand-green-dk flex items-center justify-center flex-shrink-0",
               iconClassName,
             )}
           >
@@ -67,18 +70,19 @@ export function StatCard({
         )}
       </div>
 
-      <p className="text-2xl font-bold text-ink leading-tight">{value}</p>
+      <p className="font-serif text-3xl font-semibold text-ink tracking-tight leading-none">
+        {value}
+      </p>
 
       {meta && (
         <div
           className={cn(
-            "inline-flex items-center gap-1 mt-2 text-xs px-2 py-0.5 rounded-full",
-            bg,
+            "inline-flex items-center gap-1.5 mt-2.5 text-xs",
             text,
           )}
         >
-          <Icon className="w-3 h-3" />
-          <span>{meta}</span>
+          {trend !== "neutral" && <Icon className="w-3 h-3" />}
+          <span className="text-ink-muted">{meta}</span>
         </div>
       )}
     </div>

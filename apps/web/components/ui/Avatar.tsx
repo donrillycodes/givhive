@@ -9,9 +9,8 @@ function initialsFromName(name: string): string {
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }
 
-// Avatar — circular initial-or-image badge used on members, donors, NGO logos.
-// Falls back to brand-tinted initials if no image URL is provided. We pull
-// initials via the existing getInitials() helper so the whole app uses one rule.
+// Avatar — circular initial-or-image badge.
+// Visual refresh: green-tinted backdrop, semibold initials, sizes from xs..xl.
 
 type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl";
 
@@ -27,8 +26,8 @@ const SIZE_CLASSES: Record<AvatarSize, string> = {
   xs: "w-6 h-6 text-[9px]",
   sm: "w-8 h-8 text-[10px]",
   md: "w-9 h-9 text-xs",
-  lg: "w-12 h-12 text-sm",
-  xl: "w-20 h-20 text-base",
+  lg: "w-14 h-14 text-base",
+  xl: "w-20 h-20 text-lg",
 };
 
 export function Avatar({
@@ -44,7 +43,7 @@ export function Avatar({
     <span
       className={cn(
         "inline-flex items-center justify-center rounded-full overflow-hidden flex-shrink-0",
-        "bg-brand-green-lt text-brand-green font-semibold",
+        "bg-green-100 text-green-700 font-bold",
         SIZE_CLASSES[size],
         className,
       )}

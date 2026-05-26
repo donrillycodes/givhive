@@ -86,15 +86,14 @@ export default function NGOApplicationsPage() {
 
   return (
     <AdminGuard permission="canApproveNgos">
-      <div className="flex flex-col flex-1">
-        <Header
-          title="NGO applications"
-          subtitle="Review and manage NGO applications"
-        />
+      <Header
+        title="NGO Applications"
+        accent="Applications"
+        subtitle="Review and approve organisations applying to join the GivHive network. Approved NGOs become visible to donors immediately."
+      />
 
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-5xl space-y-5">
-            <FilterPills
+      <div className="space-y-5">
+        <FilterPills
               options={STATUS_PILLS}
               value={statusFilter}
               onChange={(v) => {
@@ -177,8 +176,6 @@ export default function NGOApplicationsPage() {
                 ))}
               </div>
             )}
-          </div>
-        </div>
       </div>
     </AdminGuard>
   );

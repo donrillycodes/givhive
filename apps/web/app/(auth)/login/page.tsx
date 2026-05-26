@@ -65,35 +65,40 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-cream">
       {/* Dark brand panel — visible on desktop only */}
-      <BrandPanel />
+      <BrandPanel
+        heading="Connecting donors with the communities that need them most."
+        highlight="donors"
+        subheading="The management dashboard for NGOs and administrators running food donation programmes in Winnipeg."
+      />
 
-      {/* Form panel
-          Mobile:  top-aligned with padding-top so logo + form sit near top,
-                   no dead space above or below.
-          Desktop: centred vertically (the brand panel fills the left half). */}
-      <div className="flex-1 flex flex-col items-center justify-start md:justify-center px-5 pt-12 pb-10 md:pt-0 md:pb-0 bg-gray-50">
-        <div className="w-full max-w-sm">
-          {/* Small logo — only shown on mobile when BrandPanel is hidden */}
+      {/* Form panel — visibly darker beige so the white card lifts properly */}
+      <div
+        className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 lg:px-14 py-12 lg:py-16"
+        style={{
+          backgroundColor: "#e9e0c4",
+          backgroundImage:
+            "radial-gradient(circle at 20% 80%, rgba(45,158,100,0.10), transparent 50%), radial-gradient(circle at 85% 20%, rgba(240,152,16,0.07), transparent 50%)",
+        }}
+      >
+        <div className="w-full max-w-[440px]">
+          {/* Mobile-only logo */}
           <MobileLogo />
 
           {/* Heading */}
-          <div className="mb-8 mt-2">
-            <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Sign in to your NGO or Admin dashboard
+          <div className="mb-7">
+            <h1 className="font-serif text-[32px] sm:text-[34px] font-semibold text-ink tracking-tight leading-[1.1]">
+              Welcome{" "}
+              <em className="italic font-normal text-brand-green">back</em>
+            </h1>
+            <p className="text-[15px] text-ink-muted mt-2">
+              Sign in to your NGO or Admin dashboard.
             </p>
           </div>
 
-          {/* Card — white surface with real shadow so it lifts off the page */}
-          <div
-            className="bg-white rounded-2xl p-6 md:p-8"
-            style={{
-              boxShadow:
-                "0 4px 24px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06)",
-            }}
-          >
+          {/* Card */}
+          <div className="bg-white rounded-[20px] p-7 sm:p-8 border border-[rgba(26,122,74,0.12)] shadow-[0_20px_50px_-12px_rgba(13,46,28,0.12),0_2px_6px_rgba(13,46,28,0.05)]">
             <GoogleSoonButton
               onClick={() =>
                 setError(
@@ -102,9 +107,7 @@ export default function LoginPage() {
               }
             />
 
-            <div className="my-5">
-              <OrDivider />
-            </div>
+            <OrDivider />
 
             <form onSubmit={handleLogin} className="space-y-5">
               {error && (
@@ -133,20 +136,26 @@ export default function LoginPage() {
                 autoComplete="current-password"
               />
 
-              {/* Extra breathing room between last field and button */}
-              <div className="pt-1">
-                <Button type="submit" disabled={loading} fullWidth size="lg">
-                  {loading ? "Signing in..." : "Sign in"}
-                </Button>
+              <div className="flex justify-end -mt-1">
+                <Link
+                  href="#"
+                  className="text-xs font-semibold text-brand-green-dk hover:underline"
+                >
+                  Forgot password?
+                </Link>
               </div>
+
+              <Button type="submit" disabled={loading} fullWidth size="lg">
+                {loading ? "Signing in..." : "Sign in"}
+              </Button>
             </form>
           </div>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-sm text-ink-muted mt-5">
             New to GivHive?{" "}
             <Link
               href="/register"
-              className="text-brand-green hover:underline font-semibold"
+              className="text-brand-green-dk hover:underline font-semibold"
             >
               Create an account
             </Link>

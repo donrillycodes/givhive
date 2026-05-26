@@ -129,83 +129,78 @@ export default function NGOUpdatesPage() {
 
   return (
     <NGOGuard>
-      <div className="flex flex-col flex-1">
-        <Header
-          title="Updates"
-          subtitle="Share impact stories and announcements with donors"
+      <Header
+        title="Share an update"
+        accent="update"
+        subtitle="Tell donors what their support has made possible. Pinned updates appear at the top of your public NGO profile."
+      />
+
+      <div className="space-y-5">
+        <FilterPills
+          options={STATUS_PILLS}
+          value={statusFilter}
+          onChange={setStatusFilter}
+          rightSlot={
+            !showForm && (
+              <Button onClick={() => setShowForm(true)} size="sm">
+                <Plus className="w-3.5 h-3.5" /> Write update
+              </Button>
+            )
+          }
         />
 
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-5xl space-y-5">
-            <FilterPills
-              options={STATUS_PILLS}
-              value={statusFilter}
-              onChange={setStatusFilter}
-              rightSlot={
-                !showForm && (
-                  <Button onClick={() => setShowForm(true)} size="sm">
-                    <Plus className="w-3.5 h-3.5" /> Write update
-                  </Button>
-                )
-              }
-            />
+        {showForm && (
+          <UpdateComposer
+            form={form}
+            update={update}
+            isFormValid={isFormValid}
+            isPublishing={createAndPublishMutation.isPending}
+            isSavingDraft={createMutation.isPending}
+            isError={createMutation.isError || createAndPublishMutation.isError}
+            onCancel={() => {
+              setShowForm(false);
+              setForm(EMPTY_FORM);
+            }}
+            onPublish={() => createAndPublishMutation.mutate()}
+            onSaveDraft={() => createMutation.mutate()}
+          />
+        )}
 
-            {showForm && (
-              <UpdateComposer
-                form={form}
-                update={update}
-                isFormValid={isFormValid}
-                isPublishing={createAndPublishMutation.isPending}
-                isSavingDraft={createMutation.isPending}
-                isError={
-                  createMutation.isError || createAndPublishMutation.isError
-                }
-                onCancel={() => {
-                  setShowForm(false);
-                  setForm(EMPTY_FORM);
-                }}
-                onPublish={() => createAndPublishMutation.mutate()}
-                onSaveDraft={() => createMutation.mutate()}
+        {isLoading ? (
+          <UpdateSkeleton />
+        ) : updates.length === 0 ? (
+          <EmptyState
+            icon={<FileText className="w-6 h-6" />}
+            title={`No ${statusFilter.toLowerCase()} updates`}
+            description={
+              statusFilter === "DRAFT"
+                ? "Drafts you save will appear here. Write something donors will care about — an impact story, a thank-you, a milestone."
+                : statusFilter === "PUBLISHED"
+                  ? "Published updates appear in the donor home feed."
+                  : "Archived updates are hidden from donors but stay in your records."
+            }
+            action={
+              statusFilter === "DRAFT" && !showForm ? (
+                <Button onClick={() => setShowForm(true)}>
+                  <Plus className="w-3.5 h-3.5" /> Write your first update
+                </Button>
+              ) : undefined
+            }
+          />
+        ) : (
+          <div className="space-y-3">
+            {updates.map((item) => (
+              <UpdateCard
+                key={item.id}
+                item={item}
+                onPublish={() => publishMutation.mutate(item.id)}
+                onArchive={() => archiveMutation.mutate(item.id)}
+                isPublishing={publishMutation.isPending}
+                isArchiving={archiveMutation.isPending}
               />
-            )}
-
-            {isLoading ? (
-              <UpdateSkeleton />
-            ) : updates.length === 0 ? (
-              <EmptyState
-                icon={<FileText className="w-5 h-5" />}
-                title={`No ${statusFilter.toLowerCase()} updates`}
-                description={
-                  statusFilter === "DRAFT"
-                    ? "Drafts you save will appear here. Write something donors will care about."
-                    : statusFilter === "PUBLISHED"
-                      ? "Published updates appear in the donor home feed."
-                      : "Archived updates are hidden from donors."
-                }
-                action={
-                  statusFilter === "DRAFT" && !showForm ? (
-                    <Button onClick={() => setShowForm(true)}>
-                      <Plus className="w-3.5 h-3.5" /> Write your first update
-                    </Button>
-                  ) : undefined
-                }
-              />
-            ) : (
-              <div className="space-y-3">
-                {updates.map((item) => (
-                  <UpdateCard
-                    key={item.id}
-                    item={item}
-                    onPublish={() => publishMutation.mutate(item.id)}
-                    onArchive={() => archiveMutation.mutate(item.id)}
-                    isPublishing={publishMutation.isPending}
-                    isArchiving={archiveMutation.isPending}
-                  />
-                ))}
-              </div>
-            )}
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </NGOGuard>
   );
@@ -237,12 +232,14 @@ function UpdateComposer({
   onSaveDraft,
 }: ComposerProps) {
   return (
-    <div className="bg-white rounded-xl border border-border-subtle shadow-[0_1px_2px_rgba(15,23,42,0.04)] overflow-hidden">
+    <div className="bg-white rounded-[14px] border border-border-subtle shadow-[0_4px_18px_rgba(13,46,28,0.06),0_1px_2px_rgba(13,46,28,0.04)] overflow-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-5">
         {/* Form */}
-        <div className="lg:col-span-3 p-5 lg:border-r border-border-subtle">
+        <div className="lg:col-span-3 p-6 lg:border-r border-border-subtle">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-ink">Write a new update</h3>
+            <h3 className="font-serif text-lg font-semibold text-ink tracking-tight">
+              Write a new update
+            </h3>
             <button
               onClick={onCancel}
               className="text-ink-subtle hover:text-ink-soft"
@@ -253,11 +250,10 @@ function UpdateComposer({
           </div>
 
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <TextField
                 label="Title"
                 required
-                containerClassName="col-span-2 sm:col-span-1"
                 value={form.title}
                 onChange={(e) => update("title", e.target.value)}
                 placeholder="Your update headline"
@@ -265,7 +261,6 @@ function UpdateComposer({
               <SelectField
                 label="Type"
                 required
-                containerClassName="col-span-2 sm:col-span-1"
                 value={form.type}
                 onChange={(e) => update("type", e.target.value)}
                 options={TYPE_OPTIONS}
@@ -306,7 +301,7 @@ function UpdateComposer({
             />
           </div>
 
-          <div className="flex items-center gap-3 mt-5 flex-wrap">
+          <div className="flex items-center gap-3 mt-6 flex-wrap">
             <Button
               onClick={onPublish}
               disabled={isPublishing || !isFormValid}
@@ -336,11 +331,11 @@ function UpdateComposer({
         </div>
 
         {/* Live preview */}
-        <div className="lg:col-span-2 p-5 bg-surface-muted">
-          <p className="text-[11px] font-medium text-ink-subtle uppercase tracking-wide mb-3">
+        <div className="lg:col-span-2 p-6 bg-[#f8f5ec]">
+          <p className="text-[11px] font-semibold text-brand-green-dk uppercase tracking-[0.12em] mb-3">
             Donor preview
           </p>
-          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden">
+          <div className="bg-white rounded-[14px] border border-border-subtle overflow-hidden">
             {form.coverImageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -351,17 +346,19 @@ function UpdateComposer({
             )}
             <div className="p-4">
               <div className="flex items-center gap-2 flex-wrap">
-                {form.isPinned && <Pin className="w-3 h-3 text-brand-green" />}
+                {form.isPinned && (
+                  <Pin className="w-3 h-3 text-brand-green-dk" />
+                )}
                 <Badge tone="brand" size="sm">
                   {TYPE_OPTIONS.find((t) => t.value === form.type)?.label ??
                     form.type}
                 </Badge>
               </div>
-              <p className="text-sm font-semibold text-ink mt-2 line-clamp-2">
+              <p className="font-serif text-base font-semibold text-ink tracking-tight mt-2 line-clamp-2">
                 {form.title || "Your headline will appear here"}
               </p>
               {form.summary && (
-                <p className="text-xs text-ink-soft mt-1 line-clamp-2">
+                <p className="text-xs text-ink-muted mt-1 line-clamp-2">
                   {form.summary}
                 </p>
               )}
@@ -372,8 +369,8 @@ function UpdateComposer({
               )}
             </div>
           </div>
-          <p className="text-xs text-ink-subtle mt-3 leading-relaxed">
-            This is roughly how donors will see your update in the home feed.
+          <p className="text-xs text-ink-muted mt-3 leading-relaxed">
+            Roughly how donors will see your update in the home feed.
           </p>
         </div>
       </div>
@@ -396,38 +393,49 @@ function UpdateCard({
   isPublishing: boolean;
   isArchiving: boolean;
 }) {
-  const typeLabel = TYPE_OPTIONS.find((t) => t.value === item.type)?.label ??
+  const typeLabel =
+    TYPE_OPTIONS.find((t) => t.value === item.type)?.label ??
     item.type.replace(/_/g, " ");
 
   return (
-    <div className="bg-white rounded-xl border border-border-subtle p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] hover:border-border-default transition-colors">
+    <div className="bg-white rounded-[14px] border border-border-subtle p-5 shadow-[0_1px_2px_rgba(13,46,28,0.04)] hover:border-green-200 transition-colors">
       <div className="flex items-start gap-4">
-        {item.coverImageUrl && (
+        {item.coverImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={item.coverImageUrl}
             alt={item.title}
-            className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+            className="w-[72px] h-[72px] rounded-xl object-cover flex-shrink-0"
           />
+        ) : (
+          <div
+            className="w-[72px] h-[72px] rounded-xl flex-shrink-0 flex items-center justify-center"
+            style={{
+              background:
+                "linear-gradient(135deg, var(--color-green-100), var(--color-green-200))",
+            }}
+          >
+            <FileText className="w-6 h-6 text-brand-green-dk/70" />
+          </div>
         )}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap mb-1">
             {item.isPinned && (
-              <Pin className="w-3 h-3 text-brand-green" />
+              <Pin className="w-3 h-3 text-brand-green-dk" />
             )}
-            <p className="text-sm font-semibold text-ink truncate">
-              {item.title}
-            </p>
             <Badge tone={statusToTone(item.status)} size="sm">
               {item.status}
             </Badge>
-            <Badge tone="muted" size="sm">
+            <Badge tone="brand" size="sm">
               {typeLabel}
             </Badge>
           </div>
+          <h3 className="font-serif text-base font-semibold text-ink tracking-tight">
+            {item.title}
+          </h3>
 
           {item.summary && (
-            <p className="text-xs text-ink-soft mt-1 line-clamp-2">
+            <p className="text-sm text-ink-muted mt-1 line-clamp-2 leading-relaxed">
               {item.summary}
             </p>
           )}
@@ -445,7 +453,7 @@ function UpdateCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex flex-col gap-2 flex-shrink-0">
           {item.status === "DRAFT" && (
             <Button size="sm" onClick={onPublish} disabled={isPublishing}>
               <Send className="w-3.5 h-3.5" /> Publish
@@ -475,14 +483,14 @@ function UpdateSkeleton() {
       {[...Array(3)].map((_, i) => (
         <div
           key={i}
-          className="bg-white rounded-xl border border-border-subtle p-5 animate-pulse"
+          className="bg-white rounded-[14px] border border-border-subtle p-5 animate-pulse"
         >
           <div className="flex items-start gap-4">
-            <div className="w-16 h-16 rounded-lg bg-gray-100" />
+            <div className="w-[72px] h-[72px] rounded-xl bg-[rgba(13,46,28,0.06)]" />
             <div className="flex-1 space-y-2">
-              <div className="h-4 bg-gray-100 rounded w-1/2" />
-              <div className="h-3 bg-gray-100 rounded w-3/4" />
-              <div className="h-3 bg-gray-100 rounded w-1/3" />
+              <div className="h-4 bg-[rgba(13,46,28,0.06)] rounded w-1/2" />
+              <div className="h-3 bg-[rgba(13,46,28,0.06)] rounded w-3/4" />
+              <div className="h-3 bg-[rgba(13,46,28,0.06)] rounded w-1/3" />
             </div>
           </div>
         </div>

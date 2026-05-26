@@ -1,69 +1,88 @@
+/* ─── Plus Jakarta Sans + Fraunces from Google Fonts ──────────────────── */
+/* NB: Google Fonts @import url(...) MUST sit above @import "tailwindcss";
+   because Tailwind v4 inlines its source there and the CSS spec requires
+   every @import to precede other rules. */
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&display=swap");
+
 @import "tailwindcss";
 
-/* ─── Plus Jakarta Sans from Google Fonts ─────────────────────────────── */
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
-
 @theme {
-  /* ── Font ─────────────────────────────────────────────────────────── */
+  /* ── Fonts ────────────────────────────────────────────────────────── */
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", ui-serif, Georgia, serif;
 
-  /* ── Brand green — full scale ─────────────────────────────────────── */
+  /* ── Brand green — full scale (matched to landing.css) ────────────── */
+  --color-brand-green: #1a7a4a;
+  --color-brand-green-dk: #145e38;
+  --color-brand-green-lt: #f0f9f4;
+  --color-brand-green-mid: #2d9e64;
+  --color-green-900: #0d2e1c;
+  --color-green-800: #133d26;
+  --color-green-700: #1a5233;
+  --color-green-600: #1a7a4a;
+  --color-green-500: #2d9e64;
+  --color-green-400: #4dbf83;
+  --color-green-200: #b9dcc8;
+  --color-green-100: #d1ebde;
+  --color-green-50: #f0f9f4;
+
+  /* ── Amber accent ─────────────────────────────────────────────────── */
   --color-brand-orange: #f09810;
   --color-brand-orange-dk: #d4860e;
   --color-brand-orange-lt: #fef3dc;
-  --color-brand-black: #1c2e1c;
-  --color-brand-gray: #4a4a4a;
-  --color-brand-gray-lt: #f5f5f5;
-  --color-brand-gray-md: #e0e0e0;
+  --color-amber-600: #d4860e;
+  --color-amber-500: #f09810;
+  --color-amber-100: #fef3dc;
 
-  /* ── Brand legacy aliases (kept so existing components keep working) ─ */
-  --color-brand-green: #1a7a4a;
-  --color-brand-green-dk: #145e38;
-  --color-brand-green-lt: #e8f5ee;
-  --color-brand-green-mid: #2d9e64;
+  /* ── Cream surfaces ───────────────────────────────────────────────── */
+  --color-cream: #faf7f0;
+  --color-cream-dark: #f2ede2;
+  --color-paper: #ffffff;
+  --color-paper-soft: #fbfaf5;
 
   /* ── Sidebar ──────────────────────────────────────────────────────── */
-  --color-sidebar: #0b1c13;
+  --color-sidebar: #0d2e1c;
   --color-sidebar-active: #1a7a4a;
-  --color-sidebar-accent: #4de69e;
+  --color-sidebar-accent: #4dbf83;
 
-  /* ── Surfaces ─────────────────────────────────────────────────────── */
-  --color-page: #f4f7f5;
+  /* ── Surfaces (legacy aliases — keep so existing classnames compile) ─ */
+  --color-page: #faf7f0;
   --color-surface: #ffffff;
-  --color-surface-muted: #f0f4f2;
-  --color-surface-elevated: #fbfcfb;
+  --color-surface-muted: #f4f0e3;
+  --color-surface-elevated: #fbfaf5;
 
   /* ── Borders ──────────────────────────────────────────────────────── */
-  --color-border-subtle: #eaf0ec;
-  --color-border-default: #e2e8e4;
-  --color-border-strong: #cdd6d0;
+  --color-border-subtle: #ece6d4;
+  --color-border-default: #ddd6c0;
+  --color-border-strong: #c8c0a4;
 
   /* ── Ink (text) ───────────────────────────────────────────────────── */
   --color-ink: #0d1a12;
   --color-ink-soft: #1d2e22;
-  --color-ink-muted: #627a6b;
+  --color-ink-muted: #4a5c50;
   --color-ink-subtle: #96a89d;
 
   /* ── Semantic state pairs ─────────────────────────────────────────── */
-  --color-success-tint: #e8f5ee;
-  --color-success-ink: #145e38;
-  --color-warning-tint: #fef3c7;
-  --color-warning-ink: #92400e;
-  --color-danger-tint: #fee2e2;
-  --color-danger-ink: #991b1b;
-  --color-info-tint: #dbeafe;
-  --color-info-ink: #1e40af;
+  --color-success-tint: #f0f9f4;
+  --color-success-ink: #1a5233;
+  --color-warning-tint: #fef3dc;
+  --color-warning-ink: #d4860e;
+  --color-danger-tint: #fef2f2;
+  --color-danger-ink: #b91c1c;
+  --color-info-tint: #e8f0fb;
+  --color-info-ink: #1d4ed8;
 
   /* ── Focus ring ───────────────────────────────────────────────────── */
-  --color-ring: rgba(26, 122, 74, 0.22);
+  --color-ring: rgba(45, 158, 100, 0.22);
 
   /* ── Radius ───────────────────────────────────────────────────────── */
   --radius-card: 14px;
   --radius-pill: 9999px;
 
   /* ── Shadows ──────────────────────────────────────────────────────── */
-  --shadow-card: 0 1px 3px rgba(13, 26, 18, 0.05);
-  --shadow-pop: 0 8px 28px rgba(13, 26, 18, 0.09);
+  --shadow-card: 0 1px 2px rgba(13, 46, 28, 0.05);
+  --shadow-soft: 0 4px 18px rgba(13, 46, 28, 0.06), 0 1px 2px rgba(13, 46, 28, 0.04);
+  --shadow-pop: 0 20px 50px rgba(13, 46, 28, 0.12), 0 2px 6px rgba(13, 46, 28, 0.06);
 }
 
 /* ─── Base reset ───────────────────────────────────────────────────────── */
@@ -94,16 +113,23 @@ a {
   text-decoration: none;
 }
 
-/* ─── Sidebar nav items ────────────────────────────────────────────────── */
+/* ─── Serif helper — page titles, card titles, hero stats ──────────────── */
+.font-serif,
+.gh-serif {
+  font-family: var(--font-serif);
+  letter-spacing: -0.02em;
+}
+
+/* ─── Sidebar nav items (used inside dark sidebar) ─────────────────────── */
 .sidebar-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-size: 13.5px;
+  gap: 11px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 13px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.62);
   transition:
     background 150ms,
     color 150ms;
@@ -115,26 +141,46 @@ a {
   background: none;
 }
 .sidebar-item:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.95);
 }
 .sidebar-item.active {
-  background: rgba(26, 122, 74, 0.22);
-  color: #4de69e;
+  background: rgba(77, 191, 131, 0.12);
+  color: #4dbf83;
   border-left: 2px solid #2d9e64;
-  padding-left: 8px;
+  padding-left: 10px;
+  font-weight: 600;
+}
+.sidebar-item.active svg {
+  opacity: 1;
+}
+.sidebar-item svg {
+  opacity: 0.85;
 }
 
 .sidebar-section-label {
   font-size: 10px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.32);
   text-transform: uppercase;
-  letter-spacing: 0.09em;
-  padding: 0 10px;
-  margin-top: 20px;
-  margin-bottom: 4px;
+  letter-spacing: 0.12em;
+  padding: 0 12px;
+  margin-top: 14px;
+  margin-bottom: 6px;
   display: block;
+}
+.sidebar-section-label:first-of-type {
+  margin-top: 0;
+}
+
+/* ─── Sidebar background hex pattern (subtle) ──────────────────────────── */
+.sidebar-hex-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='140'%3E%3Cpath d='M40 4 L77 24 L77 64 L40 84 L3 64 L3 24 Z' fill='none' stroke='%234dbf83' stroke-opacity='.06' stroke-width='1'/%3E%3Cpath d='M40 74 L77 94 L77 134 L40 154 L3 134 L3 94 Z' fill='none' stroke='%234dbf83' stroke-opacity='.06' stroke-width='1'/%3E%3C/svg%3E");
+}
+
+/* Auth brand-panel hex pattern (slightly stronger so the dark side has texture) */
+.auth-brand-hex-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='140'%3E%3Cpath d='M40 4 L77 24 L77 64 L40 84 L3 64 L3 24 Z' fill='none' stroke='%234dbf83' stroke-opacity='.08' stroke-width='1'/%3E%3Cpath d='M40 74 L77 94 L77 134 L40 154 L3 134 L3 94 Z' fill='none' stroke='%234dbf83' stroke-opacity='.08' stroke-width='1'/%3E%3C/svg%3E");
 }
 
 /* ─── Mobile sidebar drawer ────────────────────────────────────────────── */
@@ -143,7 +189,7 @@ a {
   inset-y: 0;
   left: 0;
   z-index: 40;
-  width: 240px;
+  width: 260px;
   transform: translateX(-100%);
   transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -155,7 +201,7 @@ a {
   position: fixed;
   inset: 0;
   z-index: 39;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(13, 46, 28, 0.45);
   backdrop-filter: blur(2px);
   opacity: 0;
   pointer-events: none;
@@ -172,7 +218,7 @@ a {
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--color-brand-green-500);
+  color: var(--color-green-600);
 }
 
 /* ─── Focus ring ───────────────────────────────────────────────────────── */
