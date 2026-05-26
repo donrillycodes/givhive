@@ -149,12 +149,15 @@ export default function NGOProfilePage() {
     setForm((f) => ({ ...f, [field]: value }));
 
   return (
-    <div className="flex flex-col flex-1">
-      <Header title="NGO Profile" subtitle="Manage your organisation details" />
+    <>
+      <Header
+        title="NGO Profile"
+        accent="Profile"
+        subtitle="Manage your organisation details."
+      />
 
-      <div className="flex-1 p-6 overflow-y-auto">
-        <div className="max-w-3xl">
-          {isLoading ? (
+      <div className="max-w-3xl">
+        {isLoading ? (
             <ProfileSkeleton />
           ) : !ngo && !isRegistering ? (
             <EmptyState
@@ -207,9 +210,8 @@ export default function NGOProfilePage() {
               </div>
             )
           )}
-        </div>
       </div>
-    </div>
+    </>
   );
 }
 

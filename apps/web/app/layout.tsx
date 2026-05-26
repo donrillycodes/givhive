@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-sans",
+  variable: "--font-sans", // important for Tailwind v4
   display: "swap",
 });
 
@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={plusJakartaSans.className}>
+      <body className={plusJakartaSans.variable}>
         <Providers>{children}</Providers>
       </body>
     </html>

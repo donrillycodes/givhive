@@ -79,13 +79,14 @@ export default function StripeConnectPage() {
   };
 
   return (
-    <div className="flex flex-col flex-1">
+    <>
       <Header
         title="Stripe Payouts"
-        subtitle="Connect your bank account to receive donations directly"
+        accent="Payouts"
+        subtitle="Connect your bank account to receive donations directly."
       />
 
-      <div className="flex-1 p-8 overflow-y-auto max-w-2xl">
+      <div className="max-w-2xl">
         {/* Success banner */}
         {banner === "success" && (
           <div className="mb-6 bg-success-tint border border-green-200 rounded-xl p-4 flex items-start gap-3">
@@ -263,6 +264,6 @@ export default function StripeConnectPage() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

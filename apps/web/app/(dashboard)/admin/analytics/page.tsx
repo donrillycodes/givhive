@@ -30,15 +30,14 @@ export default function AnalyticsPage() {
 
   return (
     <AdminGuard permission="canViewAnalytics">
-      <div className="flex flex-col flex-1">
-        <Header
-          title="Platform analytics"
-          subtitle="A look at how GivHive is performing"
-        />
+      <Header
+        title="Platform analytics"
+        accent="analytics"
+        subtitle="A look at how GivHive is performing."
+      />
 
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-6xl space-y-7">
-            {isLoading ? (
+      <div className="space-y-7">
+        {isLoading ? (
               <AnalyticsSkeleton />
             ) : data ? (
               <>
@@ -165,8 +164,6 @@ export default function AnalyticsPage() {
                 description="Refresh the page or check the API server."
               />
             )}
-          </div>
-        </div>
       </div>
     </AdminGuard>
   );

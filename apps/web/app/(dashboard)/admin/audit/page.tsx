@@ -87,16 +87,15 @@ export default function AuditLogPage() {
 
   return (
     <AdminGuard>
-      <div className="flex flex-col flex-1">
-        <Header
-          title="Audit log"
-          subtitle="Tamper-evident record of every significant platform action"
-        />
+      <Header
+        title="Audit log"
+        accent="log"
+        subtitle="Tamper-evident record of every significant platform action."
+      />
 
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-6xl space-y-5">
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-3">
+      <div className="space-y-5">
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-3">
               <SelectField
                 containerClassName="sm:w-64"
                 value={actionFilter}
@@ -172,8 +171,6 @@ export default function AuditLogPage() {
                 )}
               </>
             )}
-          </div>
-        </div>
       </div>
     </AdminGuard>
   );

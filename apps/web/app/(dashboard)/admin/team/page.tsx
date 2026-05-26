@@ -181,16 +181,15 @@ export default function AdminTeamPage() {
 
   return (
     <AdminGuard>
-      <div className="flex flex-col flex-1">
-        <Header
-          title="Admin team"
-          subtitle="Manage who can act as a GivHive admin"
-        />
+      <Header
+        title="Admin team"
+        accent="team"
+        subtitle="Manage who can act as a GivHive admin."
+      />
 
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-5xl space-y-6">
-            {/* Top action bar */}
-            <div className="flex items-center justify-between">
+      <div className="space-y-6">
+        {/* Top action bar */}
+        <div className="flex items-center justify-between">
               <p className="text-sm text-ink-soft">
                 {activeMembers.length}{" "}
                 {activeMembers.length === 1 ? "active admin" : "active admins"}
@@ -308,8 +307,6 @@ export default function AdminTeamPage() {
                 )}
               </>
             )}
-          </div>
-        </div>
       </div>
     </AdminGuard>
   );

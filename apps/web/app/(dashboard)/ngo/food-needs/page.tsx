@@ -137,15 +137,14 @@ export default function NGOFoodNeedsPage() {
 
   return (
     <NGOGuard>
-      <div className="flex flex-col flex-1">
-        <Header
-          title="Food Needs"
-          subtitle="Post and manage your food item requests"
-        />
+      <Header
+        title="Food Needs"
+        accent="Needs"
+        subtitle="Post and manage your food item requests."
+      />
 
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-5xl space-y-5">
-            <FilterPills
+      <div className="space-y-5">
+        <FilterPills
               options={STATUS_PILLS}
               value={statusFilter}
               onChange={setStatusFilter}
@@ -204,8 +203,6 @@ export default function NGOFoodNeedsPage() {
                 ))}
               </div>
             )}
-          </div>
-        </div>
       </div>
     </NGOGuard>
   );

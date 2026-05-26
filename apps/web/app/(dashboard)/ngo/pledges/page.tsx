@@ -90,15 +90,14 @@ export default function NGOPledgesPage() {
 
   return (
     <NGOGuard>
-      <div className="flex flex-col flex-1">
-        <Header
-          title="Food Pledges"
-          subtitle="Manage incoming food donation pledges"
-        />
+      <Header
+        title="Food Pledges"
+        accent="Pledges"
+        subtitle="Manage incoming food donation pledges."
+      />
 
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-5xl space-y-5">
-            <FilterPills
+      <div className="space-y-5">
+        <FilterPills
               options={STATUS_PILLS}
               value={statusFilter}
               onChange={setStatusFilter}
@@ -145,8 +144,6 @@ export default function NGOPledgesPage() {
                 ))}
               </div>
             )}
-          </div>
-        </div>
       </div>
     </NGOGuard>
   );

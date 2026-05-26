@@ -62,15 +62,14 @@ export default function ContentPage() {
 
   return (
     <AdminGuard permission="canManageContent">
-      <div className="flex flex-col flex-1">
-        <Header
-          title="Content moderation"
-          subtitle="Review and moderate NGO posts and updates"
-        />
+      <Header
+        title="Content moderation"
+        accent="moderation"
+        subtitle="Review and moderate NGO posts and updates."
+      />
 
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-5xl space-y-5">
-            <FilterPills
+      <div className="space-y-5">
+        <FilterPills
               options={STATUS_PILLS}
               value={statusFilter}
               onChange={(v) => {
@@ -135,8 +134,6 @@ export default function ContentPage() {
                 ))}
               </div>
             )}
-          </div>
-        </div>
       </div>
     </AdminGuard>
   );

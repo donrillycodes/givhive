@@ -188,16 +188,15 @@ export default function NGOTeamPage() {
 
   return (
     <NGOGuard>
-      <div className="flex flex-col flex-1">
-        <Header
-          title="Team"
-          subtitle="Manage who can act on behalf of your NGO"
-        />
+      <Header
+        title="Team"
+        accent="Team"
+        subtitle="Manage who can act on behalf of your NGO."
+      />
 
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-5xl space-y-6">
-            {/* Top action bar */}
-            <div className="flex items-center justify-between">
+      <div className="space-y-6">
+        {/* Top action bar */}
+        <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-ink-soft">
                   {activeMembers.length}{" "}
@@ -320,8 +319,6 @@ export default function NGOTeamPage() {
                 )}
               </>
             )}
-          </div>
-        </div>
       </div>
     </NGOGuard>
   );

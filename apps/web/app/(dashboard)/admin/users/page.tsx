@@ -74,46 +74,49 @@ export default function UsersPage() {
 
   return (
     <AdminGuard permission="canManageUsers">
-      <div className="flex flex-col flex-1">
-        <Header
-          title="Users"
-          subtitle="View and manage everyone on the platform"
-        />
+      <Header
+        title="Users"
+        accent="Users"
+        subtitle="View and manage everyone on the platform."
+      />
 
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-6xl space-y-5">
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <TextField
-                containerClassName="flex-1 max-w-md"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name or email…"
-                leftIcon={<Search className="w-3.5 h-3.5" />}
-              />
-              <SelectField
-                containerClassName="sm:w-48"
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                options={ROLE_OPTIONS}
-              />
-            </div>
+      <div className="space-y-5">
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <TextField
+            containerClassName="flex-1 max-w-md"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name or email…"
+            leftIcon={<Search className="w-3.5 h-3.5" />}
+          />
+          <SelectField
+            containerClassName="sm:w-48"
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            options={ROLE_OPTIONS}
+          />
+        </div>
 
-            {isLoading ? (
-              <UsersSkeleton />
-            ) : users.length === 0 ? (
-              <EmptyState
-                icon={<Users className="w-5 h-5" />}
-                title="No users found"
-                description={
-                  search
-                    ? "Try a different search term or clear the role filter."
-                    : "No users match this filter yet."
-                }
-              />
-            ) : (
-              <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-                <table className="w-full">
+        {isLoading ? (
+          <UsersSkeleton />
+        ) : users.length === 0 ? (
+          <EmptyState
+            icon={<Users className="w-5 h-5" />}
+            title="No users found"
+            description={
+              search
+                ? "Try a different search term or clear the role filter."
+                : "No users match this filter yet."
+            }
+          />
+        ) : (
+          <div className="bg-white rounded-[14px] border border-border-subtle shadow-[0_1px_2px_rgba(13,46,28,0.05)]">
+            {/* Inner wrapper enables horizontal scroll on mobile without
+                breaking the card's rounded corners. min-w on the table
+                keeps columns readable at any viewport — swipe to see more. */}
+            <div className="overflow-x-auto rounded-[14px]">
+              <table className="w-full min-w-[720px]">
                   <thead>
                     <tr className="bg-surface-muted border-b border-border-subtle">
                       <Th>User</Th>
@@ -243,9 +246,8 @@ export default function UsersPage() {
                   </tbody>
                 </table>
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+        )}
       </div>
     </AdminGuard>
   );
