@@ -173,6 +173,8 @@ export class AdminService {
   }
 
   // Invite a new admin team member — SUPER_ADMIN only
+  // Creates a PENDING invite ONLY. No role or permissions are granted
+  // until the invitee explicitly accepts.
   async inviteAdmin(
     email: string,
     department: AdminDepartment,
@@ -185,7 +187,6 @@ export class AdminService {
     },
     superAdminId: string
   ) {
-    // Find the user by email
     const user = await db.user.findUnique({
       where: { email: email.toLowerCase().trim() },
     });
@@ -197,16 +198,27 @@ export class AdminService {
       );
     }
 
-    // Check if already an admin member
+    if (user.role === Role.SUPER_ADMIN) {
+      throw new AppError('This user is already a super admin.', 409);
+    }
+
     const existingMember = await db.adminMember.findUnique({
       where: { userId: user.id },
     });
 
-    if (existingMember) {
+    if (existingMember && existingMember.status === MemberStatus.PENDING) {
+      throw new AppError('This user already has a pending invite.', 409);
+    }
+    if (existingMember && existingMember.status === MemberStatus.ACTIVE) {
       throw new AppError('This user is already an admin team member.', 409);
     }
+    // A previously REMOVED member can be re-invited — clear the old record first
+    if (existingMember) {
+      await db.adminMember.delete({ where: { userId: user.id } });
+    }
 
-    // Create admin member record
+    // Create the PENDING invite. Permissions are stored here but NOT yet
+    // applied to the user — that happens on accept.
     const adminMember = await db.adminMember.create({
       data: {
         userId: user.id,
@@ -230,30 +242,11 @@ export class AdminService {
         canManageDonations: true,
         invitedAt: true,
         user: {
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-          },
+          select: { id: true, email: true, firstName: true, lastName: true },
         },
       },
     });
 
-    // Update the user's role to ADMIN and set permission flags
-    await db.user.update({
-      where: { id: user.id },
-      data: {
-        role: Role.ADMIN,
-        canApproveNgos: permissions.canApproveNgos ?? false,
-        canManageUsers: permissions.canManageUsers ?? false,
-        canManageContent: permissions.canManageContent ?? false,
-        canViewAnalytics: permissions.canViewAnalytics ?? false,
-        canManageDonations: permissions.canManageDonations ?? false,
-      },
-    });
-
-    // Fetch inviter name for email
     const inviter = await db.user.findUnique({
       where: { id: superAdminId },
       select: { firstName: true, lastName: true },
@@ -264,9 +257,78 @@ export class AdminService {
       inviter ? `${inviter.firstName} ${inviter.lastName}` : 'GivHive Admin'
     );
 
-    logger.info(`Admin invited: ${email} by SUPER_ADMIN: ${superAdminId}`);
+    logger.info(
+      `Admin invite created (pending): ${email} by SUPER_ADMIN: ${superAdminId}`
+    );
 
     return adminMember;
+  }
+
+  // Get the current user's pending invite, if any
+  async getMyPendingInvite(userId: string) {
+    const member = await db.adminMember.findUnique({
+      where: { userId },
+      select: {
+        id: true,
+        department: true,
+        status: true,
+        canApproveNgos: true,
+        canManageUsers: true,
+        canManageContent: true,
+        canViewAnalytics: true,
+        canManageDonations: true,
+        invitedAt: true,
+        invitedBy: { select: { firstName: true, lastName: true } },
+      },
+    });
+
+    if (!member || member.status !== MemberStatus.PENDING) {
+      return null;
+    }
+    return member;
+  }
+
+  // Accept a pending admin invite — promotes the user and activates membership
+  async acceptInvite(userId: string) {
+    const member = await db.adminMember.findUnique({ where: { userId } });
+
+    if (!member || member.status !== MemberStatus.PENDING) {
+      throw new AppError('No pending invite found.', 404);
+    }
+
+    const [updatedUser] = await db.$transaction([
+      db.user.update({
+        where: { id: userId },
+        data: {
+          role: Role.ADMIN,
+          canApproveNgos: member.canApproveNgos,
+          canManageUsers: member.canManageUsers,
+          canManageContent: member.canManageContent,
+          canViewAnalytics: member.canViewAnalytics,
+          canManageDonations: member.canManageDonations,
+        },
+        select: { id: true, email: true, role: true },
+      }),
+      db.adminMember.update({
+        where: { userId },
+        data: { status: MemberStatus.ACTIVE, joinedAt: new Date() },
+      }),
+    ]);
+
+    logger.info(`Admin invite accepted: ${userId}`);
+    return updatedUser;
+  }
+
+  // Decline a pending admin invite — removes it, user stays a donor
+  async declineInvite(userId: string) {
+    const member = await db.adminMember.findUnique({ where: { userId } });
+
+    if (!member || member.status !== MemberStatus.PENDING) {
+      throw new AppError('No pending invite found.', 404);
+    }
+
+    await db.adminMember.delete({ where: { userId } });
+    logger.info(`Admin invite declined: ${userId}`);
   }
 
   // Update admin permissions — SUPER_ADMIN only

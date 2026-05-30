@@ -201,6 +201,69 @@ export class AdminController {
       next(error);
     }
   }
+
+  // GET /api/admin/my-invite
+  async getMyInvite(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      if (!req.user) {
+        responses.unauthorized(res);
+        return;
+      }
+      const invite = await adminService.getMyPendingInvite(req.user.id);
+      responses.ok(res, 'Pending invite retrieved', { invite });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // POST /api/admin/my-invite/accept
+  async acceptInvite(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      if (!req.user) {
+        responses.unauthorized(res);
+        return;
+      }
+      const user = await adminService.acceptInvite(req.user.id);
+
+      await writeAuditLog(req, {
+        action: AuditAction.ADMIN_PERMISSION_CHANGED,
+        entityType: AuditEntityType.ADMIN_MEMBER,
+        entityId: req.user.id,
+        newState: { status: 'ACTIVE', role: 'ADMIN' },
+        notes: 'Admin invite accepted by invitee',
+      });
+
+      responses.ok(res, 'Invite accepted successfully', { user });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // POST /api/admin/my-invite/decline
+  async declineInvite(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      if (!req.user) {
+        responses.unauthorized(res);
+        return;
+      }
+      await adminService.declineInvite(req.user.id);
+      responses.ok(res, 'Invite declined');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new AdminController();
