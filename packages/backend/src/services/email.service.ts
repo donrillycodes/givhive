@@ -246,15 +246,17 @@ export class EmailService {
             </div>
             <div style="padding: 32px; background: #f9fafb; border-radius: 0 0 8px 8px;">
               <h2 style="color: #1A1A1A;">Welcome to the GivHive admin team</h2>
-              <p style="color: #4A4A4A; line-height: 1.6;">
+                            <p style="color: #4A4A4A; line-height: 1.6;">
                 <strong>${inviterName}</strong> has invited you to join the GivHive admin team.
-                You will have access to the admin dashboard to help manage the platform.
+                Review the invitation and choose whether to accept — you'll only gain admin
+                access once you accept.
               </p>
-              <a href="${DASHBOARD_URL}/login" 
+              <a href="${DASHBOARD_URL}/accept-invite" 
                 style="display: inline-block; background: #1A7A4A; color: white; padding: 12px 24px; 
                 border-radius: 8px; text-decoration: none; font-weight: bold; margin: 16px 0;">
-                Sign in to GivHive →
+                Review your invitation →
               </a>
+
               <hr style="border: none; border-top: 1px solid #E0E0E0; margin: 24px 0;">
               <p style="color: #9CA3AF; font-size: 12px;">GivHive — Winnipeg, Canada</p>
             </div>

@@ -130,6 +130,10 @@ export const adminApi = {
   updatePermissions: (id: string, data: any) =>
     apiClient.patch(`/api/admin/team/${id}/permissions`, data),
   removeAdmin: (id: string) => apiClient.delete(`/api/admin/team/${id}`),
+  // Invite acceptance (invitee-facing)
+  getMyInvite: () => apiClient.get("/api/admin/my-invite"),
+  acceptInvite: () => apiClient.post("/api/admin/my-invite/accept"),
+  declineInvite: () => apiClient.post("/api/admin/my-invite/decline"),
 };
 
 export default apiClient;
