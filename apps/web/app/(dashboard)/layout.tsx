@@ -1,8 +1,10 @@
 "use client";
-
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
+import { useIdleTimeout } from "@/hooks/useIdleTimeout";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { SidebarProvider } from "@/components/shared/SidebarContext";
 import { Topbar } from "@/components/shared/Topbar";
@@ -16,6 +18,21 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       router.push("/login");
     }
   }, [user, loading, router]);
+
+  // Idle timeout — 30 min for admins, 2 hr for NGOs.
+  // Donor mobile app intentionally has no timeout.
+  const role = user?.role;
+  const isAdmin = role === "ADMIN" || role === "SUPER_ADMIN";
+  useIdleTimeout({
+    timeoutMs: isAdmin ? 30 * 60 * 1000 : 2 * 60 * 60 * 1000,
+    enabled: !!user && !loading,
+    onTimeout: () => {
+      signOut(auth).catch(() => {
+        /* still redirect even if signOut fails */
+      });
+      router.replace("/login?reason=timeout");
+    },
+  });
 
   if (loading) {
     return (
