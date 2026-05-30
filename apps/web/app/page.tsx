@@ -450,7 +450,7 @@ export default function LandingPage() {
           <a href="#how">How it works</a>
           <Link href="/login">NGO Dashboard</Link>
           <Link href="/register">Register NGO</Link>
-          <a href="#">Privacy</a>
+          <Link href="/privacy">Privacy</Link>
           <a href="#">Contact</a>
         </div>
         <p className="footer-copy">© 2026 GivHive · Winnipeg, Manitoba</p>
