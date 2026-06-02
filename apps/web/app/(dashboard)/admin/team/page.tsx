@@ -229,7 +229,7 @@ export default function AdminTeamPage() {
               <EmptyState
                 icon={<Users className="w-5 h-5" />}
                 title="No admin team members yet"
-                description="Invite teammates to help operate GivHive. They'll need a GivHive account first."
+                description="Invite teammates to help operate GivHive. We'll email them a secure link — they'll set up their account when they accept."
                 action={
                   <Button onClick={() => setShowInviteForm(true)}>
                     <Plus className="w-3.5 h-3.5" /> Invite your first admin
@@ -366,7 +366,7 @@ function InviteComposer({
           <div>
             <p className="text-sm font-semibold text-ink">Invite an admin</p>
             <p className="text-xs text-ink-subtle">
-              They must already have a GivHive account
+              We&apos;ll email a secure invitation link
             </p>
           </div>
         </div>
@@ -438,8 +438,8 @@ function InviteComposer({
 
         {isError && (
           <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
-            Failed to send invitation. Make sure the user has a GivHive account
-            first.
+            Failed to send invitation. Check the email and try again — there
+            may already be a pending invite for this address.
           </p>
         )}
 

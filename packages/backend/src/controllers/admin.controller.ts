@@ -3,6 +3,7 @@ import adminService from '../services/admin.service';
 import { responses } from '../utils/apiResponse';
 import { writeAuditLog } from '../middleware/audit';
 import { AuditAction, AuditEntityType, AdminDepartment } from '@prisma/client';
+import invitationService from '../services/invitation.service';
 
 const getParam = (param: unknown): string => {
   if (Array.isArray(param)) return String(param[0]);
@@ -93,26 +94,27 @@ export class AdminController {
         return;
       }
 
-      const adminMember = await adminService.inviteAdmin(
+      const invitation = await invitationService.createAdminInvitation({
         email,
-        department as AdminDepartment,
-        permissions ?? {},
-        req.user.id
-      );
+        department: department as AdminDepartment,
+        permissions: permissions ?? {},
+        invitedById: req.user.id,
+      });
 
       await writeAuditLog(req, {
         action: AuditAction.ADMIN_PERMISSION_CHANGED,
         entityType: AuditEntityType.ADMIN_MEMBER,
-        entityId: adminMember.id,
+        entityId: invitation.id,
         newState: {
           email,
           department,
           permissions: permissions ?? {},
+          invitationId: invitation.id,
         },
-        notes: 'New admin invited',
+        notes: 'Admin invitation created (token-based)',
       });
 
-      responses.created(res, 'Admin invited successfully', { adminMember });
+      responses.created(res, 'Admin invitation sent', { invitation });
     } catch (error) {
       next(error);
     }
@@ -197,69 +199,6 @@ export class AdminController {
       });
 
       responses.ok(res, 'Admin removed successfully');
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  // GET /api/admin/my-invite
-  async getMyInvite(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      if (!req.user) {
-        responses.unauthorized(res);
-        return;
-      }
-      const invite = await adminService.getMyPendingInvite(req.user.id);
-      responses.ok(res, 'Pending invite retrieved', { invite });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  // POST /api/admin/my-invite/accept
-  async acceptInvite(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      if (!req.user) {
-        responses.unauthorized(res);
-        return;
-      }
-      const user = await adminService.acceptInvite(req.user.id);
-
-      await writeAuditLog(req, {
-        action: AuditAction.ADMIN_PERMISSION_CHANGED,
-        entityType: AuditEntityType.ADMIN_MEMBER,
-        entityId: req.user.id,
-        newState: { status: 'ACTIVE', role: 'ADMIN' },
-        notes: 'Admin invite accepted by invitee',
-      });
-
-      responses.ok(res, 'Invite accepted successfully', { user });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  // POST /api/admin/my-invite/decline
-  async declineInvite(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      if (!req.user) {
-        responses.unauthorized(res);
-        return;
-      }
-      await adminService.declineInvite(req.user.id);
-      responses.ok(res, 'Invite declined');
     } catch (error) {
       next(error);
     }

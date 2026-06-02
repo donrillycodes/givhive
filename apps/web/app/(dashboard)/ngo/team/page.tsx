@@ -241,7 +241,7 @@ export default function NGOTeamPage() {
               <EmptyState
                 icon={<Users className="w-5 h-5" />}
                 title="No team members yet"
-                description="Invite staff to help manage your NGO. They'll need a GivHive account first."
+                description="Invite staff to help manage your NGO. We'll email them a secure link — they'll set up their account when they accept."
                 action={
                   <Button onClick={() => setShowInviteForm(true)}>
                     <Plus className="w-3.5 h-3.5" /> Invite your first member
@@ -381,7 +381,7 @@ function InviteComposer({
               Invite a team member
             </p>
             <p className="text-xs text-ink-subtle">
-              They must already have a GivHive account
+              We&apos;ll email a secure invitation link
             </p>
           </div>
         </div>
@@ -446,8 +446,8 @@ function InviteComposer({
 
         {isError && (
           <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
-            Failed to send invitation. Make sure the user has a GivHive account
-            first.
+            Failed to send invitation. Check the email and try again — there
+            may already be a pending invite for this address.
           </p>
         )}
 

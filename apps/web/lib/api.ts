@@ -130,10 +130,18 @@ export const adminApi = {
   updatePermissions: (id: string, data: any) =>
     apiClient.patch(`/api/admin/team/${id}/permissions`, data),
   removeAdmin: (id: string) => apiClient.delete(`/api/admin/team/${id}`),
-  // Invite acceptance (invitee-facing)
-  getMyInvite: () => apiClient.get("/api/admin/my-invite"),
-  acceptInvite: () => apiClient.post("/api/admin/my-invite/accept"),
-  declineInvite: () => apiClient.post("/api/admin/my-invite/decline"),
+};
+
+// ── Invitations (token-based) ──────────────────────────────────────────────────
+// These endpoints are token-based — invitees may not yet have a GivHive account.
+// `accept` uses the Firebase ID token (attached by the request interceptor),
+// and the backend verifies it directly without the standard auth middleware.
+export const invitationApi = {
+  getByToken: (token: string) => apiClient.get(`/api/invitations/${token}`),
+  accept: (token: string, data?: { firstName?: string; lastName?: string }) =>
+    apiClient.post(`/api/invitations/${token}/accept`, data ?? {}),
+  decline: (token: string) =>
+    apiClient.post(`/api/invitations/${token}/decline`),
 };
 
 export default apiClient;

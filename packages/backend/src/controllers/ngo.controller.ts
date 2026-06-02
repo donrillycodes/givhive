@@ -3,6 +3,7 @@ import ngoService from '../services/ngo.service';
 import { responses } from '../utils/apiResponse';
 import { writeAuditLog } from '../middleware/audit';
 import { AuditAction, AuditEntityType, NGOMemberRole } from '@prisma/client';
+import invitationService from '../services/invitation.service';
 
 const getParam = (param: unknown): string => {
   if (Array.isArray(param)) return String(param[0]);
@@ -405,14 +406,22 @@ export class NGOController {
         return;
       }
 
-      const member = await ngoService.inviteMember(
-        id,
-        req.user.id,
+      const invitation = await invitationService.createNGOInvitation({
         email,
-        role ?? NGOMemberRole.STAFF
-      );
+        ngoId: id,
+        memberRole: role ?? NGOMemberRole.STAFF,
+        invitedById: req.user.id,
+      });
 
-      responses.created(res, 'Member invited successfully', { member });
+      await writeAuditLog(req, {
+        action: AuditAction.USER_ROLE_CHANGED,
+        entityType: AuditEntityType.NGO_MEMBER,
+        entityId: invitation.id,
+        newState: { email, role: role ?? NGOMemberRole.STAFF, ngoId: id },
+        notes: 'NGO member invitation created (token-based)',
+      });
+
+      responses.created(res, 'Invitation sent', { invitation });
     } catch (error) {
       next(error);
     }

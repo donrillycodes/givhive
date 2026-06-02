@@ -191,6 +191,19 @@ enum ActorRole {
   SYSTEM
 }
 
+enum InvitationType {
+  ADMIN
+  NGO_MEMBER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  REVOKED
+}
+
 model User {
   id          String   @id @default(uuid())
   email       String   @unique
@@ -225,6 +238,8 @@ model User {
   auditLogs        AuditLog[]
   sentInvitesNgo   NGOMember[]   @relation("NGOMemberInviter")
   sentInvitesAdmin AdminMember[] @relation("AdminMemberInviter")
+  sentInvitations     Invitation[] @relation("InvitationInviter")
+  acceptedInvitations Invitation[] @relation("InvitationAcceptedBy")
   donorPreference DonorPreference?
 
   createdAt DateTime @default(now())
@@ -278,11 +293,12 @@ model NGO {
   verifiedById String?
   verifiedBy   User?   @relation("NGOVerifier", fields: [verifiedById], references: [id])
 
-  members   NGOMember[]
-  donations Donation[]
-  foodNeeds FoodNeed[]
-  updates   Update[]
-  pledges   FoodPledge[]
+  members     NGOMember[]
+  invitations Invitation[]
+  donations   Donation[]
+  foodNeeds   FoodNeed[]
+  updates     Update[]
+  pledges     FoodPledge[]
 
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -611,6 +627,44 @@ model DonorPreference {
 
   @@index([userId])
   @@map("donor_preferences")
+}
+
+model Invitation {
+  id     String           @id @default(uuid())
+  email  String
+  token  String           @unique
+  type   InvitationType
+  status InvitationStatus @default(PENDING)
+
+  // Admin-specific (null for NGO invites)
+  department AdminDepartment?
+
+  // NGO-specific (null for admin invites)
+  ngoId      String?
+  ngo        NGO?           @relation(fields: [ngoId], references: [id])
+  memberRole NGOMemberRole?
+
+  // Permission set appropriate to the invite type, stored as JSON
+  // ADMIN:      { canApproveNgos, canManageUsers, canManageContent,
+  //               canViewAnalytics, canManageDonations }
+  // NGO_MEMBER: { canPostNeeds, canPostUpdates, canManagePledges,
+  //               canViewDonations, canManageMembers }
+  permissions Json
+
+  invitedById String
+  invitedBy   User   @relation("InvitationInviter", fields: [invitedById], references: [id])
+
+  acceptedByUserId String?
+  acceptedByUser   User?   @relation("InvitationAcceptedBy", fields: [acceptedByUserId], references: [id])
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([token])
+  @@index([status])
+  @@map("invitations")
 }
 
 // Indexes for query performance and security

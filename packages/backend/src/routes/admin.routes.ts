@@ -27,33 +27,8 @@ router.get(
   adminController.getAuditLogs.bind(adminController)
 );
 
-// ── Invite acceptance — any authenticated user (invitee is not yet an admin) ──
-
-// Get my pending invite
-// GET /api/admin/my-invite
-router.get(
-  '/my-invite',
-  authenticate,
-  adminController.getMyInvite.bind(adminController)
-);
-
-// Accept my pending invite
-// POST /api/admin/my-invite/accept
-router.post(
-  '/my-invite/accept',
-  authenticate,
-  adminController.acceptInvite.bind(adminController)
-);
-
-// Decline my pending invite
-// POST /api/admin/my-invite/decline
-router.post(
-  '/my-invite/decline',
-  authenticate,
-  adminController.declineInvite.bind(adminController)
-);
-
 // ── Admin team management — SUPER_ADMIN only ───────────────────────────────────
+// Invite acceptance moved to /api/invitations/:token/{accept,decline}.
 
 // Get all admin team members
 // GET /api/admin/team

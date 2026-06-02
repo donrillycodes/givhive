@@ -190,7 +190,13 @@ export class EmailService {
   }
 
   // ── NGO Team Member Invited ────────────────────────────────────────────────
-  async sendNGOMemberInvite(to: string, ngoName: string, inviterName: string) {
+  async sendNGOMemberInvite(
+    to: string,
+    ngoName: string,
+    inviterName: string,
+    token: string
+  ) {
+    const inviteUrl = `${DASHBOARD_URL}/accept-invite?token=${token}`;
     try {
       await resend.emails.send({
         from: FROM,
@@ -202,23 +208,25 @@ export class EmailService {
               <h1 style="color: white; margin: 0; font-size: 24px;">GivHive</h1>
             </div>
             <div style="padding: 32px; background: #f9fafb; border-radius: 0 0 8px 8px;">
-              <h2 style="color: #1A1A1A;">You have been invited!</h2>
+              <h2 style="color: #1A1A1A;">You've been invited to ${ngoName}</h2>
               <p style="color: #4A4A4A; line-height: 1.6;">
-                <strong>${inviterName}</strong> has invited you to join <strong>${ngoName}</strong> 
+                <strong>${inviterName}</strong> has invited you to join <strong>${ngoName}</strong>
                 as a team member on GivHive.
               </p>
               <p style="color: #4A4A4A; line-height: 1.6;">
-                Sign in to your GivHive account to accept the invitation and start managing 
-                food needs, pledges, and updates for ${ngoName}.
+                Click the button below to review the invitation. If you don't already have a
+                GivHive account, you'll create one as part of accepting — no separate sign-up
+                step needed.
               </p>
-              <a href="${DASHBOARD_URL}/login" 
-                style="display: inline-block; background: #1A7A4A; color: white; padding: 12px 24px; 
+              <a href="${inviteUrl}"
+                style="display: inline-block; background: #1A7A4A; color: white; padding: 12px 24px;
                 border-radius: 8px; text-decoration: none; font-weight: bold; margin: 16px 0;">
-                Sign in to GivHive →
+                Review your invitation →
               </a>
-              <p style="color: #9CA3AF; font-size: 13px;">
-                Don't have an account yet? 
-                <a href="${DASHBOARD_URL}/register" style="color: #1A7A4A;">Create one here</a>
+              <p style="color: #9CA3AF; font-size: 12px; margin-top: 16px;">
+                This invitation expires in 7 days. If the button doesn't work, paste this
+                link into your browser:<br>
+                <span style="color: #4A4A4A; word-break: break-all;">${inviteUrl}</span>
               </p>
               <hr style="border: none; border-top: 1px solid #E0E0E0; margin: 24px 0;">
               <p style="color: #9CA3AF; font-size: 12px;">GivHive — Winnipeg, Canada</p>
@@ -233,7 +241,8 @@ export class EmailService {
   }
 
   // ── Admin Team Member Invited ──────────────────────────────────────────────
-  async sendAdminInvite(to: string, inviterName: string) {
+  async sendAdminInvite(to: string, inviterName: string, token: string) {
+    const inviteUrl = `${DASHBOARD_URL}/accept-invite?token=${token}`;
     try {
       await resend.emails.send({
         from: FROM,
@@ -245,18 +254,26 @@ export class EmailService {
               <h1 style="color: white; margin: 0; font-size: 24px;">GivHive</h1>
             </div>
             <div style="padding: 32px; background: #f9fafb; border-radius: 0 0 8px 8px;">
-              <h2 style="color: #1A1A1A;">Welcome to the GivHive admin team</h2>
-                            <p style="color: #4A4A4A; line-height: 1.6;">
+              <h2 style="color: #1A1A1A;">You've been invited to the GivHive admin team</h2>
+              <p style="color: #4A4A4A; line-height: 1.6;">
                 <strong>${inviterName}</strong> has invited you to join the GivHive admin team.
-                Review the invitation and choose whether to accept — you'll only gain admin
-                access once you accept.
+                Click below to review the invitation and choose whether to accept — you'll
+                only gain admin access once you accept.
               </p>
-              <a href="${DASHBOARD_URL}/accept-invite" 
-                style="display: inline-block; background: #1A7A4A; color: white; padding: 12px 24px; 
+              <p style="color: #4A4A4A; line-height: 1.6;">
+                If you don't already have a GivHive account at this email, you'll create one
+                as part of accepting — no separate sign-up step.
+              </p>
+              <a href="${inviteUrl}"
+                style="display: inline-block; background: #1A7A4A; color: white; padding: 12px 24px;
                 border-radius: 8px; text-decoration: none; font-weight: bold; margin: 16px 0;">
                 Review your invitation →
               </a>
-
+              <p style="color: #9CA3AF; font-size: 12px; margin-top: 16px;">
+                This invitation expires in 7 days. If the button doesn't work, paste this
+                link into your browser:<br>
+                <span style="color: #4A4A4A; word-break: break-all;">${inviteUrl}</span>
+              </p>
               <hr style="border: none; border-top: 1px solid #E0E0E0; margin: 24px 0;">
               <p style="color: #9CA3AF; font-size: 12px;">GivHive — Winnipeg, Canada</p>
             </div>

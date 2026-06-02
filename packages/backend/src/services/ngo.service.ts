@@ -14,6 +14,9 @@ import {
 } from '@prisma/client';
 import { CreateNGOInput, UpdateNGOInput, NGOQueryFilters } from '../types';
 import emailService from './email.service';
+import invitationService, {
+  NGOPermissionSet,
+} from './invitation.service';
 
 export class NGOService {
   // Register a new NGO
@@ -637,81 +640,30 @@ export class NGOService {
     return members;
   }
 
-  // Invite a new member to an NGO
+  // Invite a new member to an NGO.
+  // Delegates to the invitation service: a token-based Invitation is created
+  // and emailed to the invitee. No User or NGOMember record is written until
+  // the invitee accepts.
   async inviteMember(
     ngoId: string,
     invitedById: string,
     email: string,
-    role: NGOMemberRole
+    role: NGOMemberRole,
+    permissions?: Partial<NGOPermissionSet>
   ) {
-    // Find the user by email
-    const user = await db.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
+    const invitation = await invitationService.createNGOInvitation({
+      email,
+      ngoId,
+      memberRole: role,
+      permissions,
+      invitedById,
     });
-
-    if (!user) {
-      throw new AppError(
-        'No account found with this email address. The user must register first.',
-        404
-      );
-    }
-
-    // Check if user is already a member
-    const existingMember = await db.nGOMember.findUnique({
-      where: { ngoId_userId: { ngoId, userId: user.id } },
-    });
-
-    if (existingMember) {
-      throw new AppError('This user is already a member of your NGO.', 409);
-    }
-
-    const member = await db.nGOMember.create({
-      data: {
-        ngoId,
-        userId: user.id,
-        invitedById,
-        role,
-        status: MemberStatus.PENDING,
-      },
-      select: {
-        id: true,
-        role: true,
-        status: true,
-        invitedAt: true,
-        user: {
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-    });
-
-    // Send invite email
-    // Fetch NGO name and inviter name for email
-    const [ngo, inviter] = await Promise.all([
-      db.nGO.findUnique({ where: { id: ngoId }, select: { name: true } }),
-      db.user.findUnique({
-        where: { id: invitedById },
-        select: { firstName: true, lastName: true },
-      }),
-    ]);
-
-    if (ngo && inviter) {
-      await emailService.sendNGOMemberInvite(
-        user.email,
-        ngo.name,
-        `${inviter.firstName} ${inviter.lastName}`
-      );
-    }
 
     logger.info(
-      `NGO member invited: ${user.email} to NGO: ${ngoId} by: ${invitedById}`
+      `NGO invitation created via NGO service: ${email} to NGO: ${ngoId} by: ${invitedById}`
     );
 
-    return member;
+    return invitation;
   }
 
   // Remove a member from an NGO

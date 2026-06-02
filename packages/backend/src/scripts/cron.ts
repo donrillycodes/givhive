@@ -4,6 +4,7 @@ import { writeSystemAuditLog } from '../middleware/audit';
 import { AuditAction, AuditEntityType } from '@prisma/client';
 import logger from '../utils/logger';
 import notificationService from '../services/notification.service';
+import invitationService from '../services/invitation.service';
 
 // /**
 //  * FoodShare Cron Jobs
@@ -168,6 +169,19 @@ const expireFoodNeeds = async (): Promise<void> => {
   }
 };
 
+// ── Cron Job 4 — Invitation Expiry ────────────────────────────────────────────
+// Runs every day at 4:00 AM
+// Marks PENDING invitations past their expiresAt as EXPIRED
+const expireInvitations = async (): Promise<void> => {
+  logger.info('Cron: Starting invitation expiry job');
+  try {
+    const count = await invitationService.expirePending();
+    logger.info(`Cron: Invitation expiry complete — expired ${count} invitations`);
+  } catch (error) {
+    logger.error('Cron: Invitation expiry job failed', { error });
+  }
+};
+
 // ── Start all cron jobs ────────────────────────────────────────────────────────
 export const startCronJobs = (): void => {
   // Pledge expiry — every day at 1:00 AM
@@ -182,6 +196,11 @@ export const startCronJobs = (): void => {
 
   // Food need expiry — every day at 3:00 AM
   cron.schedule('0 3 * * *', expireFoodNeeds, {
+    timezone: 'America/Winnipeg',
+  });
+
+  // Invitation expiry — every day at 4:00 AM
+  cron.schedule('0 4 * * *', expireInvitations, {
     timezone: 'America/Winnipeg',
   });
 

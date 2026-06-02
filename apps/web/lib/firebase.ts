@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   getAuth,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   type User,
@@ -32,6 +33,17 @@ export const signIn = async (
   password: string,
 ): Promise<User> => {
   const result = await signInWithEmailAndPassword(auth, email, password);
+  return result.user;
+};
+
+// Create a new Firebase account. Used by the invitation accept flow when
+// the invitee doesn't already have a GivHive account — the backend invitation
+// accept endpoint provisions the matching User row server-side.
+export const createAccount = async (
+  email: string,
+  password: string,
+): Promise<User> => {
+  const result = await createUserWithEmailAndPassword(auth, email, password);
   return result.user;
 };
 

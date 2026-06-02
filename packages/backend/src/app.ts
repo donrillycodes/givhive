@@ -98,6 +98,7 @@ import updateRoutes from './routes/update.routes';
 import notificationRoutes from './routes/notification.routes';
 import adminRoutes from './routes/admin.routes';
 import stripeConnectRoutes from './routes/stripeConnect.routes';
+import invitationRoutes from './routes/invitation.routes';
 
 app.use('/api/stripe-connect', stripeConnectRoutes);
 app.use('/api/auth', authRoutes);
@@ -109,6 +110,7 @@ app.use('/api/food-pledges', foodPledgeRoutes);
 app.use('/api/updates', updateRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/invitations', invitationRoutes);
 
 // ── 404 handler ────────────────────────────────────────────────────────────────
 
