@@ -12,7 +12,6 @@ import {
   MemberStatus,
   Role,
 } from '@prisma/client';
-import invitationService from './invitation.service';
 
 export class AdminService {
   // Get platform-wide analytics
@@ -170,36 +169,6 @@ export class AdminService {
     ]);
 
     return buildPaginatedResponse(logs, total, params);
-  }
-
-  // Invite a new admin team member — SUPER_ADMIN only.
-  // Delegates to the invitation service: a token-based Invitation is created
-  // and emailed to the invitee. No User, AdminMember, or permission state is
-  // written until the invitee accepts.
-  async inviteAdmin(
-    email: string,
-    department: AdminDepartment,
-    permissions: {
-      canApproveNgos?: boolean;
-      canManageUsers?: boolean;
-      canManageContent?: boolean;
-      canViewAnalytics?: boolean;
-      canManageDonations?: boolean;
-    },
-    superAdminId: string
-  ) {
-    const invitation = await invitationService.createAdminInvitation({
-      email,
-      department,
-      permissions,
-      invitedById: superAdminId,
-    });
-
-    logger.info(
-      `Admin invitation created via admin service: ${email} by SUPER_ADMIN: ${superAdminId}`
-    );
-
-    return invitation;
   }
 
   // Update admin permissions — SUPER_ADMIN only

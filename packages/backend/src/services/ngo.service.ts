@@ -14,9 +14,6 @@ import {
 } from '@prisma/client';
 import { CreateNGOInput, UpdateNGOInput, NGOQueryFilters } from '../types';
 import emailService from './email.service';
-import invitationService, {
-  NGOPermissionSet,
-} from './invitation.service';
 
 export class NGOService {
   // Register a new NGO
@@ -638,32 +635,6 @@ export class NGOService {
     });
 
     return members;
-  }
-
-  // Invite a new member to an NGO.
-  // Delegates to the invitation service: a token-based Invitation is created
-  // and emailed to the invitee. No User or NGOMember record is written until
-  // the invitee accepts.
-  async inviteMember(
-    ngoId: string,
-    invitedById: string,
-    email: string,
-    role: NGOMemberRole,
-    permissions?: Partial<NGOPermissionSet>
-  ) {
-    const invitation = await invitationService.createNGOInvitation({
-      email,
-      ngoId,
-      memberRole: role,
-      permissions,
-      invitedById,
-    });
-
-    logger.info(
-      `NGO invitation created via NGO service: ${email} to NGO: ${ngoId} by: ${invitedById}`
-    );
-
-    return invitation;
   }
 
   // Remove a member from an NGO
