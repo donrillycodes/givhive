@@ -31,7 +31,7 @@ const startServer = async (): Promise<void> => {
     app.listen(env.port, () => {
       logger.info(`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  🌱 Food Share API
+  🌱 GivHive API
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Environment : ${env.nodeEnv}
   Port        : ${env.port}

@@ -120,7 +120,7 @@ export default function LandingPage() {
           Right here.
         </h1>
         <p>
-          GivHive connects Winnipeg food donors with verified local charities —
+          GivHive connects Winnipeg food donors with verified local charities,
           making every donation simple, trackable, and impactful.
         </p>
         <div className="hero-actions">
@@ -146,7 +146,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* STATS BAR */}
+      {/* STATS BAR 
       <div className="stats-bar">
         <div className="stat-item">
           <span className="stat-num">500+</span>
@@ -164,7 +164,7 @@ export default function LandingPage() {
           <span className="stat-num">100%</span>
           <span className="stat-label">Verified charities</span>
         </div>
-      </div>
+      </div> */}
 
       {/* HOW IT WORKS */}
       <section className="how" id="how">
@@ -351,7 +351,7 @@ export default function LandingPage() {
           a legitimate, established organisation.
         </p>
         <div className="ngo-grid">
-          <div className="ngo-card">
+          {/* <div className="ngo-card">
             <div className="ngo-icon">🌾</div>
             <div className="ngo-name">Winnipeg Harvest</div>
             <div className="ngo-type">Food Bank · Founded 1984</div>
@@ -377,7 +377,7 @@ export default function LandingPage() {
               <span className="verified-dot" />
               Verified partner
             </div>
-          </div>
+          </div> */}
           <div
             className="ngo-card"
             style={{
