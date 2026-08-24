@@ -1,16 +1,17 @@
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   StyleSheet,
   Alert,
 } from "react-native";
+import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../hooks/useAuth";
 import { COLORS, FONT, SPACE, RADII, getInitials } from "../../lib/utils";
+import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
 import { useNavigationStore } from "../../store/authStore";
 
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
@@ -26,6 +27,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
   const { setActivityTab } = useNavigationStore();
+  const tabBarScrollHandler = useTabBarScrollHandler();
 
   const handleSignOut = () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -82,7 +84,11 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
+        onScroll={tabBarScrollHandler}
+        scrollEventThrottle={16}
+      >
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Profile</Text>
@@ -150,7 +156,7 @@ export default function ProfileScreen() {
 
         <Text style={styles.version}>GivHive v1.0.0</Text>
         <View style={styles.bottomPad} />
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 }

@@ -1,11 +1,11 @@
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,6 +20,7 @@ import {
   formatDate,
   formatStatus,
 } from "../../lib/utils";
+import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
 import type { Donation, FoodPledge, PaginatedResponse } from "../../types";
 import { useNavigationStore } from "../../store/authStore";
 
@@ -65,6 +66,7 @@ function EmptyState({
 export default function ActivityScreen() {
   const { activityTab } = useNavigationStore();
   const [activeTab, setActiveTab] = useState<Tab>(activityTab);
+  const tabBarScrollHandler = useTabBarScrollHandler();
 
   useEffect(() => {
     setActiveTab(activityTab);
@@ -126,9 +128,11 @@ export default function ActivityScreen() {
       </View>
 
       {/* Content */}
-      <ScrollView
+      <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}
+        onScroll={tabBarScrollHandler}
+        scrollEventThrottle={16}
       >
         {activeTab === "donations" ? (
           donationsLoading ? (
@@ -212,7 +216,7 @@ export default function ActivityScreen() {
           ))
         )}
         <View style={styles.bottomPad} />
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 }

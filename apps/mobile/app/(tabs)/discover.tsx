@@ -1,12 +1,12 @@
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   StyleSheet,
   TextInput,
   ActivityIndicator,
 } from "react-native";
+import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -21,6 +21,7 @@ import {
   formatCategory,
   getProgress,
 } from "../../lib/utils";
+import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
 import type { NGO, FoodNeed, PaginatedResponse } from "../../types";
 
 type Tab = "ngos" | "needs";
@@ -29,6 +30,7 @@ export default function DiscoverScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>("ngos");
   const [search, setSearch] = useState("");
+  const tabBarScrollHandler = useTabBarScrollHandler();
 
   const { data: ngosData, isLoading: ngosLoading } = useQuery({
     queryKey: ["all-ngos", search],
@@ -114,10 +116,12 @@ export default function DiscoverScreen() {
       </View>
 
       {/* List */}
-      <ScrollView
+      <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}
         keyboardShouldPersistTaps="handled"
+        onScroll={tabBarScrollHandler}
+        scrollEventThrottle={16}
       >
         {activeTab === "ngos" ? (
           ngosLoading ? (
@@ -207,7 +211,7 @@ export default function DiscoverScreen() {
           })
         )}
         <View style={styles.bottomPad} />
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 }
