@@ -380,6 +380,7 @@ const styles = StyleSheet.create({
     width: 32,
   },
   bottomPad: {
-    height: SPACE.xl,
+    // Clears the floating tab bar (height + its bottom offset + safe area)
+    height: 120,
   },
 });
