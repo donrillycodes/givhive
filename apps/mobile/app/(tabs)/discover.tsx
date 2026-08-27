@@ -8,11 +8,12 @@ import {
 } from "react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useRouter, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { ngoApi, foodNeedApi } from "../../lib/api";
+import { useNavigationStore } from "../../store/authStore";
 import { COLORS, FONT, SPACE, RADII, formatCategory } from "../../lib/utils";
 import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
 import { NGOAvatar } from "../../components/shared/NGOAvatar";
@@ -23,9 +24,16 @@ type Tab = "ngos" | "needs";
 
 export default function DiscoverScreen() {
   const router = useRouter();
+  const setActiveTabTitle = useNavigationStore((s) => s.setActiveTabTitle);
   const [activeTab, setActiveTab] = useState<Tab>("ngos");
   const [search, setSearch] = useState("");
   const tabBarScrollHandler = useTabBarScrollHandler();
+
+  useFocusEffect(
+    useCallback(() => {
+      setActiveTabTitle("Search");
+    }, [setActiveTabTitle]),
+  );
 
   const { data: ngosData, isLoading: ngosLoading } = useQuery({
     queryKey: ["all-ngos", search],

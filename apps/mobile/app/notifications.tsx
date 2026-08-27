@@ -7,14 +7,13 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notificationApi } from "../lib/api";
-import { COLORS, formatRelativeTime } from "../lib/utils";
+import { COLORS, FONT, formatRelativeTime } from "../lib/utils";
 import type { Notification, PaginatedResponse } from "../types";
 
 export default function NotificationsScreen() {
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -45,77 +44,86 @@ export default function NotificationsScreen() {
   const unreadCount = notifications.filter((n) => n.status === "UNREAD").length;
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
-        >
-          <Text style={styles.backText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Notifications</Text>
-        {unreadCount > 0 && (
-          <TouchableOpacity onPress={() => markAllReadMutation.mutate()}>
-            <Text style={styles.markAllRead}>Mark all read</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {isLoading ? (
-        <ActivityIndicator color={COLORS.green} style={{ marginTop: 40 }} />
-      ) : notifications.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyEmoji}>🔔</Text>
-          <Text style={styles.emptyTitle}>No notifications yet</Text>
-          <Text style={styles.emptyMessage}>
-            You will be notified about your donations and pledges here
-          </Text>
-        </View>
-      ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {notifications.map((notification) => (
-            <TouchableOpacity
-              key={notification.id}
-              style={[
-                styles.notificationItem,
-                notification.status === "UNREAD" &&
-                  styles.notificationItemUnread,
-              ]}
-              onPress={() => {
-                if (notification.status === "UNREAD") {
-                  markReadMutation.mutate(notification.id);
-                }
-              }}
-              activeOpacity={0.7}
-            >
-              <View style={styles.notificationContent}>
-                {notification.status === "UNREAD" && (
-                  <View style={styles.unreadDot} />
-                )}
-                <View
-                  style={[
-                    styles.notificationText,
-                    notification.status !== "UNREAD" && { marginLeft: 16 },
-                  ]}
-                >
-                  <Text style={styles.notificationTitle}>
-                    {notification.title}
-                  </Text>
-                  <Text style={styles.notificationBody}>
-                    {notification.body}
-                  </Text>
-                  <Text style={styles.notificationTime}>
-                    {formatRelativeTime(notification.createdAt)}
-                  </Text>
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: "Notifications",
+          headerTintColor: COLORS.primary,
+          headerStyle: { backgroundColor: COLORS.background },
+          headerShadowVisible: false,
+          headerTitleStyle: {
+            fontSize: FONT.base,
+            fontWeight: "700",
+            color: COLORS.text,
+          },
+          headerRight: () =>
+            unreadCount > 0 ? (
+              <TouchableOpacity onPress={() => markAllReadMutation.mutate()}>
+                <Text style={styles.markAllRead}>Mark all read</Text>
+              </TouchableOpacity>
+            ) : null,
+        }}
+      />
+      <SafeAreaView
+        style={styles.container}
+        edges={["bottom", "left", "right"]}
+      >
+        {isLoading ? (
+          <ActivityIndicator color={COLORS.green} style={{ marginTop: 40 }} />
+        ) : notifications.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyEmoji}>🔔</Text>
+            <Text style={styles.emptyTitle}>No notifications yet</Text>
+            <Text style={styles.emptyMessage}>
+              You will be notified about your donations and pledges here
+            </Text>
+          </View>
+        ) : (
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {notifications.map((notification) => (
+              <TouchableOpacity
+                key={notification.id}
+                style={[
+                  styles.notificationItem,
+                  notification.status === "UNREAD" &&
+                    styles.notificationItemUnread,
+                ]}
+                onPress={() => {
+                  if (notification.status === "UNREAD") {
+                    markReadMutation.mutate(notification.id);
+                  }
+                }}
+                activeOpacity={0.7}
+              >
+                <View style={styles.notificationContent}>
+                  {notification.status === "UNREAD" && (
+                    <View style={styles.unreadDot} />
+                  )}
+                  <View
+                    style={[
+                      styles.notificationText,
+                      notification.status !== "UNREAD" && { marginLeft: 16 },
+                    ]}
+                  >
+                    <Text style={styles.notificationTitle}>
+                      {notification.title}
+                    </Text>
+                    <Text style={styles.notificationBody}>
+                      {notification.body}
+                    </Text>
+                    <Text style={styles.notificationTime}>
+                      {formatRelativeTime(notification.createdAt)}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-          <View style={styles.bottomPadding} />
-        </ScrollView>
-      )}
-    </SafeAreaView>
+              </TouchableOpacity>
+            ))}
+            <View style={styles.bottomPadding} />
+          </ScrollView>
+        )}
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -124,32 +132,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
-    backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.grayMd,
-  },
-  backButton: {},
-  backText: {
-    color: COLORS.green,
-    fontSize: 15,
-    fontWeight: "500",
-  },
-  title: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: COLORS.black,
-  },
   markAllRead: {
     fontSize: 13,
     color: COLORS.green,
     fontWeight: "500",
+    paddingHorizontal: 4,
   },
   emptyState: {
     flex: 1,

@@ -1,43 +1,41 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { COLORS } from "../../lib/utils";
+import { Stack } from "expo-router";
+import { COLORS, FONT } from "../../lib/utils";
 
 export default function SupportScreen() {
-  const router = useRouter();
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.back}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Help & Support</Text>
-        <View style={{ width: 50 }} />
-      </View>
-      <View style={styles.content}>
-        <Text style={styles.emoji}>❓</Text>
-        <Text style={styles.message}>Support centre coming soon</Text>
-        <Text style={styles.sub}>For urgent issues email hello@givhive.ca</Text>
-      </View>
-    </SafeAreaView>
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: "Help & Support",
+          headerTintColor: COLORS.primary,
+          headerStyle: { backgroundColor: COLORS.background },
+          headerShadowVisible: false,
+          headerTitleStyle: {
+            fontSize: FONT.base,
+            fontWeight: "700",
+            color: COLORS.text,
+          },
+        }}
+      />
+      <SafeAreaView
+        style={styles.container}
+        edges={["bottom", "left", "right"]}
+      >
+        <View style={styles.content}>
+          <Text style={styles.emoji}>❓</Text>
+          <Text style={styles.message}>Support centre coming soon</Text>
+          <Text style={styles.sub}>For urgent issues email hello@givhive.ca</Text>
+        </View>
+      </SafeAreaView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
-    backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.grayMd,
-  },
-  back: { color: COLORS.green, fontSize: 15, fontWeight: "500" },
-  title: { fontSize: 17, fontWeight: "700", color: COLORS.black },
   content: {
     flex: 1,
     alignItems: "center",

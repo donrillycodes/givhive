@@ -9,11 +9,11 @@ import {
 } from "react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useRouter, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
-import { useAuthStore } from "../../store/authStore";
+import { useAuthStore, useNavigationStore } from "../../store/authStore";
 import { ngoApi, foodNeedApi, updateApi } from "../../lib/api";
 import {
   COLORS,
@@ -73,8 +73,15 @@ function QuickAction({
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const setActiveTabTitle = useNavigationStore((s) => s.setActiveTabTitle);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const tabBarScrollHandler = useTabBarScrollHandler();
+
+  useFocusEffect(
+    useCallback(() => {
+      setActiveTabTitle("Home");
+    }, [setActiveTabTitle]),
+  );
 
   const {
     data: ngosData,

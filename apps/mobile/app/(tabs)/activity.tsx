@@ -7,7 +7,8 @@ import {
 } from "react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { donationApi, pledgeApi } from "../../lib/api";
@@ -64,13 +65,19 @@ function EmptyState({
 }
 
 export default function ActivityScreen() {
-  const { activityTab } = useNavigationStore();
+  const { activityTab, setActiveTabTitle } = useNavigationStore();
   const [activeTab, setActiveTab] = useState<Tab>(activityTab);
   const tabBarScrollHandler = useTabBarScrollHandler();
 
   useEffect(() => {
     setActiveTab(activityTab);
   }, [activityTab]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setActiveTabTitle("Activity");
+    }, [setActiveTabTitle]),
+  );
 
   const { data: donationsData, isLoading: donationsLoading } = useQuery({
     queryKey: ["my-donations"],

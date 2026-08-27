@@ -9,11 +9,11 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ngoApi, donationApi } from "../../lib/api";
-import { COLORS } from "../../lib/utils";
+import { COLORS, FONT } from "../../lib/utils";
 import type { NGO } from "../../types";
 import * as WebBrowser from "expo-web-browser";
 
@@ -116,31 +116,41 @@ export default function DonateScreen() {
     );
   };
 
+  const headerOptions = {
+    headerShown: true,
+    title: ngo?.name ?? "Donate",
+    headerTintColor: COLORS.primary,
+    headerStyle: { backgroundColor: COLORS.background },
+    headerShadowVisible: false,
+    headerTitleStyle: {
+      fontSize: FONT.base,
+      fontWeight: "700" as const,
+      color: COLORS.text,
+    },
+  };
+
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <ActivityIndicator color={COLORS.green} style={{ marginTop: 40 }} />
-      </SafeAreaView>
+      <>
+        <Stack.Screen options={headerOptions} />
+        <SafeAreaView
+          style={styles.container}
+          edges={["bottom", "left", "right"]}
+        >
+          <ActivityIndicator color={COLORS.green} style={{ marginTop: 40 }} />
+        </SafeAreaView>
+      </>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <>
+      <Stack.Screen options={headerOptions} />
+      <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backButton}
-          >
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Make a Donation</Text>
-        </View>
-
         {/* NGO info */}
         {ngo && (
           <View style={styles.ngoCard}>
@@ -267,7 +277,8 @@ export default function DonateScreen() {
 
         <View style={styles.bottomPadding} />
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -275,25 +286,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  backButton: {},
-  backText: {
-    color: COLORS.green,
-    fontSize: 15,
-    fontWeight: "500",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: COLORS.black,
   },
   ngoCard: {
     flexDirection: "row",

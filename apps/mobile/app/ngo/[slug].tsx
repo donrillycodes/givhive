@@ -8,10 +8,10 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { ngoApi, foodNeedApi } from "../../lib/api";
-import { COLORS, formatCategory } from "../../lib/utils";
+import { COLORS, FONT, formatCategory } from "../../lib/utils";
 import { NGOAvatar } from "../../components/shared/NGOAvatar";
 import { FoodNeedCard } from "../../components/shared/FoodNeedCard";
 import { Button } from "../../components/ui/Button";
@@ -45,132 +45,153 @@ export default function NGOProfileScreen() {
   const ngo = ngoData;
   const needs = needsData?.items ?? [];
 
+  const headerOptions = {
+    headerShown: true,
+    title: ngo?.name ?? "NGO Profile",
+    headerTintColor: COLORS.primary,
+    headerStyle: { backgroundColor: COLORS.background },
+    headerShadowVisible: false,
+    headerTitleStyle: {
+      fontSize: FONT.base,
+      fontWeight: "700" as const,
+      color: COLORS.text,
+    },
+  };
+
   if (ngoLoading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <ActivityIndicator color={COLORS.green} style={{ marginTop: 40 }} />
-      </SafeAreaView>
+      <>
+        <Stack.Screen options={headerOptions} />
+        <SafeAreaView
+          style={styles.container}
+          edges={["bottom", "left", "right"]}
+        >
+          <ActivityIndicator color={COLORS.green} style={{ marginTop: 40 }} />
+        </SafeAreaView>
+      </>
     );
   }
 
   if (!ngo) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.errorState}>
-          <Text style={styles.errorText}>NGO not found</Text>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Text style={styles.backLink}>Go back</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      <>
+        <Stack.Screen options={headerOptions} />
+        <SafeAreaView
+          style={styles.container}
+          edges={["bottom", "left", "right"]}
+        >
+          <View style={styles.errorState}>
+            <Text style={styles.errorText}>NGO not found</Text>
+            <TouchableOpacity onPress={() => router.back()}>
+              <Text style={styles.backLink}>Go back</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backButton}
-          >
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Cover image */}
-        {ngo.coverUrl && (
-          <Image
-            source={{ uri: ngo.coverUrl }}
-            style={styles.coverImage}
-            resizeMode="cover"
-          />
-        )}
-
-        {/* NGO hero */}
-        <View style={styles.hero}>
-          <NGOAvatar name={ngo.name} logoUrl={ngo.logoUrl} size={80} />
-          <Text style={styles.ngoName}>{ngo.name}</Text>
-          <Text style={styles.ngoCategory}>
-            {formatCategory(ngo.category)} · {ngo.city}, {ngo.province}
-          </Text>
-
-          {/* Donate button */}
-          <Button
-            label="❤️ Donate Now"
-            onPress={() => router.push(`/donate/${ngo.id}` as any)}
-            style={styles.donateButton}
-          />
-        </View>
-
-        {/* About */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
-          <Text style={styles.description}>{ngo.description}</Text>
-          {ngo.mission && (
-            <>
-              <Text style={[styles.sectionTitle, { marginTop: 12 }]}>
-                Mission
-              </Text>
-              <Text style={styles.description}>{ngo.mission}</Text>
-            </>
+    <>
+      <Stack.Screen options={headerOptions} />
+      <SafeAreaView
+        style={styles.container}
+        edges={["bottom", "left", "right"]}
+      >
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Cover image */}
+          {ngo.coverUrl && (
+            <Image
+              source={{ uri: ngo.coverUrl }}
+              style={styles.coverImage}
+              resizeMode="cover"
+            />
           )}
-        </View>
 
-        {/* Contact */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Contact</Text>
-          <View style={styles.contactRow}>
-            <Text style={styles.contactLabel}>Email</Text>
-            <Text style={styles.contactValue}>{ngo.email}</Text>
-          </View>
-          {ngo.phone && (
-            <View style={styles.contactRow}>
-              <Text style={styles.contactLabel}>Phone</Text>
-              <Text style={styles.contactValue}>{ngo.phone}</Text>
-            </View>
-          )}
-          <View style={styles.contactRow}>
-            <Text style={styles.contactLabel}>Address</Text>
-            <Text style={styles.contactValue}>
-              {ngo.address}, {ngo.city}
+          {/* NGO hero */}
+          <View style={styles.hero}>
+            <NGOAvatar name={ngo.name} logoUrl={ngo.logoUrl} size={80} />
+            <Text style={styles.ngoName}>{ngo.name}</Text>
+            <Text style={styles.ngoCategory}>
+              {formatCategory(ngo.category)} · {ngo.city}, {ngo.province}
             </Text>
+
+            {/* Donate button */}
+            <Button
+              label="❤️ Donate Now"
+              onPress={() => router.push(`/donate/${ngo.id}` as any)}
+              style={styles.donateButton}
+            />
           </View>
-          {ngo.website && (
+
+          {/* About */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>About</Text>
+            <Text style={styles.description}>{ngo.description}</Text>
+            {ngo.mission && (
+              <>
+                <Text style={[styles.sectionTitle, { marginTop: 12 }]}>
+                  Mission
+                </Text>
+                <Text style={styles.description}>{ngo.mission}</Text>
+              </>
+            )}
+          </View>
+
+          {/* Contact */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Contact</Text>
             <View style={styles.contactRow}>
-              <Text style={styles.contactLabel}>Website</Text>
-              <Text style={[styles.contactValue, { color: COLORS.green }]}>
-                {ngo.website}
+              <Text style={styles.contactLabel}>Email</Text>
+              <Text style={styles.contactValue}>{ngo.email}</Text>
+            </View>
+            {ngo.phone && (
+              <View style={styles.contactRow}>
+                <Text style={styles.contactLabel}>Phone</Text>
+                <Text style={styles.contactValue}>{ngo.phone}</Text>
+              </View>
+            )}
+            <View style={styles.contactRow}>
+              <Text style={styles.contactLabel}>Address</Text>
+              <Text style={styles.contactValue}>
+                {ngo.address}, {ngo.city}
               </Text>
             </View>
-          )}
-        </View>
+            {ngo.website && (
+              <View style={styles.contactRow}>
+                <Text style={styles.contactLabel}>Website</Text>
+                <Text style={[styles.contactValue, { color: COLORS.green }]}>
+                  {ngo.website}
+                </Text>
+              </View>
+            )}
+          </View>
 
-        {/* Food needs */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Current Food Needs</Text>
-          {needsLoading ? (
-            <ActivityIndicator color={COLORS.green} />
-          ) : needs.length === 0 ? (
-            <Text style={styles.emptyText}>
-              No open food needs at the moment
-            </Text>
-          ) : (
-            needs.map((need) => (
-              <FoodNeedCard
-                key={need.id}
-                need={need}
-                variant="minimal"
-                onPress={() => router.push(`/food-need/${need.id}` as any)}
-              />
-            ))
-          )}
-        </View>
+          {/* Food needs */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Current Food Needs</Text>
+            {needsLoading ? (
+              <ActivityIndicator color={COLORS.green} />
+            ) : needs.length === 0 ? (
+              <Text style={styles.emptyText}>
+                No open food needs at the moment
+              </Text>
+            ) : (
+              needs.map((need) => (
+                <FoodNeedCard
+                  key={need.id}
+                  need={need}
+                  variant="minimal"
+                  onPress={() => router.push(`/food-need/${need.id}` as any)}
+                />
+              ))
+            )}
+          </View>
 
-        <View style={styles.bottomPadding} />
-      </ScrollView>
-    </SafeAreaView>
+          <View style={styles.bottomPadding} />
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -178,19 +199,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 8,
-  },
-  backButton: {
-    alignSelf: "flex-start",
-  },
-  backText: {
-    color: COLORS.green,
-    fontSize: 15,
-    fontWeight: "500",
   },
   hero: {
     alignItems: "center",

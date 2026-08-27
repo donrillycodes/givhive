@@ -7,8 +7,9 @@ import {
 } from "react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useCallback } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { COLORS, FONT, SPACE, RADII, getInitials } from "../../lib/utils";
 import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
@@ -26,8 +27,14 @@ interface MenuItem {
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
-  const { setActivityTab } = useNavigationStore();
+  const { setActivityTab, setActiveTabTitle } = useNavigationStore();
   const tabBarScrollHandler = useTabBarScrollHandler();
+
+  useFocusEffect(
+    useCallback(() => {
+      setActiveTabTitle("Account");
+    }, [setActiveTabTitle]),
+  );
 
   const handleSignOut = () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [

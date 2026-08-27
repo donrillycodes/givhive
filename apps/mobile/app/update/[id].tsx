@@ -8,10 +8,10 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { updateApi } from "../../lib/api";
-import { COLORS, formatDate, formatRelativeTime } from "../../lib/utils";
+import { COLORS, FONT, formatDate, formatRelativeTime } from "../../lib/utils";
 import type { NGOUpdate } from "../../types";
 
 export default function UpdateScreen() {
@@ -26,88 +26,111 @@ export default function UpdateScreen() {
     },
   });
 
+  const headerOptions = {
+    headerShown: true,
+    title: update?.title ?? "Update",
+    headerTintColor: COLORS.primary,
+    headerStyle: { backgroundColor: COLORS.background },
+    headerShadowVisible: false,
+    headerTitleStyle: {
+      fontSize: FONT.base,
+      fontWeight: "700" as const,
+      color: COLORS.text,
+    },
+  };
+
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <ActivityIndicator color={COLORS.green} style={{ marginTop: 40 }} />
-      </SafeAreaView>
+      <>
+        <Stack.Screen options={headerOptions} />
+        <SafeAreaView
+          style={styles.container}
+          edges={["bottom", "left", "right"]}
+        >
+          <ActivityIndicator color={COLORS.green} style={{ marginTop: 40 }} />
+        </SafeAreaView>
+      </>
     );
   }
 
   if (!update) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.errorState}>
-          <Text style={styles.errorText}>Update not found</Text>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Text style={styles.backLink}>Go back</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      <>
+        <Stack.Screen options={headerOptions} />
+        <SafeAreaView
+          style={styles.container}
+          edges={["bottom", "left", "right"]}
+        >
+          <View style={styles.errorState}>
+            <Text style={styles.errorText}>Update not found</Text>
+            <TouchableOpacity onPress={() => router.back()}>
+              <Text style={styles.backLink}>Go back</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backButton}
-          >
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* NGO info */}
-        <View style={styles.ngoRow}>
-          <View style={styles.ngoLogo}>
-            <Text style={styles.ngoLogoText}>{update.ngo.name.charAt(0)}</Text>
+    <>
+      <Stack.Screen options={headerOptions} />
+      <SafeAreaView
+        style={styles.container}
+        edges={["bottom", "left", "right"]}
+      >
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* NGO info */}
+          <View style={styles.ngoRow}>
+            <View style={styles.ngoLogo}>
+              <Text style={styles.ngoLogoText}>
+                {update.ngo.name.charAt(0)}
+              </Text>
+            </View>
+            <View>
+              <Text style={styles.ngoName}>{update.ngo.name}</Text>
+              <Text style={styles.updateTime}>
+                {formatRelativeTime(update.publishedAt ?? update.createdAt)}
+              </Text>
+            </View>
           </View>
-          <View>
-            <Text style={styles.ngoName}>{update.ngo.name}</Text>
-            <Text style={styles.updateTime}>
-              {formatRelativeTime(update.publishedAt ?? update.createdAt)}
-            </Text>
-          </View>
-        </View>
 
-        {/* Cover image placeholder */}
-        {update.coverImageUrl && (
-          <Image
-            source={{ uri: update.coverImageUrl }}
-            style={styles.coverImage}
-            resizeMode="cover"
-          />
-        )}
-
-        {/* Content */}
-        <View style={styles.content}>
-          <View style={styles.typeBadge}>
-            <Text style={styles.typeBadgeText}>
-              {update.type.replace(/_/g, " ")}
-            </Text>
-          </View>
-          <Text style={styles.title}>{update.title}</Text>
-          {update.summary && (
-            <Text style={styles.summary}>{update.summary}</Text>
+          {/* Cover image placeholder */}
+          {update.coverImageUrl && (
+            <Image
+              source={{ uri: update.coverImageUrl }}
+              style={styles.coverImage}
+              resizeMode="cover"
+            />
           )}
-          <View style={styles.divider} />
-          <Text style={styles.body}>{update.body}</Text>
-        </View>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            👁 {update.viewsCount} views ·{" "}
-            {formatDate(update.publishedAt ?? update.createdAt)}
-          </Text>
-        </View>
+          {/* Content */}
+          <View style={styles.content}>
+            <View style={styles.typeBadge}>
+              <Text style={styles.typeBadgeText}>
+                {update.type.replace(/_/g, " ")}
+              </Text>
+            </View>
+            <Text style={styles.title}>{update.title}</Text>
+            {update.summary && (
+              <Text style={styles.summary}>{update.summary}</Text>
+            )}
+            <View style={styles.divider} />
+            <Text style={styles.body}>{update.body}</Text>
+          </View>
 
-        <View style={styles.bottomPadding} />
-      </ScrollView>
-    </SafeAreaView>
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
+              👁 {update.viewsCount} views ·{" "}
+              {formatDate(update.publishedAt ?? update.createdAt)}
+            </Text>
+          </View>
+
+          <View style={styles.bottomPadding} />
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -115,19 +138,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 8,
-  },
-  backButton: {
-    alignSelf: "flex-start",
-  },
-  backText: {
-    color: COLORS.green,
-    fontSize: 15,
-    fontWeight: "500",
   },
   ngoRow: {
     flexDirection: "row",
@@ -168,9 +178,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 0,
-  },
-  coverImageEmoji: {
-    fontSize: 48,
   },
   content: {
     padding: 20,
@@ -246,9 +253,4 @@ const styles = StyleSheet.create({
   bottomPadding: {
     height: 40,
   },
-  //   coverImage: {
-  //   height: 200,
-  //   width: '100%',
-  //   backgroundColor: COLORS.grayLt,
-  // },
 });

@@ -36,13 +36,19 @@ export const useAuthStore = create<AuthState>((set) => ({
     }),
 }));
 
-// Navigation store — for deep linking to specific tabs
+// Navigation store — for deep linking to specific tabs, and for tracking
+// which tab is active so a screen pushed on top of the tab navigator can
+// show that tab's name as its native back-button label.
 interface NavigationState {
   activityTab: 'donations' | 'pledges';
   setActivityTab: (tab: 'donations' | 'pledges') => void;
+  activeTabTitle: string;
+  setActiveTabTitle: (title: string) => void;
 }
 
 export const useNavigationStore = create<NavigationState>((set) => ({
   activityTab: 'donations',
   setActivityTab: (tab) => set({ activityTab: tab }),
+  activeTabTitle: 'Home',
+  setActiveTabTitle: (title) => set({ activeTabTitle: title }),
 }));
