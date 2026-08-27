@@ -19,6 +19,7 @@ import { foodNeedApi } from "../../lib/api";
 import {
   COLORS,
   FONT,
+  SHADOW,
   formatDate,
   getProgress,
   formatCategory,
@@ -395,8 +396,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 16,
     padding: 16,
-    borderWidth: 1,
-    borderColor: COLORS.grayMd,
+    ...SHADOW.card,
   },
   sectionTitle: {
     fontSize: 12,

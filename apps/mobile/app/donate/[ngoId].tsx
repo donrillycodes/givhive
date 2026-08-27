@@ -13,7 +13,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ngoApi, donationApi } from "../../lib/api";
-import { COLORS, FONT } from "../../lib/utils";
+import { COLORS, FONT, SHADOW } from "../../lib/utils";
 import type { NGO } from "../../types";
 import * as WebBrowser from "expo-web-browser";
 
@@ -296,8 +296,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 16,
     padding: 14,
-    borderWidth: 1,
-    borderColor: COLORS.grayMd,
+    ...SHADOW.card,
   },
   ngoLogo: {
     width: 48,
@@ -328,8 +327,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 16,
     padding: 16,
-    borderWidth: 1,
-    borderColor: COLORS.grayMd,
+    ...SHADOW.card,
   },
   sectionTitle: {
     fontSize: 13,

@@ -83,6 +83,20 @@ export const RADII = {
   full: 9999,
 } as const;
 
+// ── Card shadow ─────────────────────────────────────────────────────────────────
+// One shared recipe for "floating" cards (quick actions, NGO cards, list rows,
+// boxed sections) so depth reads consistently instead of a flat hairline
+// border. Not used on inputs, buttons, or pill/tab toggles — those keep borders.
+export const SHADOW = {
+  card: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
+    shadowRadius: 9,
+    elevation: 3,
+  },
+} as const;
+
 // ── Helper functions (unchanged) ───────────────────────────────────────────────
 // Format currency — always two decimal places
 export function formatCurrency(

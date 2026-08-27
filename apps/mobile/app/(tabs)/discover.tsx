@@ -14,7 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { ngoApi, foodNeedApi } from "../../lib/api";
 import { useNavigationStore } from "../../store/authStore";
-import { COLORS, FONT, SPACE, RADII, formatCategory } from "../../lib/utils";
+import { COLORS, FONT, SPACE, RADII, SHADOW, formatCategory } from "../../lib/utils";
 import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
 import { NGOAvatar } from "../../components/shared/NGOAvatar";
 import { FoodNeedCard } from "../../components/shared/FoodNeedCard";
@@ -251,8 +251,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.surface,
     borderRadius: RADII.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOW.card,
     padding: SPACE.md,
     flexDirection: "row",
     alignItems: "center",

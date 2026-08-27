@@ -11,7 +11,7 @@ import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { COLORS, FONT, SPACE, RADII, getInitials } from "../../lib/utils";
+import { COLORS, FONT, SPACE, RADII, SHADOW, getInitials } from "../../lib/utils";
 import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
 import { useNavigationStore } from "../../store/authStore";
 
@@ -193,8 +193,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: SPACE.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOW.card,
     marginBottom: SPACE["2xl"],
   },
   avatar: {
@@ -243,8 +242,7 @@ const styles = StyleSheet.create({
     marginHorizontal: SPACE.xl,
     backgroundColor: COLORS.surface,
     borderRadius: RADII.xl,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOW.card,
     overflow: "hidden",
     marginBottom: SPACE.lg,
   },

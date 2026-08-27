@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { COLORS, FONT, SPACE, RADII, getProgress } from "../../lib/utils";
+import { COLORS, FONT, SPACE, RADII, SHADOW, getProgress } from "../../lib/utils";
 import { Badge } from "../ui/Badge";
 import { ProgressBar } from "../ui/ProgressBar";
 import type { FoodNeed } from "../../types";
@@ -131,12 +131,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderRadius: RADII.lg,
     padding: SPACE.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
     borderLeftWidth: 3,
     borderLeftColor: COLORS.accent,
     position: "relative",
     gap: SPACE.xs,
+    ...SHADOW.card,
   },
   urgentTitle: {
     fontSize: FONT.base,
@@ -170,12 +169,11 @@ const styles = StyleSheet.create({
   compactCard: {
     backgroundColor: COLORS.surface,
     borderRadius: RADII.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
     padding: SPACE.md,
     flexDirection: "row",
     alignItems: "center",
     gap: SPACE.md,
+    ...SHADOW.card,
   },
   compactCardUrgent: {
     borderLeftWidth: 3,

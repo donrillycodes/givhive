@@ -6,10 +6,11 @@ interface SectionHeaderProps {
   onSeeAll?: () => void;
 }
 
-/** Section title with an optional "See all" action, used above home-feed lists. */
+/** Section title with a small accent bar and an optional "See all" action. */
 export function SectionHeader({ title, onSeeAll }: SectionHeaderProps) {
   return (
     <View style={styles.header}>
+      <View style={styles.bar} />
       <Text style={styles.title}>{title}</Text>
       {onSeeAll && (
         <TouchableOpacity onPress={onSeeAll}>
@@ -23,12 +24,19 @@ export function SectionHeader({ title, onSeeAll }: SectionHeaderProps) {
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    gap: SPACE.sm,
     paddingHorizontal: SPACE.xl,
     marginBottom: SPACE.md,
   },
+  bar: {
+    width: 3,
+    height: 14,
+    borderRadius: 2,
+    backgroundColor: COLORS.primary,
+  },
   title: {
+    flex: 1,
     fontSize: FONT.base,
     fontWeight: "700",
     color: COLORS.text,

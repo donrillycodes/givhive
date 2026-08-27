@@ -17,6 +17,7 @@ import {
   FONT,
   SPACE,
   RADII,
+  SHADOW,
   formatCurrency,
   formatDate,
   formatStatus,
@@ -305,8 +306,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.surface,
     borderRadius: RADII.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOW.card,
     padding: SPACE.md,
     flexDirection: "row",
     alignItems: "center",

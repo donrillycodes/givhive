@@ -20,6 +20,7 @@ import {
   FONT,
   SPACE,
   RADII,
+  SHADOW,
   formatRelativeTime,
   truncate,
   formatCategory,
@@ -169,6 +170,8 @@ export default function HomeScreen() {
 
         {/* ── Impact card ── */}
         <View style={styles.impactCard}>
+          <View style={styles.impactCircleTop} />
+          <View style={styles.impactCircleBottom} />
           <View>
             <Text style={styles.impactLabel}>Active in Winnipeg</Text>
             <Text style={styles.impactNumber}>
@@ -370,7 +373,7 @@ const styles = StyleSheet.create({
   // Impact card
   impactCard: {
     marginHorizontal: SPACE.xl,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.primaryDark,
     borderRadius: RADII.xl,
     padding: SPACE.xl,
     flexDirection: "row",
@@ -379,6 +382,29 @@ const styles = StyleSheet.create({
     marginBottom: SPACE.xl,
     position: "relative",
     overflow: "hidden",
+    shadowColor: COLORS.primaryDark,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  impactCircleTop: {
+    position: "absolute",
+    right: -26,
+    top: -30,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "rgba(255,255,255,0.06)",
+  },
+  impactCircleBottom: {
+    position: "absolute",
+    left: -16,
+    bottom: -36,
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    backgroundColor: "rgba(255,255,255,0.05)",
   },
   impactLabel: {
     fontSize: FONT.xs,
@@ -433,8 +459,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: SPACE.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOW.card,
   },
   quickActionIconWrap: {
     width: 40,
@@ -478,8 +503,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderRadius: RADII.lg,
     padding: SPACE.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOW.card,
     alignItems: "center",
     gap: SPACE.sm,
   },
@@ -503,8 +527,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderRadius: RADII.lg,
     padding: SPACE.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOW.card,
     gap: SPACE.sm,
   },
   updateHeader: {

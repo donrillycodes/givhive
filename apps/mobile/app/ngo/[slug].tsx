@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { ngoApi, foodNeedApi } from "../../lib/api";
-import { COLORS, FONT, formatCategory } from "../../lib/utils";
+import { COLORS, FONT, SHADOW, formatCategory } from "../../lib/utils";
 import { NGOAvatar } from "../../components/shared/NGOAvatar";
 import { FoodNeedCard } from "../../components/shared/FoodNeedCard";
 import { Button } from "../../components/ui/Button";
@@ -230,8 +230,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 16,
     padding: 16,
-    borderWidth: 1,
-    borderColor: COLORS.grayMd,
+    ...SHADOW.card,
   },
   sectionTitle: {
     fontSize: 14,
