@@ -11,13 +11,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { ngoApi, foodNeedApi } from "../../lib/api";
-import {
-  COLORS,
-  formatCategory,
-  formatDate,
-  getProgress,
-  truncate,
-} from "../../lib/utils";
+import { COLORS, formatCategory } from "../../lib/utils";
+import { NGOAvatar } from "../../components/shared/NGOAvatar";
+import { FoodNeedCard } from "../../components/shared/FoodNeedCard";
+import { Button } from "../../components/ui/Button";
 import type { NGO, FoodNeed, PaginatedResponse } from "../../types";
 
 export default function NGOProfileScreen() {
@@ -93,30 +90,18 @@ export default function NGOProfileScreen() {
 
         {/* NGO hero */}
         <View style={styles.hero}>
-          {ngo.logoUrl ? (
-            <Image
-              source={{ uri: ngo.logoUrl }}
-              style={styles.logoImage}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.logo}>
-              <Text style={styles.logoText}>{ngo.name.charAt(0)}</Text>
-            </View>
-          )}
+          <NGOAvatar name={ngo.name} logoUrl={ngo.logoUrl} size={80} />
           <Text style={styles.ngoName}>{ngo.name}</Text>
           <Text style={styles.ngoCategory}>
             {formatCategory(ngo.category)} · {ngo.city}, {ngo.province}
           </Text>
 
           {/* Donate button */}
-          <TouchableOpacity
-            style={styles.donateButton}
+          <Button
+            label="❤️ Donate Now"
             onPress={() => router.push(`/donate/${ngo.id}` as any)}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.donateButtonText}>❤️ Donate Now</Text>
-          </TouchableOpacity>
+            style={styles.donateButton}
+          />
         </View>
 
         {/* About */}
@@ -173,40 +158,12 @@ export default function NGOProfileScreen() {
             </Text>
           ) : (
             needs.map((need) => (
-              <TouchableOpacity
+              <FoodNeedCard
                 key={need.id}
-                style={styles.needCard}
+                need={need}
+                variant="minimal"
                 onPress={() => router.push(`/food-need/${need.id}` as any)}
-                activeOpacity={0.8}
-              >
-                <View style={styles.needHeader}>
-                  <Text style={styles.needTitle} numberOfLines={1}>
-                    {need.title}
-                  </Text>
-                  {need.isUrgent && (
-                    <View style={styles.urgentBadge}>
-                      <Text style={styles.urgentText}>URGENT</Text>
-                    </View>
-                  )}
-                </View>
-                <Text style={styles.needSubtitle}>
-                  {need.itemName} · {need.quantityFulfilled}/
-                  {need.quantityRequired} {need.unit}
-                </Text>
-                <View style={styles.progressBar}>
-                  <View
-                    style={[
-                      styles.progressFill,
-                      {
-                        width: `${getProgress(
-                          need.quantityFulfilled,
-                          need.quantityRequired,
-                        )}%`,
-                      },
-                    ]}
-                  />
-                </View>
-              </TouchableOpacity>
+              />
             ))
           )}
         </View>
@@ -243,43 +200,21 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.grayMd,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.greenLt,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
-  },
-  logoText: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: COLORS.green,
+    gap: 6,
   },
   ngoName: {
     fontSize: 22,
     fontWeight: "bold",
     color: COLORS.black,
     textAlign: "center",
-    marginBottom: 6,
   },
   ngoCategory: {
     fontSize: 13,
     color: COLORS.gray,
-    marginBottom: 20,
+    marginBottom: 14,
   },
   donateButton: {
-    backgroundColor: COLORS.green,
-    paddingVertical: 14,
     paddingHorizontal: 40,
-    borderRadius: 14,
-  },
-  donateButtonText: {
-    color: COLORS.white,
-    fontSize: 16,
-    fontWeight: "600",
   },
   section: {
     backgroundColor: COLORS.white,
@@ -321,53 +256,6 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     flex: 1,
   },
-  needCard: {
-    backgroundColor: COLORS.background,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: COLORS.grayMd,
-  },
-  needHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 4,
-  },
-  needTitle: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: COLORS.black,
-    flex: 1,
-  },
-  urgentBadge: {
-    backgroundColor: "#FEE2E2",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  urgentText: {
-    color: "#DC2626",
-    fontSize: 9,
-    fontWeight: "700",
-  },
-  needSubtitle: {
-    fontSize: 12,
-    color: COLORS.gray,
-    marginBottom: 8,
-  },
-  progressBar: {
-    height: 5,
-    backgroundColor: COLORS.grayLt,
-    borderRadius: 3,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: COLORS.green,
-    borderRadius: 3,
-  },
   emptyText: {
     fontSize: 13,
     color: COLORS.gray,
@@ -391,12 +279,6 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     height: 40,
-  },
-  logoImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 12,
   },
   coverImage: {
     width: "100%",

@@ -22,6 +22,9 @@ import {
   getProgress,
   formatCategory,
 } from "../../lib/utils";
+import { Badge } from "../../components/ui/Badge";
+import { ProgressBar } from "../../components/ui/ProgressBar";
+import { Button } from "../../components/ui/Button";
 import type { FoodNeed } from "../../types";
 
 export default function FoodNeedScreen() {
@@ -125,15 +128,14 @@ export default function FoodNeedScreen() {
 
             <View style={styles.badges}>
               {need.isUrgent && (
-                <View style={styles.urgentBadge}>
-                  <Text style={styles.urgentText}>🚨 URGENT</Text>
-                </View>
+                <Badge label="🚨 URGENT" bg="#FEE2E2" color={COLORS.red} />
               )}
-              <View style={styles.categoryBadge}>
-                <Text style={styles.categoryText}>
-                  {formatCategory(need.itemCategory)}
-                </Text>
-              </View>
+              <Badge
+                label={formatCategory(need.itemCategory)}
+                bg={COLORS.greenLt}
+                color={COLORS.green}
+                textStyle={{ fontWeight: "600" }}
+              />
             </View>
 
             <Text style={styles.title}>{need.title}</Text>
@@ -146,9 +148,11 @@ export default function FoodNeedScreen() {
               <Text style={styles.sectionTitle}>Progress</Text>
               <Text style={styles.progressPercent}>{progress}%</Text>
             </View>
-            <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: `${progress}%` }]} />
-            </View>
+            <ProgressBar
+              percent={progress}
+              height={8}
+              style={styles.progressBarSpacing}
+            />
             <View style={styles.progressStats}>
               <Text style={styles.progressStat}>
                 <Text style={styles.progressStatBold}>
@@ -214,15 +218,10 @@ export default function FoodNeedScreen() {
               <Text style={styles.sectionTitle}>Make a Pledge</Text>
 
               {!showPledgeForm ? (
-                <TouchableOpacity
-                  style={styles.pledgeButton}
+                <Button
+                  label="📦 Pledge Food Items"
                   onPress={() => setShowPledgeForm(true)}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.pledgeButtonText}>
-                    📦 Pledge Food Items
-                  </Text>
-                </TouchableOpacity>
+                />
               ) : (
                 <View style={styles.pledgeForm}>
                   <View style={styles.field}>
@@ -284,24 +283,19 @@ export default function FoodNeedScreen() {
                   </View>
 
                   <View style={styles.formButtons}>
-                    <TouchableOpacity
-                      style={styles.submitButton}
+                    <Button
+                      label="Submit Pledge"
+                      loadingLabel="Submitting..."
+                      loading={pledgeMutation.isPending}
                       onPress={handlePledge}
-                      disabled={pledgeMutation.isPending}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={styles.submitButtonText}>
-                        {pledgeMutation.isPending
-                          ? "Submitting..."
-                          : "Submit Pledge"}
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.cancelButton}
+                      style={styles.flexButton}
+                    />
+                    <Button
+                      label="Cancel"
+                      variant="secondary"
                       onPress={() => setShowPledgeForm(false)}
-                    >
-                      <Text style={styles.cancelButtonText}>Cancel</Text>
-                    </TouchableOpacity>
+                      style={styles.flexButton}
+                    />
                   </View>
                 </View>
               )}
@@ -368,28 +362,6 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 12,
   },
-  urgentBadge: {
-    backgroundColor: "#FEE2E2",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-  },
-  urgentText: {
-    color: "#DC2626",
-    fontSize: 11,
-    fontWeight: "700",
-  },
-  categoryBadge: {
-    backgroundColor: COLORS.greenLt,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-  },
-  categoryText: {
-    color: COLORS.green,
-    fontSize: 11,
-    fontWeight: "600",
-  },
   title: {
     fontSize: 20,
     fontWeight: "bold",
@@ -429,17 +401,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.green,
   },
-  progressBar: {
-    height: 8,
-    backgroundColor: COLORS.grayLt,
-    borderRadius: 4,
-    overflow: "hidden",
+  progressBarSpacing: {
     marginBottom: 10,
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: COLORS.green,
-    borderRadius: 4,
   },
   progressStats: {
     flexDirection: "row",
@@ -470,17 +433,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.black,
     flex: 1,
-  },
-  pledgeButton: {
-    backgroundColor: COLORS.green,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  pledgeButtonText: {
-    color: COLORS.white,
-    fontSize: 15,
-    fontWeight: "600",
   },
   pledgeForm: {
     gap: 14,
@@ -514,29 +466,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
   },
-  submitButton: {
+  flexButton: {
     flex: 1,
-    backgroundColor: COLORS.green,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  submitButtonText: {
-    color: COLORS.white,
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: COLORS.grayLt,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  cancelButtonText: {
-    color: COLORS.gray,
-    fontSize: 15,
-    fontWeight: "500",
   },
   closedBanner: {
     marginHorizontal: 16,

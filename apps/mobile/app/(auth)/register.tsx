@@ -2,14 +2,12 @@ import { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   StatusBar,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -18,9 +16,19 @@ import { COLORS, FONT, SPACE, RADII } from "../../lib/utils";
 import { authApi } from "../../lib/api";
 import { signIn } from "../../lib/firebase";
 import { useAuthStore } from "../../store/authStore";
+import { Input } from "../../components/ui/Input";
+import { Button } from "../../components/ui/Button";
+import { ErrorBanner } from "../../components/ui/ErrorBanner";
 import type { User } from "../../types";
 
 type Role = "DONOR" | "NGO";
+
+const ORG_TYPES = [
+  { value: "REGISTERED_CHARITY", label: "Registered Charity" },
+  { value: "NON_PROFIT", label: "Non-Profit" },
+  { value: "COMMUNITY_GROUP", label: "Community Group" },
+  { value: "SOCIAL_ENTERPRISE", label: "Social Enterprise" },
+];
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -35,8 +43,6 @@ export default function RegisterScreen() {
   const [orgType, setOrgType] = useState("");
   const [primaryContactName, setPrimaryContactName] = useState("");
   const [primaryContactTitle, setPrimaryContactTitle] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -212,197 +218,87 @@ export default function RegisterScreen() {
           <View style={styles.form}>
             {/* Name row */}
             <View style={styles.nameRow}>
-              <View style={[styles.fieldGroup, { flex: 1 }]}>
-                <Text style={styles.label}>First name</Text>
-                <View style={styles.inputWrap}>
-                  <TextInput
-                    style={styles.input}
-                    value={firstName}
-                    onChangeText={setFirstName}
-                    placeholder="First name"
-                    placeholderTextColor={COLORS.textHint}
-                    autoCapitalize="words"
-                  />
-                </View>
-              </View>
-              <View style={[styles.fieldGroup, { flex: 1 }]}>
-                <Text style={styles.label}>Last name</Text>
-                <View style={styles.inputWrap}>
-                  <TextInput
-                    style={styles.input}
-                    value={lastName}
-                    onChangeText={setLastName}
-                    placeholder="Last name"
-                    placeholderTextColor={COLORS.textHint}
-                    autoCapitalize="words"
-                  />
-                </View>
-              </View>
+              <Input
+                label="First name"
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="First name"
+                autoCapitalize="words"
+                containerStyle={styles.nameField}
+              />
+              <Input
+                label="Last name"
+                value={lastName}
+                onChangeText={setLastName}
+                placeholder="Last name"
+                autoCapitalize="words"
+                containerStyle={styles.nameField}
+              />
             </View>
 
-            {/* Email */}
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>Email address</Text>
-              <View style={styles.inputWrap}>
-                <Ionicons
-                  name="mail-outline"
-                  size={18}
-                  color={COLORS.textSub}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="your@email.com"
-                  placeholderTextColor={COLORS.textHint}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-              </View>
-            </View>
+            <Input
+              label="Email address"
+              icon="mail-outline"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="your@email.com"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
 
-            {/* Password */}
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>Password</Text>
-              <View style={styles.inputWrap}>
-                <Ionicons
-                  name="lock-closed-outline"
-                  size={18}
-                  color={COLORS.textSub}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="At least 6 characters"
-                  placeholderTextColor={COLORS.textHint}
-                  secureTextEntry={!showPassword}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword((v) => !v)}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <Ionicons
-                    name={showPassword ? "eye-off-outline" : "eye-outline"}
-                    size={18}
-                    color={COLORS.textSub}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
+            <Input
+              label="Password"
+              icon="lock-closed-outline"
+              secureToggle
+              value={password}
+              onChangeText={setPassword}
+              placeholder="At least 6 characters"
+            />
 
-            {/* Confirm password */}
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>Confirm password</Text>
-              <View style={styles.inputWrap}>
-                <Ionicons
-                  name="lock-closed-outline"
-                  size={18}
-                  color={COLORS.textSub}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  placeholder="Repeat your password"
-                  placeholderTextColor={COLORS.textHint}
-                  secureTextEntry={!showConfirm}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowConfirm((v) => !v)}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <Ionicons
-                    name={showConfirm ? "eye-off-outline" : "eye-outline"}
-                    size={18}
-                    color={COLORS.textSub}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
+            <Input
+              label="Confirm password"
+              icon="lock-closed-outline"
+              secureToggle
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              placeholder="Repeat your password"
+            />
 
             {/* NGO verification fields — only shown when NGO role selected */}
             {role === "NGO" && (
               <>
-                <View style={styles.fieldGroup}>
-                  <Text style={styles.label}>CRA Charity Number</Text>
-                  <View style={styles.inputWrap}>
-                    <Ionicons
-                      name="document-text-outline"
-                      size={18}
-                      color={COLORS.textSub}
-                      style={styles.inputIcon}
-                    />
-                    <TextInput
-                      style={styles.input}
-                      value={craNumber}
-                      onChangeText={setCraNumber}
-                      placeholder="e.g. 123456789 RR 0001"
-                      placeholderTextColor={COLORS.textHint}
-                      autoCapitalize="none"
-                    />
-                  </View>
-                </View>
+                <Input
+                  label="CRA Charity Number"
+                  icon="document-text-outline"
+                  value={craNumber}
+                  onChangeText={setCraNumber}
+                  placeholder="e.g. 123456789 RR 0001"
+                  autoCapitalize="none"
+                />
 
-                <View style={styles.fieldGroup}>
-                  <Text style={styles.label}>Primary Contact Name</Text>
-                  <View style={styles.inputWrap}>
-                    <Ionicons
-                      name="person-outline"
-                      size={18}
-                      color={COLORS.textSub}
-                      style={styles.inputIcon}
-                    />
-                    <TextInput
-                      style={styles.input}
-                      value={primaryContactName}
-                      onChangeText={setPrimaryContactName}
-                      placeholder="Full name"
-                      placeholderTextColor={COLORS.textHint}
-                      autoCapitalize="words"
-                    />
-                  </View>
-                </View>
+                <Input
+                  label="Primary Contact Name"
+                  icon="person-outline"
+                  value={primaryContactName}
+                  onChangeText={setPrimaryContactName}
+                  placeholder="Full name"
+                  autoCapitalize="words"
+                />
 
-                <View style={styles.fieldGroup}>
-                  <Text style={styles.label}>Contact Title</Text>
-                  <View style={styles.inputWrap}>
-                    <Ionicons
-                      name="briefcase-outline"
-                      size={18}
-                      color={COLORS.textSub}
-                      style={styles.inputIcon}
-                    />
-                    <TextInput
-                      style={styles.input}
-                      value={primaryContactTitle}
-                      onChangeText={setPrimaryContactTitle}
-                      placeholder="e.g. Executive Director"
-                      placeholderTextColor={COLORS.textHint}
-                      autoCapitalize="words"
-                    />
-                  </View>
-                </View>
+                <Input
+                  label="Contact Title"
+                  icon="briefcase-outline"
+                  value={primaryContactTitle}
+                  onChangeText={setPrimaryContactTitle}
+                  placeholder="e.g. Executive Director"
+                  autoCapitalize="words"
+                />
 
                 <View style={styles.fieldGroup}>
                   <Text style={styles.label}>Organisation Type</Text>
                   <View style={styles.orgTypeRow}>
-                    {[
-                      {
-                        value: "REGISTERED_CHARITY",
-                        label: "Registered Charity",
-                      },
-                      { value: "NON_PROFIT", label: "Non-Profit" },
-                      { value: "COMMUNITY_GROUP", label: "Community Group" },
-                      {
-                        value: "SOCIAL_ENTERPRISE",
-                        label: "Social Enterprise",
-                      },
-                    ].map((type) => (
+                    {ORG_TYPES.map((type) => (
                       <TouchableOpacity
                         key={type.value}
                         style={[
@@ -428,36 +324,16 @@ export default function RegisterScreen() {
               </>
             )}
 
-            {/* Error message */}
-            {error ? (
-              <View style={styles.errorBox}>
-                <Ionicons
-                  name="alert-circle-outline"
-                  size={16}
-                  color={COLORS.error}
-                />
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            ) : null}
+            <ErrorBanner message={error} />
 
-            {/* Register button */}
-            <TouchableOpacity
-              style={[styles.btn, loading && styles.btnDisabled]}
+            <Button
+              label="Create account"
+              loadingLabel="Creating account..."
+              loading={loading}
               onPress={handleRegister}
-              disabled={loading}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.btnText}>
-                {loading ? "Creating account..." : "Create account"}
-              </Text>
-              {!loading && (
-                <Ionicons
-                  name="arrow-forward"
-                  size={18}
-                  color={COLORS.surface}
-                />
-              )}
-            </TouchableOpacity>
+              icon="arrow-forward"
+              style={styles.submitBtn}
+            />
 
             {/* Terms */}
             <Text style={styles.terms}>
@@ -583,6 +459,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: SPACE.md,
   },
+  nameField: {
+    flex: 1,
+  },
   fieldGroup: {
     gap: SPACE.sm,
   },
@@ -591,43 +470,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: COLORS.text,
   },
-  inputWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.surface,
-    borderRadius: RADII.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    paddingHorizontal: SPACE.md,
-    height: 52,
-    gap: SPACE.sm,
-  },
-  inputIcon: {
-    flexShrink: 0,
-  },
-  input: {
-    flex: 1,
-    fontSize: FONT.base,
-    color: COLORS.text,
-    paddingVertical: 0,
-  },
-  btn: {
-    backgroundColor: COLORS.primary,
-    borderRadius: RADII.lg,
-    paddingVertical: SPACE.lg,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: SPACE.sm,
+  submitBtn: {
     marginTop: SPACE.sm,
-  },
-  btnDisabled: {
-    opacity: 0.6,
-  },
-  btnText: {
-    fontSize: FONT.base,
-    fontWeight: "700",
-    color: COLORS.surface,
   },
   terms: {
     fontSize: FONT.xs,
@@ -651,22 +495,6 @@ const styles = StyleSheet.create({
     fontSize: FONT.md,
     color: COLORS.primary,
     fontWeight: "700",
-  },
-  errorBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: SPACE.sm,
-    backgroundColor: COLORS.errorLight,
-    borderRadius: RADII.md,
-    padding: SPACE.md,
-    borderWidth: 1,
-    borderColor: COLORS.errorBorder,
-  },
-  errorText: {
-    fontSize: FONT.sm,
-    color: COLORS.error,
-    flex: 1,
-    lineHeight: 18,
   },
   orgTypeRow: {
     flexDirection: "row",

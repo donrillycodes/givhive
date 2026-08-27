@@ -23,32 +23,16 @@ import {
   formatRelativeTime,
   truncate,
   formatCategory,
-  getProgress,
 } from "../../lib/utils";
 import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
+import { SectionHeader } from "../../components/shared/SectionHeader";
+import { NGOAvatar } from "../../components/shared/NGOAvatar";
+import { FoodNeedCard } from "../../components/shared/FoodNeedCard";
 import type { NGO, FoodNeed, NGOUpdate, PaginatedResponse } from "../../types";
 
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
-
-interface SectionHeaderProps {
-  title: string;
-  onSeeAll?: () => void;
-}
-
-function SectionHeader({ title, onSeeAll }: SectionHeaderProps) {
-  return (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      {onSeeAll && (
-        <TouchableOpacity onPress={onSeeAll}>
-          <Text style={styles.seeAll}>See all</Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-}
 
 interface QuickActionProps {
   icon: IoniconName;
@@ -245,46 +229,14 @@ export default function HomeScreen() {
             {needsLoading ? (
               <ActivityIndicator color={COLORS.primary} style={styles.loader} />
             ) : (
-              urgentNeeds.map((need) => {
-                const pct = getProgress(
-                  need.quantityFulfilled,
-                  need.quantityRequired,
-                );
-                return (
-                  <TouchableOpacity
-                    key={need.id}
-                    style={styles.urgentCard}
-                    onPress={() => router.push(`/food-need/${need.id}` as any)}
-                    activeOpacity={0.75}
-                  >
-                    <View style={styles.urgentBadge}>
-                      <Text style={styles.urgentBadgeText}>URGENT</Text>
-                    </View>
-                    <Text style={styles.urgentTitle}>{need.title}</Text>
-                    <Text style={styles.urgentNgo}>
-                      {need.ngo.name} · {need.ngo.city}
-                    </Text>
-                    <View style={styles.progressRow}>
-                      <View style={styles.progressBar}>
-                        <View
-                          style={[styles.progressFill, { width: `${pct}%` }]}
-                        />
-                      </View>
-                      <Text style={styles.progressText}>
-                        {need.quantityFulfilled}/{need.quantityRequired}{" "}
-                        {need.unit}
-                      </Text>
-                    </View>
-                    <View style={styles.urgentArrow}>
-                      <Ionicons
-                        name="arrow-forward"
-                        size={14}
-                        color={COLORS.surface}
-                      />
-                    </View>
-                  </TouchableOpacity>
-                );
-              })
+              urgentNeeds.map((need) => (
+                <FoodNeedCard
+                  key={need.id}
+                  need={need}
+                  variant="urgent"
+                  onPress={() => router.push(`/food-need/${need.id}` as any)}
+                />
+              ))
             )}
           </View>
         )}
@@ -310,11 +262,7 @@ export default function HomeScreen() {
                   onPress={() => router.push(`/ngo/${ngo.slug}` as any)}
                   activeOpacity={0.75}
                 >
-                  <View style={styles.ngoAvatar}>
-                    <Text style={styles.ngoAvatarText}>
-                      {ngo.name.charAt(0)}
-                    </Text>
-                  </View>
+                  <NGOAvatar name={ngo.name} logoUrl={ngo.logoUrl} />
                   <Text style={styles.ngoName} numberOfLines={2}>
                     {ngo.name}
                   </Text>
@@ -343,11 +291,7 @@ export default function HomeScreen() {
                 activeOpacity={0.75}
               >
                 <View style={styles.updateHeader}>
-                  <View style={styles.updateAvatar}>
-                    <Text style={styles.updateAvatarText}>
-                      {update.ngo.name.charAt(0)}
-                    </Text>
-                  </View>
+                  <NGOAvatar name={update.ngo.name} logoUrl={update.ngo.logoUrl} size={36} />
                   <View style={styles.updateMeta}>
                     <Text style={styles.updateNgo}>{update.ngo.name}</Text>
                     <Text style={styles.updateTime}>
@@ -508,23 +452,6 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: SPACE.xl,
   },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: SPACE.xl,
-    marginBottom: SPACE.md,
-  },
-  sectionTitle: {
-    fontSize: FONT.base,
-    fontWeight: "700",
-    color: COLORS.text,
-  },
-  seeAll: {
-    fontSize: FONT.sm,
-    color: COLORS.primary,
-    fontWeight: "600",
-  },
   loader: {
     marginTop: SPACE.xl,
   },
@@ -532,75 +459,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACE.xl,
     color: COLORS.textSub,
     fontSize: FONT.sm,
-  },
-
-  // Urgent needs
-  urgentCard: {
-    marginHorizontal: SPACE.xl,
-    marginBottom: SPACE.sm,
-    backgroundColor: COLORS.surface,
-    borderRadius: RADII.lg,
-    padding: SPACE.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderLeftWidth: 3,
-    borderLeftColor: COLORS.accent,
-    position: "relative",
-  },
-  urgentBadge: {
-    alignSelf: "flex-start",
-    backgroundColor: COLORS.accentLight,
-    paddingHorizontal: SPACE.sm,
-    paddingVertical: 3,
-    borderRadius: RADII.sm,
-    marginBottom: SPACE.sm,
-  },
-  urgentBadgeText: {
-    fontSize: FONT.xs,
-    fontWeight: "700",
-    color: COLORS.accent,
-    letterSpacing: 0.5,
-  },
-  urgentTitle: {
-    fontSize: FONT.base,
-    fontWeight: "600",
-    color: COLORS.text,
-    marginBottom: 4,
-    paddingRight: SPACE["2xl"],
-  },
-  urgentNgo: {
-    fontSize: FONT.sm,
-    color: COLORS.textSub,
-    marginBottom: SPACE.md,
-  },
-  progressRow: {
-    gap: SPACE.xs,
-  },
-  progressBar: {
-    height: 5,
-    backgroundColor: COLORS.surfaceAlt,
-    borderRadius: RADII.full,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: COLORS.primary,
-    borderRadius: RADII.full,
-  },
-  progressText: {
-    fontSize: FONT.xs,
-    color: COLORS.textSub,
-  },
-  urgentArrow: {
-    position: "absolute",
-    top: SPACE.lg,
-    right: SPACE.lg,
-    width: 28,
-    height: 28,
-    borderRadius: RADII.full,
-    backgroundColor: COLORS.primary,
-    alignItems: "center",
-    justifyContent: "center",
   },
 
   // NGO cards
@@ -617,19 +475,6 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     alignItems: "center",
     gap: SPACE.sm,
-  },
-  ngoAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: RADII.full,
-    backgroundColor: COLORS.primaryLight,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  ngoAvatarText: {
-    fontSize: FONT.lg,
-    fontWeight: "800",
-    color: COLORS.primary,
   },
   ngoName: {
     fontSize: FONT.sm,
@@ -659,20 +504,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: SPACE.md,
-  },
-  updateAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: RADII.full,
-    backgroundColor: COLORS.primaryLight,
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-  },
-  updateAvatarText: {
-    fontSize: FONT.md,
-    fontWeight: "800",
-    color: COLORS.primary,
   },
   updateMeta: {
     flex: 1,
