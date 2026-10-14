@@ -52,14 +52,6 @@ export default function ProfileScreen() {
 
   const menuItems: MenuItem[] = [
     {
-      icon: "heart-outline",
-      label: "My Donations",
-      onPress: () => {
-        setActivityTab("donations");
-        router.push("/(tabs)/activity");
-      },
-    },
-    {
       icon: "cube-outline",
       label: "My Pledges",
       onPress: () => {

@@ -31,6 +31,8 @@ import { NGOAvatar } from "../../components/shared/NGOAvatar";
 import { FoodNeedCard } from "../../components/shared/FoodNeedCard";
 import type { NGO, FoodNeed, NGOUpdate, PaginatedResponse } from "../../types";
 
+import { CASH_DONATIONS_ENABLED } from "../../lib/features";
+
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
@@ -195,14 +197,16 @@ export default function HomeScreen() {
 
         {/* ── Quick actions ── */}
         <View style={styles.quickActions}>
-          <QuickAction
-            icon="heart-outline"
-            label="Donate"
-            sub="Cash gift"
-            iconBg={COLORS.accentLight}
-            iconColor={COLORS.accent}
-            onPress={() => router.push("/(tabs)/discover")}
-          />
+          {CASH_DONATIONS_ENABLED && (
+            <QuickAction
+              icon="heart-outline"
+              label="Donate"
+              sub="Cash gift"
+              iconBg={COLORS.accentLight}
+              iconColor={COLORS.accent}
+              onPress={() => router.push("/(tabs)/discover")}
+            />
+          )}
           <QuickAction
             icon="cube-outline"
             label="Pledge Food"

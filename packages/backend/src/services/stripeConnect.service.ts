@@ -1,4 +1,5 @@
-import { stripe } from '../config/stripe';
+import { getStripe } from '../config/stripe';
+import { assertCashDonationsEnabled } from '../config/features';
 import db from '../config/database';
 import { AppError } from '../middleware/error';
 import logger from '../utils/logger';
@@ -7,6 +8,7 @@ import { env } from '../config/env';
 export class StripeConnectService {
   // ── Create Connect account and return onboarding URL ──────────────────
   async createConnectAccount(ngoId: string) {
+    assertCashDonationsEnabled();
     const ngo = await db.nGO.findUnique({
       where: { id: ngoId },
       select: {
@@ -27,7 +29,7 @@ export class StripeConnectService {
 
     // Create a new Connect account if one does not exist
     if (!accountId) {
-      const account = await stripe.accounts.create({
+      const account = await getStripe().accounts.create({
         type: 'express',
         email: ngo.email,
         business_profile: {
@@ -53,7 +55,7 @@ export class StripeConnectService {
     }
 
     // Generate onboarding link
-    const accountLink = await stripe.accountLinks.create({
+    const accountLink = await getStripe().accountLinks.create({
       account: accountId,
       refresh_url: `${env.clientUrl}/ngo/stripe?refresh=true`,
       return_url: `${env.clientUrl}/ngo/stripe?success=true`,
@@ -81,7 +83,7 @@ export class StripeConnectService {
       };
     }
 
-    const account = await stripe.accounts.retrieve(ngo.stripeAccountId);
+    const account = await getStripe().accounts.retrieve(ngo.stripeAccountId);
 
     return {
       connected: true,
@@ -94,6 +96,7 @@ export class StripeConnectService {
 
   // ── Generate a new onboarding link for incomplete accounts ─────────────
   async refreshOnboardingLink(ngoId: string) {
+    assertCashDonationsEnabled();
     const ngo = await db.nGO.findUnique({
       where: { id: ngoId },
       select: { stripeAccountId: true },
@@ -103,7 +106,7 @@ export class StripeConnectService {
       throw new AppError('No Stripe account found. Please connect first.', 404);
     }
 
-    const accountLink = await stripe.accountLinks.create({
+    const accountLink = await getStripe().accountLinks.create({
       account: ngo.stripeAccountId,
       refresh_url: `${env.clientUrl}/ngo/stripe?refresh=true`,
       return_url: `${env.clientUrl}/ngo/stripe?success=true`,

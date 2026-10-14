@@ -25,12 +25,12 @@ export class EmailService {
             <h2 style="color: #1A1A1A;">Welcome to GivHive, ${firstName}! 🎉</h2>
             <p style="color: #4A4A4A; line-height: 1.6;">
               You have joined a community of donors making a real difference in Winnipeg and beyond.
-              Every donation and food pledge you make goes directly to verified NGOs helping people in need.
+              Your food pledges support reviewed organisations helping people in need.
             </p>
             <div style="background: #E8F5EE; border-radius: 8px; padding: 20px; margin: 16px 0;">
               <p style="margin: 0; font-weight: bold; color: #1A1A1A;">Here is what you can do:</p>
               <p style="margin: 8px 0 0 0; color: #4A4A4A; line-height: 1.8;">
-                ❤️ Make cash donations to verified NGOs<br>
+                ❤️ Find food needs from reviewed local organisations<br>
                 📦 Pledge food items to specific needs<br>
                 📰 Follow NGO updates and impact stories<br>
                 🔔 Get notified when your pledges are confirmed
@@ -122,7 +122,7 @@ export class EmailService {
               <h2 style="color: #1A1A1A;">Your NGO is approved! 🎉</h2>
               <p style="color: #4A4A4A; line-height: 1.6;">
                 Great news — <strong>${ngoName}</strong> has been reviewed by GivHive and is now live on the GivHive platform.
-                Donors can now find your organisation, make cash donations, and pledge food items to your needs.
+                Donors can now find your organisation, pledge food items to your needs.
               </p>
               <a href="${DASHBOARD_URL}/ngo" 
                 style="display: inline-block; background: #1A7A4A; color: white; padding: 12px 24px; 

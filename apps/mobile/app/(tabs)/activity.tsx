@@ -26,6 +26,8 @@ import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
 import type { Donation, FoodPledge, PaginatedResponse } from "../../types";
 import { useNavigationStore } from "../../store/authStore";
 
+import { CASH_DONATIONS_ENABLED } from "../../lib/features";
+
 type Tab = "donations" | "pledges";
 
 function statusColor(status: string): string {
@@ -67,7 +69,7 @@ function EmptyState({
 
 export default function ActivityScreen() {
   const { activityTab, setActiveTabTitle } = useNavigationStore();
-  const [activeTab, setActiveTab] = useState<Tab>(activityTab);
+  const [selectedTab, setActiveTab] = useState<Tab>(activityTab);
   const tabBarScrollHandler = useTabBarScrollHandler();
 
   useEffect(() => {
@@ -94,11 +96,13 @@ export default function ActivityScreen() {
       const res = await pledgeApi.getMyPledges();
       return res.data.data as PaginatedResponse<FoodPledge>;
     },
-    enabled: activeTab === "pledges",
+    enabled: !CASH_DONATIONS_ENABLED || selectedTab === "pledges",
   });
 
   const donations = donationsData?.items ?? [];
   const pledges = pledgesData?.items ?? [];
+  const showDonationHistory = CASH_DONATIONS_ENABLED || donations.length > 0;
+  const activeTab = showDonationHistory ? selectedTab : "pledges";
 
   return (
     <SafeAreaView style={styles.container}>
@@ -106,19 +110,21 @@ export default function ActivityScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>My Activity</Text>
         <View style={styles.tabs}>
-          <TouchableOpacity
-            style={[styles.tab, activeTab === "donations" && styles.tabActive]}
-            onPress={() => setActiveTab("donations")}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "donations" && styles.tabTextActive,
-              ]}
+          {showDonationHistory && (
+            <TouchableOpacity
+              style={[styles.tab, activeTab === "donations" && styles.tabActive]}
+              onPress={() => setActiveTab("donations")}
             >
-              Donations
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.tabText,
+                  activeTab === "donations" && styles.tabTextActive,
+                ]}
+              >
+                Past Cash Donations
+              </Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity
             style={[styles.tab, activeTab === "pledges" && styles.tabActive]}
             onPress={() => setActiveTab("pledges")}
@@ -149,7 +155,7 @@ export default function ActivityScreen() {
             <EmptyState
               icon="heart-outline"
               title="No donations yet"
-              message="Your donation history will appear here once you make your first contribution."
+              message="No past cash donations. You can support organisations through food pledges."
             />
           ) : (
             donations.map((donation) => (

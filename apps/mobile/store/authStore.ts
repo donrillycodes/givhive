@@ -47,7 +47,7 @@ interface NavigationState {
 }
 
 export const useNavigationStore = create<NavigationState>((set) => ({
-  activityTab: 'donations',
+  activityTab: 'pledges',
   setActivityTab: (tab) => set({ activityTab: tab }),
   activeTabTitle: 'Home',
   setActiveTabTitle: (title) => set({ activeTabTitle: title }),

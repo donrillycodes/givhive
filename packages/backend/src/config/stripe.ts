@@ -1,18 +1,15 @@
 import Stripe from 'stripe';
 import { env } from './env';
-import logger from '../utils/logger';
+import { AppError } from '../middleware/error';
 
-if (!env.stripe.secretKey || env.stripe.secretKey === 'placeholder') {
-  logger.warn(
-    'Stripe secret key is not configured. Payment features will not work.'
-  );
-}
+let stripe: InstanceType<typeof Stripe> | undefined;
 
-export const stripe: InstanceType<typeof Stripe> = new Stripe(
-  env.stripe.secretKey,
-  {
-    apiVersion: '2026-03-25.dahlia',
+// The food-pledge release can start without Stripe credentials. Existing
+// payments/webhooks can still be processed when those credentials are supplied.
+export function getStripe(): InstanceType<typeof Stripe> {
+  if (!env.stripe.secretKey || env.stripe.secretKey === 'placeholder') {
+    throw new AppError('Payment processing is not configured', 503);
   }
-);
-
-export default stripe;
+  stripe ??= new Stripe(env.stripe.secretKey, { apiVersion: '2026-03-25.dahlia' });
+  return stripe;
+}

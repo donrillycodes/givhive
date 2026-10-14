@@ -76,7 +76,7 @@ export default function NotificationsScreen() {
             <Text style={styles.emptyEmoji}>🔔</Text>
             <Text style={styles.emptyTitle}>No notifications yet</Text>
             <Text style={styles.emptyMessage}>
-              You will be notified about your donations and pledges here
+              You will be notified about your food pledges here
             </Text>
           </View>
         ) : (

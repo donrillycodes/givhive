@@ -56,8 +56,8 @@ export default function PrivacyPolicyPage() {
               <strong>we</strong>,&rdquo; &ldquo;<strong>us</strong>,&rdquo; or
               &ldquo;<strong>our</strong>&rdquo;) is a donation platform based
               in Winnipeg, Manitoba, Canada. We connect individual donors with
-              reviewed non-governmental organisations (NGOs) so that food,
-              supplies, and monetary donations can reach people in need.
+              reviewed non-governmental organisations (NGOs) so that food
+              and supplies can reach people in need. Cash donations and bank-account onboarding are paused in the current release.
             </p>
             <p className="mt-4">
               This Privacy Policy explains what personal information we collect,
@@ -142,7 +142,7 @@ export default function PrivacyPolicyPage() {
                 Posted food needs, donation updates, and team-member records
               </li>
               <li>
-                Stripe Connect account identifier (we never see or store your
+                Historical Stripe Connect account identifier, if previously connected (we never see or store your
                 bank details — see section 4)
               </li>
             </ul>
@@ -190,7 +190,7 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc pl-6 space-y-1.5 mt-3">
               <li>
                 <strong>To provide the Services</strong> — create and manage
-                your account, process donations and food pledges, deliver in-app
+                your account, manage food pledges and historical donation records, deliver in-app
                 and email notifications, and operate the dashboard you signed up
                 for.
               </li>
@@ -264,9 +264,9 @@ export default function PrivacyPolicyPage() {
                 .
               </li>
               <li>
-                <strong>Stripe, Inc.</strong> — processes all monetary donations
-                through Stripe Checkout and Stripe Connect, and handles payouts
-                to NGOs. Stripe collects and stores your payment-card details
+                <strong>Stripe, Inc.</strong> — was used for cash donations through
+                Stripe Checkout and Stripe Connect. New cash donations and bank-account onboarding are currently unavailable.
+                For any historical payments, Stripe stores payment-card details
                 and the NGO&apos;s bank information directly; GivHive never sees
                 this data. Privacy policy:{" "}
                 <a

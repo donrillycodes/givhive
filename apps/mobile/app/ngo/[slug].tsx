@@ -1,3 +1,4 @@
+import { CASH_DONATIONS_ENABLED } from "../../lib/features";
 import {
   View,
   Text,
@@ -116,12 +117,14 @@ export default function NGOProfileScreen() {
               {formatCategory(ngo.category)} · {ngo.city}, {ngo.province}
             </Text>
 
-            {/* Donate button */}
-            <Button
-              label="❤️ Donate Now"
-              onPress={() => router.push(`/donate/${ngo.id}` as any)}
-              style={styles.donateButton}
-            />
+            {/* Cash donations are paused for the food-pledge release. */}
+            {CASH_DONATIONS_ENABLED && (
+              <Button
+                label="❤️ Donate Now"
+                onPress={() => router.push(`/donate/${ngo.id}` as any)}
+                style={styles.donateButton}
+              />
+            )}
           </View>
 
           {/* About */}

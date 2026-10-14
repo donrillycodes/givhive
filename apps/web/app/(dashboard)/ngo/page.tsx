@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { CASH_DONATIONS_ENABLED } from "@/lib/features";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Header } from "@/components/shared/Header";
@@ -71,7 +72,7 @@ export default function NGODashboardPage() {
         <EmptyState
           icon={<Package className="w-6 h-6" />}
           title="No NGO found"
-          description="Register your organisation to start receiving donations and food pledges through GivHive."
+          description="Register your organisation to start receiving food pledges through GivHive."
           action={
             <Link href="/ngo/profile">
               <Button>
@@ -95,13 +96,15 @@ export default function NGODashboardPage() {
 
           {/* Stats grid */}
           {isApproved && stats && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <StatCard
-                label="Total donations"
-                value={formatCurrency(Number(stats.totalDonationsAmount))}
-                meta={`${stats.totalDonationsCount} donation${stats.totalDonationsCount === 1 ? "" : "s"} all-time`}
-                icon={<Heart className="w-4 h-4" />}
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {(CASH_DONATIONS_ENABLED || stats.totalDonationsCount > 0) && (
+                <StatCard
+                  label="Past cash donations"
+                  value={formatCurrency(Number(stats.totalDonationsAmount))}
+                  meta={`${stats.totalDonationsCount} donation${stats.totalDonationsCount === 1 ? "" : "s"} all-time`}
+                  icon={<Heart className="w-4 h-4" />}
+                />
+              )}
               <StatCard
                 label="Active pledges"
                 value={stats.activePledges}
@@ -351,8 +354,8 @@ function RecentActivity({ ngoId }: { ngoId: string }) {
     queryFn: () => donationApi.getByNGO(ngoId, { limit: 5 }),
   });
 
-  const pledges: FoodPledge[] = pledgesRes?.data?.data?.pledges ?? [];
-  const donations: Donation[] = donationsRes?.data?.data?.donations ?? [];
+  const pledges: FoodPledge[] = pledgesRes?.data?.data?.items ?? [];
+  const donations: Donation[] = donationsRes?.data?.data?.items ?? [];
 
   const activity: ActivityItem[] = [
     ...pledges.map((p) => ({
@@ -394,7 +397,7 @@ function RecentActivity({ ngoId }: { ngoId: string }) {
         <div className="px-5 py-12 text-center">
           <p className="text-sm text-ink-soft">No activity yet</p>
           <p className="text-xs text-ink-muted mt-1">
-            New pledges and donations will appear here
+            Your food pledge activity will appear here
           </p>
         </div>
       ) : (

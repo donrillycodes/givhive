@@ -169,7 +169,7 @@ export default function RegisterScreen() {
                     role === "DONOR" && styles.roleDescActive,
                   ]}
                 >
-                  Give food or cash
+                  Give food and supplies
                 </Text>
               </TouchableOpacity>
 
@@ -207,7 +207,7 @@ export default function RegisterScreen() {
                     role === "NGO" && styles.roleDescActive,
                   ]}
                 >
-                  Receive donations
+                  Receive food pledges
                 </Text>
               </TouchableOpacity>
             </View>

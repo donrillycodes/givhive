@@ -1,5 +1,6 @@
 import db from '../config/database';
-import { stripe } from '../config/stripe';
+import { getStripe } from '../config/stripe';
+import { assertCashDonationsEnabled } from '../config/features';
 import { AppError } from '../middleware/error';
 import logger from '../utils/logger';
 import {
@@ -15,6 +16,7 @@ export class DonationService {
   // Create a Stripe PaymentIntent and a PENDING donation record
   // Called when donor initiates a donation in the mobile app
   async createPaymentIntent(input: CreateDonationInput, donorId: string) {
+    assertCashDonationsEnabled();
     // Verify the NGO exists and is approved
     const ngo = await db.nGO.findUnique({
       where: { id: input.ngoId },
@@ -70,7 +72,7 @@ export class DonationService {
     const amountInCents = Math.round(input.amount * 100);
 
     // Create the Stripe PaymentIntent
-    const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntent = await getStripe().paymentIntents.create({
       amount: amountInCents,
       currency: (input.currency ?? 'cad').toLowerCase(),
       metadata: {
@@ -120,6 +122,7 @@ export class DonationService {
 
   // Create a Stripe Checkout Session for a donation
   async createCheckoutSession(input: CreateDonationInput, donorId: string) {
+    assertCashDonationsEnabled();
     // Verify the NGO exists and is approved
     const ngo = await db.nGO.findUnique({
       where: { id: input.ngoId },
@@ -179,7 +182,7 @@ export class DonationService {
     // Otherwise the donation falls back to the GivHive platform account.
     if (ngo.stripeAccountId) {
       try {
-        const account = await stripe.accounts.retrieve(ngo.stripeAccountId);
+        const account = await getStripe().accounts.retrieve(ngo.stripeAccountId);
         const transfersActive = account.capabilities?.transfers === 'active';
         if (account.charges_enabled && transfersActive) {
           paymentIntentData.transfer_data = {
@@ -199,7 +202,7 @@ export class DonationService {
     }
 
     // Create the Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       mode: 'payment',
       customer_email: donor.email,
       line_items: [
@@ -267,7 +270,7 @@ export class DonationService {
     // This confirms the request genuinely came from Stripe
     // and was not tampered with in transit
     try {
-      event = stripe.webhooks.constructEvent(
+      event = getStripe().webhooks.constructEvent(
         rawBody,
         signature,
         process.env.STRIPE_WEBHOOK_SECRET!

@@ -178,11 +178,10 @@ export default function LandingPage() {
             <div className="step">
               <div className="step-num">02</div>
               <div className="step-content">
-                <h3>Pledge food or cash</h3>
+                <h3>Pledge food</h3>
                 <p>
-                  Donate surplus food from your home, business, or event — or
-                  make a secure cash donation via Stripe that goes directly to
-                  the charity.
+                  Pledge surplus food from your home, business, or event to
+                  help an organisation meet its current needs.
                 </p>
               </div>
             </div>
@@ -191,7 +190,7 @@ export default function LandingPage() {
               <div className="step-content">
                 <h3>Track your impact</h3>
                 <p>
-                  Get updates from the NGO, see your donation history, and watch
+                  Get updates from the NGO, follow your food pledges, and watch
                   your contributions make a difference in your community.
                 </p>
               </div>
@@ -222,7 +221,7 @@ export default function LandingPage() {
                   <div>
                     <div className="phone-card-title">Siloam Mission</div>
                     <div className="phone-card-sub">
-                      Cash donations open · 3 drives active
+                      Food pledges open · 3 requests active
                     </div>
                   </div>
                 </div>
@@ -235,7 +234,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                 </div>
-                <div className="phone-donate-btn">Donate Now →</div>
+                <div className="phone-donate-btn">Pledge Food →</div>
               </div>
             </div>
           </div>
@@ -260,8 +259,8 @@ export default function LandingPage() {
             For <em>donors</em> &amp; the community
           </h3>
           <p>
-            Whether you have a bag of groceries to spare or want to make a cash
-            donation, GivHive makes giving as easy as ordering takeout.
+            Whether you have a bag of groceries or surplus food to share,
+            GivHive helps you find an organisation that needs it.
           </p>
           <ul className="feature-list">
             <li>
@@ -270,7 +269,7 @@ export default function LandingPage() {
             </li>
             <li>
               <span className="check" />
-              Secure cash donations via Stripe
+              Pledge food to reviewed local organisations
             </li>
             <li>
               <span className="check" />
@@ -278,7 +277,7 @@ export default function LandingPage() {
             </li>
             <li>
               <span className="check" />
-              Full donation history &amp; receipts
+              Food pledge history &amp; status updates
             </li>
             <li>
               <span className="check" />
@@ -318,7 +317,7 @@ export default function LandingPage() {
             </li>
             <li>
               <span className="check" />
-              Stripe payouts directly to your account
+              Share receiving hours and drop-off instructions
             </li>
           </ul>
           <Link href="/register" className="audience-cta">

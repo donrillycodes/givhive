@@ -3,6 +3,7 @@
 import { BrandLogo } from "@/components/shared/BrandLogo";
 
 import Link from "next/link";
+import { CASH_DONATIONS_ENABLED } from "@/lib/features";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -50,7 +51,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
     },
     { label: "Pledges", href: "/ngo/pledges", icon: Heart },
     { label: "Updates", href: "/ngo/updates", icon: FileText },
-    { label: "Stripe Payouts", href: "/ngo/stripe", icon: CreditCard },
+    ...(CASH_DONATIONS_ENABLED ? [{ label: "Stripe Payouts", href: "/ngo/stripe", icon: CreditCard }] : []),
     {
       label: "Profile",
       href: "/ngo/profile",
