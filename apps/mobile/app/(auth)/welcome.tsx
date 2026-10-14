@@ -1,3 +1,4 @@
+import { BrandLogo } from "../../components/shared/BrandLogo";
 import {
   View,
   Text,
@@ -69,9 +70,7 @@ export default function WelcomeScreen() {
 
       {/* Top bar */}
       <View style={styles.topBar}>
-        <View style={styles.logoMark}>
-          <Ionicons name="leaf" size={16} color={COLORS.primary} />
-        </View>
+        <BrandLogo width={180} />
         {!isLast && (
           <TouchableOpacity
             onPress={() => router.push("/(auth)/register")}
@@ -151,14 +150,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACE.xl,
     paddingTop: SPACE.lg,
     paddingBottom: SPACE.sm,
-  },
-  logoMark: {
-    width: 36,
-    height: 36,
-    borderRadius: RADII.sm,
-    backgroundColor: COLORS.primaryLight,
-    alignItems: "center",
-    justifyContent: "center",
   },
   skip: {
     fontSize: FONT.base,

@@ -1,5 +1,7 @@
 "use client";
 
+import { BrandLogo } from "@/components/shared/BrandLogo";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,26 +28,6 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
   permission?: boolean;
   section?: string;
-}
-
-// ─── GivHive hexagon logo mark ────────────────────────────────────────────
-function HiveMark({ size = 28 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 28 28"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path d="M14 2L24.3923 8V20L14 26L3.60769 20V8L14 2Z" fill="#1a7a4a" />
-      <path
-        d="M14 7L19.1962 10V16L14 19L8.80385 16V10L14 7Z"
-        fill="#4dbf83"
-        opacity="0.9"
-      />
-    </svg>
-  );
 }
 
 // ─── Sidebar inner content (shared between desktop + mobile) ───────────────
@@ -156,10 +138,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
         <div className="flex items-center gap-2.5">
-          <HiveMark size={26} />
-          <span className="font-serif font-semibold text-white text-[17px] tracking-tight">
-            GivHive
-          </span>
+          <BrandLogo reverse width={150} />
           <span
             className="text-[10px] px-2 py-0.5 rounded-full leading-none font-semibold tracking-wide uppercase"
             style={{ background: tagBg, color: tagFg }}

@@ -1,3 +1,4 @@
+import { BrandLogo } from "../../components/shared/BrandLogo";
 import { useState } from "react";
 import {
   View,
@@ -126,9 +127,7 @@ export default function LoginScreen() {
 
           {/* Logo mark */}
           <View style={styles.logoWrap}>
-            <View style={styles.logoMark}>
-              <Ionicons name="leaf" size={22} color={COLORS.primary} />
-            </View>
+            <BrandLogo width={240} />
           </View>
 
           {/* Heading */}
@@ -215,14 +214,6 @@ const styles = StyleSheet.create({
   logoWrap: {
     marginTop: SPACE["3xl"],
     marginBottom: SPACE["2xl"],
-  },
-  logoMark: {
-    width: 52,
-    height: 52,
-    borderRadius: RADII.lg,
-    backgroundColor: COLORS.primaryLight,
-    alignItems: "center",
-    justifyContent: "center",
   },
   headingBlock: {
     gap: SPACE.sm,

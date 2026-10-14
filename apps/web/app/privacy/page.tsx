@@ -1,3 +1,4 @@
+import { BrandLogo } from "@/components/shared/BrandLogo";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -21,7 +22,7 @@ export default function PrivacyPolicyPage() {
             className="text-lg font-bold tracking-tight"
             style={{ color: "#1A7A4A" }}
           >
-            GivHive
+            <BrandLogo width={180} />
           </Link>
           <Link
             href="/"

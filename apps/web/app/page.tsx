@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { BrandLogo } from "@/components/shared/BrandLogo";
 import { Fraunces, DM_Sans } from "next/font/google";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -80,21 +81,7 @@ export default function LandingPage() {
       {/* NAV */}
       <nav id="gh-nav">
         <Link href="/" className="nav-logo">
-          <svg
-            className="hex-icon"
-            viewBox="0 0 34 34"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M17 2 L31 10 L31 26 L17 34 L3 26 L3 10 Z" fill="#1a7a4a" />
-            <path d="M17 8 L25 13 L25 21 L17 26 L9 21 L9 13 Z" fill="#2d9e64" />
-            <path
-              d="M17 13 L21 15.5 L21 20 L17 22.5 L13 20 L13 15.5 Z"
-              fill="#fff"
-              opacity="0.9"
-            />
-          </svg>
-          GivHive
+          <BrandLogo width={190} />
         </Link>
         <div className="nav-links">
           <a href="#how">How it works</a>
@@ -215,7 +202,7 @@ export default function LandingPage() {
           <div className="phone-outer">
             <div className="phone-inner">
               <div className="phone-status">
-                <span className="phone-logo">GivHive</span>
+                <span className="phone-logo"><BrandLogo reverse width={110} /></span>
                 <div className="phone-bell" />
               </div>
               <div className="phone-body">
@@ -440,7 +427,7 @@ export default function LandingPage() {
       <footer>
         <div>
           <a href="#" className="footer-logo">
-            GivHive
+            <BrandLogo reverse width={190} />
           </a>
           <p className="footer-tagline">
             Connecting food donors with Winnipeg communities.

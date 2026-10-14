@@ -1,3 +1,4 @@
+import { BrandLogo } from "@/components/shared/BrandLogo";
 import { ReactNode } from "react";
 import { ShieldCheck } from "lucide-react";
 
@@ -7,26 +8,6 @@ import { ShieldCheck } from "lucide-react";
 //
 // Visual refresh matches landing: deep forest panel with hex texture,
 // Fraunces serif headline with italic accent, cream form panel.
-
-// ─── Hexagon hive logo mark ────────────────────────────────────────────────
-export function HiveMark({ size = 32 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 28 28"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path d="M14 2L24.3923 8V20L14 26L3.60769 20V8L14 2Z" fill="#1a7a4a" />
-      <path
-        d="M14 7L19.1962 10V16L14 19L8.80385 16V10L14 7Z"
-        fill="#4dbf83"
-        opacity="0.9"
-      />
-    </svg>
-  );
-}
 
 // ─── Dark brand panel (desktop left column) ────────────────────────────────
 export function BrandPanel({
@@ -72,10 +53,7 @@ export function BrandPanel({
     >
       {/* Logo */}
       <div className="flex items-center gap-2.5 relative">
-        <HiveMark size={28} />
-        <span className="font-serif text-white text-lg font-semibold tracking-tight">
-          GivHive
-        </span>
+        <BrandLogo reverse width={150} />
       </div>
 
       {/* Copy */}
@@ -127,10 +105,7 @@ export function BrandPanel({
 export function MobileLogo() {
   return (
     <div className="flex flex-col items-center gap-2 mb-7 lg:hidden">
-      <HiveMark size={36} />
-      <span className="font-serif font-semibold text-ink text-lg tracking-tight">
-        GivHive
-      </span>
+      <BrandLogo width={220} />
       <p className="text-[11px] text-ink-subtle text-center">
         NGO &amp; Admin Dashboard
       </p>
