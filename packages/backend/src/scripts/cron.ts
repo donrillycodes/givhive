@@ -5,6 +5,7 @@ import { AuditAction, AuditEntityType } from '@prisma/client';
 import logger from '../utils/logger';
 import notificationService from '../services/notification.service';
 import invitationService from '../services/invitation.service';
+import accountDeletionService from '../services/accountDeletion.service';
 
 // /**
 //  * FoodShare Cron Jobs
@@ -184,6 +185,10 @@ const expireInvitations = async (): Promise<void> => {
 
 // ── Start all cron jobs ────────────────────────────────────────────────────────
 export const startCronJobs = (): void => {
+  void accountDeletionService.processPendingDeletions();
+  cron.schedule('*/5 * * * *', () => accountDeletionService.processPendingDeletions(), {
+    timezone: 'America/Winnipeg',
+  });
   // Pledge expiry — every day at 1:00 AM
   cron.schedule('0 1 * * *', expirePledges, {
     timezone: 'America/Winnipeg',

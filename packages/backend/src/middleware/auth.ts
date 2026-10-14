@@ -15,6 +15,7 @@ declare global {
         role: string;
         firebaseUid: string;
         isActive: boolean;
+        authTime: number;
         canApproveNgos: boolean;
         canManageUsers: boolean;
         canManageContent: boolean;
@@ -26,10 +27,11 @@ declare global {
   }
 }
 
-export const authenticate = async (
+const authenticateUser = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  forAccountDeletion = false
 ): Promise<void> => {
   try {
     // Step 1 — Extract the token from the Authorization header
@@ -48,7 +50,7 @@ export const authenticate = async (
 
     // Step 2 — Verify the token with Firebase
     // Firebase checks the token is valid, not expired, and not tampered with
-    const decodedToken = await admin.auth().verifyIdToken(token);
+    const decodedToken = await admin.auth().verifyIdToken(token, forAccountDeletion);
 
     if (!decodedToken) {
       throw new AppError('Invalid authentication token', 401);
@@ -79,7 +81,7 @@ export const authenticate = async (
 
     // Step 4 — Check if the account is active
     // Suspended accounts are rejected here before reaching any endpoint
-    if (!user.isActive) {
+    if (!user.isActive && !forAccountDeletion) {
       throw new AppError(
         'Your account has been suspended. Please contact support.',
         403
@@ -88,7 +90,7 @@ export const authenticate = async (
 
     // Step 5 — Attach user to request object
     // Every subsequent middleware and controller can access req.user
-    req.user = user;
+    req.user = { ...user, authTime: decodedToken.auth_time };
 
     logger.debug(`Authenticated user: ${user.email} (${user.role})`);
 
@@ -97,3 +99,12 @@ export const authenticate = async (
     next(error);
   }
 };
+
+
+export const authenticate = (req: Request, res: Response, next: NextFunction) =>
+  authenticateUser(req, res, next);
+
+// Deletion also checks Firebase revocation and permits suspended application
+// accounts to remove their data instead of treating suspension as a retention rule.
+export const authenticateForAccountDeletion = (req: Request, res: Response, next: NextFunction) =>
+  authenticateUser(req, res, next, true);

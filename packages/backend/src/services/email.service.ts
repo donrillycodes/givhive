@@ -9,6 +9,20 @@ const APP_NAME = 'GivHive';
 const DASHBOARD_URL = env.clientUrl;
 
 export class EmailService {
+  async sendAccountDeletionConfirmation(to: string, deletionId: string): Promise<boolean> {
+    try {
+      const result = await resend.emails.send({
+        from: FROM,
+        to,
+        subject: 'Your GivHive account has been deleted',
+        text: 'Your GivHive account and sign-in have been deleted. Your profile, food pledges, notes, preferences and notifications have been removed. Historical payment records, if any, are retained without your GivHive account details. Copies in backups remain until those backups expire.',
+      }, { idempotencyKey: `account-deletion-${deletionId}` });
+      return !result.error;
+    } catch {
+      return false;
+    }
+  }
+
   // ── Donor Welcome ──────────────────────────────────────────────────────────
   async sendDonorWelcome(to: string, firstName: string) {
     try {

@@ -5,6 +5,7 @@ import logger from '../utils/logger';
 import { RegisterInput } from '../types';
 import { Role } from '@prisma/client';
 import emailService from './email.service';
+import accountDeletionService from './accountDeletion.service';
 
 export class AuthService {
   // Register a new donor account
@@ -180,21 +181,11 @@ export class AuthService {
     return user;
   }
 
-  // Delete a user account
-  // Deletes from both Firebase and our database
-  async deleteAccount(userId: string, firebaseUid: string) {
-    // Soft approach — we deactivate rather than hard delete
-    // This preserves donation and pledge history
-    await db.user.update({
-      where: { id: userId },
-      data: { isActive: false },
-    });
-
-    // Revoke all Firebase sessions
-    await admin.auth().revokeRefreshTokens(firebaseUid);
-
-    logger.info(`Account deactivated: ${userId}`);
+  // Donor self-service deletion includes database erasure and Firebase cleanup.
+  async deleteAccount(userId: string, firebaseUid: string, authTime?: number) {
+    return accountDeletionService.deleteAccount(userId, firebaseUid, authTime);
   }
+
 }
 
 export default new AuthService();

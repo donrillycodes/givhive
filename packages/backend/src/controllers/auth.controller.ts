@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import authService from '../services/auth.service';
-import { responses } from '../utils/apiResponse';
-import { writeAuditLog } from '../middleware/audit';
-import { AuditAction, AuditEntityType } from '@prisma/client';
+import { responses, sendSuccess } from '../utils/apiResponse';
 import { RegisterInput } from '../types';
 
 export class AuthController {
@@ -111,17 +109,15 @@ export class AuthController {
         return;
       }
 
-      await authService.deleteAccount(req.user.id, req.user.firebaseUid);
-
-      // Write audit log
-      await writeAuditLog(req, {
-        action: AuditAction.USER_DELETED,
-        entityType: AuditEntityType.USER,
-        entityId: req.user.id,
-        notes: 'User requested account deletion',
+      const result = await authService.deleteAccount(req.user.id, req.user.firebaseUid, req.user.authTime);
+      // The service writes a minimal audit event inside the erasure transaction.
+      // Do not recreate deleted profile data, IP addresses or user agents here.
+      sendSuccess({
+        res,
+        statusCode: result.status === 'completed' ? 200 : 202,
+        message: result.status === 'completed' ? 'Account deleted successfully' : 'Account removed; sign-in deletion is finishing. We will email you when it is complete.',
+        data: result,
       });
-
-      responses.ok(res, 'Account deleted successfully');
     } catch (error) {
       next(error);
     }

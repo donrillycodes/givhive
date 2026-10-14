@@ -464,7 +464,7 @@ export class DonationService {
 
     // Donors can only view their own donations
     // Admins can view any donation
-    if (donation.donor.id !== requesterId) {
+    if (donation.donor?.id !== requesterId) {
       throw new AppError(
         'You do not have permission to view this donation',
         403

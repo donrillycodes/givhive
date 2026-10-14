@@ -442,19 +442,16 @@ export default function PrivacyPolicyPage() {
                 as long as your account is active.
               </li>
               <li>
-                <strong>Donation and pledge records</strong> — kept for at least
-                seven (7) years to meet Canadian tax and record-keeping
-                requirements.
+                <strong>Food pledges</strong> — donor-linked pledge history and personal notes are removed when a donor deletes their account. Outstanding pledges are cancelled, while aggregate food quantities already delivered remain counted.
               </li>
               <li>
-                <strong>Closed or deleted accounts</strong> — most personal data
-                is removed within 90 days of account deletion, except where
-                retention is required by law (such as donation receipts for tax
-                purposes).
+                <strong>Historical payment records</strong> — amounts, dates, status and payment references may be retained for accounting and legal obligations. When a donor deletes their account, these records are unlinked from the profile and personal messages are removed.
               </li>
               <li>
-                <strong>Audit logs</strong> — retained for security and
-                accountability for up to seven (7) years.
+                <strong>Deleted donor accounts</strong> — profile information, preferences, notifications and food pledge history are removed from the application database when the deletion request is accepted. Firebase sign-in deletion normally completes immediately. If a provider is temporarily unavailable, cleanup is retried automatically, normally within a few minutes. Your email is temporarily retained for a delayed completion notice; unsuccessful email delivery is retried for up to seven days after the request once sign-in cleanup completes.
+              </li>
+              <li>
+                <strong>Audit logs</strong> — donor-linked application audit entries are removed during deletion. A minimal deletion event without profile details is retained for accountability. Other security records follow their applicable retention settings.
               </li>
               <li>
                 <strong>Backups</strong> — encrypted backups may retain deleted
@@ -496,7 +493,7 @@ export default function PrivacyPolicyPage() {
               </li>
             </ul>
             <p className="mt-4">
-              To exercise any of these rights, contact our Privacy Officer using
+              Donors can delete their account directly in the app under Profile → Settings → Delete account. For other privacy requests, contact our Privacy Officer using
               the details at the end of this policy. We will respond to your
               request within <strong>30 days</strong>, as required by PIPEDA. We
               may need to verify your identity before fulfilling a request, and

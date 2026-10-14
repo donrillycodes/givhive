@@ -398,8 +398,8 @@ model Donation {
   refundReason  String?
 
   // Relations
-  donorId String
-  donor   User   @relation(fields: [donorId], references: [id])
+  donorId String?
+  donor   User?   @relation(fields: [donorId], references: [id], onDelete: SetNull)
 
   ngoId String
   ngo   NGO    @relation(fields: [ngoId], references: [id])
@@ -412,6 +412,20 @@ model Donation {
   @@index([status])
   @@index([paymentProvider])
   @@map("donations")
+}
+
+// Outbox for cleanup in Firebase after the application account has been erased.
+// Removed when cleanup and any delayed confirmation have finished.
+model AccountDeletion {
+  id String @id @default(uuid())
+  firebaseUid String? @unique
+  email String
+  requestedAt DateTime @default(now())
+  attempts Int @default(0)
+  lastAttemptAt DateTime?
+
+  @@index([requestedAt])
+  @@map("account_deletions")
 }
 
 // Private, immutable evidence for each approval, including the application reviewed.

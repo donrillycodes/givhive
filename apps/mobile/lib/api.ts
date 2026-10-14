@@ -33,6 +33,9 @@ apiClient.interceptors.response.use(
 export const authApi = {
   getMe: () => apiClient.get("/api/auth/me"),
   register: (data: any) => apiClient.post("/api/auth/register", data),
+  deleteAccount: () => apiClient.delete<{ data: { status: "completed" | "pending" } }>(
+    "/api/auth/account", { timeout: 30000 },
+  ),
 };
 
 // ── NGO ────────────────────────────────────────────────────────────────────────

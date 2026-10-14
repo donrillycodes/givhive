@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import authController from '../controllers/auth.controller';
-import { authenticate } from '../middleware/auth';
+import { authenticate, authenticateForAccountDeletion } from '../middleware/auth';
 import { authLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
@@ -39,7 +39,7 @@ router.post(
 // DELETE /api/auth/account
 router.delete(
     '/account',
-    authenticate,
+    authenticateForAccountDeletion,
     authController.deleteAccount.bind(authController)
 );
 

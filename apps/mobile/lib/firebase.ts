@@ -5,6 +5,8 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   type User,
 } from "firebase/auth";
 
@@ -39,6 +41,14 @@ export const signUp = async (
 
 export const logOut = async (): Promise<void> => {
   await signOut(auth);
+};
+
+// The password is used only by Firebase; it is never sent to our API or stored.
+export const reauthenticateForAccountDeletion = async (password: string): Promise<void> => {
+  const user = auth.currentUser;
+  if (!user?.email) throw new Error('Please sign in again before deleting your account.');
+  await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
+  await user.getIdToken(true);
 };
 
 export const sendPasswordReset = async (email: string): Promise<void> => {
