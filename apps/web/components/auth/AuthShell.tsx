@@ -1,4 +1,5 @@
 import { BrandLogo } from "@/components/shared/BrandLogo";
+import Link from "next/link";
 import { ReactNode } from "react";
 import { ShieldCheck } from "lucide-react";
 
@@ -53,7 +54,9 @@ export function BrandPanel({
     >
       {/* Logo */}
       <div className="flex items-center gap-2.5 relative">
-        <BrandLogo reverse width={150} />
+        <Link href="/" aria-label="GivHive home" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+          <BrandLogo reverse width={150} />
+        </Link>
       </div>
 
       {/* Copy */}
@@ -105,7 +108,9 @@ export function BrandPanel({
 export function MobileLogo() {
   return (
     <div className="flex flex-col items-center gap-2 mb-7 lg:hidden">
-      <BrandLogo width={220} />
+      <Link href="/" aria-label="GivHive home" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-green">
+        <BrandLogo width={220} />
+      </Link>
       <p className="text-[11px] text-ink-subtle text-center">
         NGO &amp; Admin Dashboard
       </p>

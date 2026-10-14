@@ -537,7 +537,11 @@ function PageShell({
     <div className="min-h-screen flex items-center justify-center bg-cream px-6 py-12">
       <div className="w-full max-w-[460px]">
         <div className="text-center mb-7">
-          <div className="flex justify-center"><BrandLogo width={220} /></div>
+          <div className="flex justify-center">
+            <Link href="/" aria-label="GivHive home" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-green">
+              <BrandLogo width={220} />
+            </Link>
+          </div>
         </div>
         <div className="bg-white rounded-[20px] p-7 sm:p-8 border border-[rgba(26,122,74,0.12)] shadow-[0_20px_50px_-12px_rgba(13,46,28,0.12)]">
           {loading ? (

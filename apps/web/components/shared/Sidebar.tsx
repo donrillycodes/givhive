@@ -138,7 +138,9 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
         <div className="flex items-center gap-2.5">
-          <BrandLogo reverse width={150} />
+          <Link href="/" aria-label="GivHive home" onClick={onNavClick} className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            <BrandLogo reverse width={150} />
+          </Link>
           <span
             className="text-[10px] px-2 py-0.5 rounded-full leading-none font-semibold tracking-wide uppercase"
             style={{ background: tagBg, color: tagFg }}
