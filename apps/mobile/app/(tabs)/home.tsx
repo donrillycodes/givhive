@@ -177,7 +177,7 @@ export default function HomeScreen() {
             <Text style={styles.impactNumber}>
               {totalNGOs > 0 ? totalNGOs : "—"}
             </Text>
-            <Text style={styles.impactUnit}>verified charities</Text>
+            <Text style={styles.impactUnit}>reviewed organisations</Text>
           </View>
           <View style={styles.impactDivider} />
           <View>

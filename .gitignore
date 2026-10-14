@@ -15,8 +15,7 @@ dist/
 build/
 .next/
 
-# Prisma
-prisma/migrations/
+# Prisma migrations are versioned so deployment can apply schema changes.
 
 # Logs
 logs/

@@ -119,7 +119,7 @@ export default function RegisterPage() {
         highlight="Winnipeg"
         subheading="Create your account and start making a difference — whether you are an NGO receiving donations or a donor making pledges."
         bullets={[
-          "NGOs get a verified dashboard to manage needs",
+          "NGOs apply for review before joining the network",
           "Donors use the GivHive mobile app",
           "Every pledge tracked, every donation counted",
         ]}
@@ -311,14 +311,14 @@ function RoleStep({
       <RoleCard
         icon={<Building2 className="w-5 h-5" />}
         title="NGO or Charity Representative"
-        description="Register your organisation to receive donations and food pledges from verified donors."
+        description="Register your organisation to receive donations and food pledges from local donors."
         active={selectedRole === "ngo"}
         onClick={() => onSelect("ngo")}
       />
       <RoleCard
         icon={<HeartHandshake className="w-5 h-5" />}
         title="Donor"
-        description="Give cash donations or food pledges to verified charities through the GivHive mobile app."
+        description="Give cash donations or food pledges to reviewed organisations through the GivHive mobile app."
         active={selectedRole === "donor"}
         onClick={() => onSelect("donor")}
       />

@@ -121,7 +121,7 @@ export class EmailService {
             <div style="padding: 32px; background: #f9fafb; border-radius: 0 0 8px 8px;">
               <h2 style="color: #1A1A1A;">Your NGO is approved! 🎉</h2>
               <p style="color: #4A4A4A; line-height: 1.6;">
-                Great news — <strong>${ngoName}</strong> has been verified and is now live on the GivHive platform.
+                Great news — <strong>${ngoName}</strong> has been reviewed by GivHive and is now live on the GivHive platform.
                 Donors can now find your organisation, make cash donations, and pledge food items to your needs.
               </p>
               <a href="${DASHBOARD_URL}/ngo" 

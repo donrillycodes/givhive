@@ -17,7 +17,7 @@ export default function DownloadPage() {
         heading="The donor experience lives in the GivHive app."
         subheading="Make pledges, track your impact, and stay close to the charities you care about — all from your phone."
         bullets={[
-          "Discover verified Winnipeg charities",
+          "Discover Winnipeg organisations reviewed by GivHive",
           "Pledge non-perishable goods to specific needs",
           "Track every donation in one place",
         ]}

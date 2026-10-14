@@ -37,6 +37,7 @@ router.get(
 router.post(
   '/register',
   authenticate,
+  requireRole(Role.NGO, Role.SUPER_ADMIN),
   ngoController.registerNGO.bind(ngoController)
 );
 

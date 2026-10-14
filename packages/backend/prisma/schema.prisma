@@ -230,6 +230,7 @@ model User {
   adminMembership  AdminMember?
   managedNgo       NGO?          @relation("NGOManager")
   verifiedNgos     NGO[]         @relation("NGOVerifier")
+  ngoReviews       NGOReview[]
   postedNeeds      FoodNeed[]
   postedUpdates    Update[]
   fulfilledPledges FoodPledge[]  @relation("PledgeFulfiller")
@@ -276,6 +277,8 @@ model NGO {
   orgType            String?
   primaryContactName String?
   primaryContactTitle String?
+  registrationNumber String?
+  foodDonationDetails String?
   status            NGOStatus @default(PENDING)
   rejectionReason   String?
   resubmissionCount Int       @default(0)
@@ -292,6 +295,7 @@ model NGO {
 
   verifiedById String?
   verifiedBy   User?   @relation("NGOVerifier", fields: [verifiedById], references: [id])
+  reviews      NGOReview[]
 
   members     NGOMember[]
   invitations Invitation[]
@@ -408,6 +412,27 @@ model Donation {
   @@index([status])
   @@index([paymentProvider])
   @@map("donations")
+}
+
+// Private, immutable evidence for each approval, including the application reviewed.
+model NGOReview {
+  id String @id @default(uuid())
+  ngoId String
+  ngo NGO @relation(fields: [ngoId], references: [id])
+  reviewerId String
+  reviewer User @relation(fields: [reviewerId], references: [id])
+  organisationChecked Boolean
+  representativeConfirmed Boolean
+  foodOperationsConfirmed Boolean
+  evidenceSources String
+  contactMethod String
+  contactedAt DateTime
+  notes String
+  applicationSnapshot Json
+  createdAt DateTime @default(now())
+
+  @@index([ngoId, createdAt])
+  @@map("ngo_reviews")
 }
 
 model FoodNeed {

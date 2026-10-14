@@ -56,7 +56,7 @@ export default function PrivacyPolicyPage() {
               <strong>we</strong>,&rdquo; &ldquo;<strong>us</strong>,&rdquo; or
               &ldquo;<strong>our</strong>&rdquo;) is a donation platform based
               in Winnipeg, Manitoba, Canada. We connect individual donors with
-              verified non-governmental organisations (NGOs) so that food,
+              reviewed non-governmental organisations (NGOs) so that food,
               supplies, and monetary donations can reach people in need.
             </p>
             <p className="mt-4">

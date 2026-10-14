@@ -50,6 +50,8 @@ export interface CreateNGOInput {
   orgType?: string;
   primaryContactName?: string;
   primaryContactTitle?: string;
+  registrationNumber?: string;
+  foodDonationDetails?: string;
   category: string;
   website?: string;
   address: string;
@@ -71,6 +73,8 @@ export interface UpdateNGOInput {
   orgType?: string;
   primaryContactName?: string;
   primaryContactTitle?: string;
+  registrationNumber?: string;
+  foodDonationDetails?: string;
   category?: string;
   website?: string;
   address?: string;

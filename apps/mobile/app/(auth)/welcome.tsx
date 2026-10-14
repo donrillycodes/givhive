@@ -27,7 +27,7 @@ const slides: Slide[] = [
   {
     tag: "WINNIPEG GIVING, SIMPLIFIED",
     headline: "Turn extra food\ninto real help.",
-    body: "GivHive connects donors with verified charities so meals, supplies, and cash donations reach people faster.",
+    body: "GivHive connects donors with reviewed organisations so meals, supplies, and cash donations reach people faster.",
     icon: "heart-outline",
     iconBg: COLORS.primaryLight,
     iconColor: COLORS.primary,

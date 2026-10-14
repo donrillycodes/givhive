@@ -15,7 +15,7 @@ export function BrandPanel({
   highlight = "donors",
   subheading = "The management dashboard for NGOs and administrators running food donation programmes in Winnipeg.",
   bullets = [
-    "Verified NGO organisations only",
+    "Organisations reviewed by GivHive",
     "Real-time food pledge tracking",
     "Secure, role-based access control",
   ],

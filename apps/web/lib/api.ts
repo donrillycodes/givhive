@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance, type AxiosError } from "axios";
+import type { NGOReviewInput } from "@/types";
 import { getToken } from "./firebase";
 
 // Create the axios instance pointing to our backend API
@@ -57,7 +58,7 @@ export const ngoApi = {
   // Admin
   adminGetAll: (params?: any) =>
     apiClient.get("/api/ngos/admin/all", { params }),
-  approve: (id: string, data?: any) =>
+  approve: (id: string, data: NGOReviewInput) =>
     apiClient.patch(`/api/ngos/${id}/approve`, data),
   reject: (id: string, data: any) =>
     apiClient.patch(`/api/ngos/${id}/reject`, data),

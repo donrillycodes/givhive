@@ -43,6 +43,9 @@ export interface NGO {
   orgType?: string | null;
   primaryContactName?: string | null;
   primaryContactTitle?: string | null;
+  registrationNumber?: string | null;
+  foodDonationDetails?: string | null;
+  reviews?: NGOReview[];
   category: NGOCategory;
   logoUrl?: string;
   coverUrl?: string;
@@ -62,6 +65,31 @@ export interface NGO {
   createdAt: string;
   updatedAt: string;
   manager?: Pick<User, "id" | "email" | "firstName" | "lastName">;
+}
+
+export interface NGOReview {
+  id: string;
+  organisationChecked: boolean;
+  representativeConfirmed: boolean;
+  foodOperationsConfirmed: boolean;
+  evidenceSources: string;
+  contactMethod: string;
+  contactedAt: string;
+  notes: string;
+  applicationSnapshot: Record<string, string | null>;
+  createdAt: string;
+  reviewer: Pick<User, "firstName" | "lastName">;
+}
+
+export interface NGOReviewInput {
+  organisationChecked: boolean;
+  representativeConfirmed: boolean;
+  foodOperationsConfirmed: boolean;
+  evidenceSources: string;
+  contactMethod: string;
+  contactedAt: string;
+  notes: string;
+  applicationUpdatedAt: string;
 }
 
 export interface NGODashboard {

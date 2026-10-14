@@ -11,13 +11,17 @@ import {
   NGOCategory,
   NGOMemberRole,
   MemberStatus,
+  Prisma,
 } from '@prisma/client';
 import { CreateNGOInput, UpdateNGOInput, NGOQueryFilters } from '../types';
 import emailService from './email.service';
+import { identityFields, parseNGOInput, validateNGOApplication, parseNGOReview } from '../utils/ngoVerification';
 
 export class NGOService {
   // Register a new NGO
   async registerNGO(input: CreateNGOInput, managerId: string) {
+    input = parseNGOInput({ city: 'Winnipeg', province: 'Manitoba', country: 'Canada', ...input }) as CreateNGOInput;
+    validateNGOApplication(input);
     // Check if this user already manages an NGO
     const existingNGO = await db.nGO.findUnique({
       where: { managerId },
@@ -58,6 +62,8 @@ export class NGOService {
         orgType: input.orgType || null,
         primaryContactName: input.primaryContactName || null,
         primaryContactTitle: input.primaryContactTitle || null,
+        registrationNumber: input.registrationNumber || null,
+        foodDonationDetails: input.foodDonationDetails,
         mission: input.mission,
         category: input.category as NGOCategory,
         website: input.website,
@@ -77,6 +83,13 @@ export class NGOService {
         phone: true,
         description: true,
         mission: true,
+        craNumber: true,
+        orgType: true,
+        primaryContactName: true,
+        primaryContactTitle: true,
+        registrationNumber: true,
+        foodDonationDetails: true,
+        updatedAt: true,
         category: true,
         website: true,
         address: true,
@@ -265,6 +278,13 @@ export class NGOService {
         phone: true,
         description: true,
         mission: true,
+        craNumber: true,
+        orgType: true,
+        primaryContactName: true,
+        primaryContactTitle: true,
+        registrationNumber: true,
+        foodDonationDetails: true,
+        updatedAt: true,
         category: true,
         website: true,
         address: true,
@@ -320,65 +340,37 @@ export class NGOService {
   }
 
   // Update NGO profile
-  async updateNGO(ngoId: string, input: UpdateNGOInput) {
-    // Check if new email is already taken by another NGO
-    if (input.email) {
-      const emailTaken = await db.nGO.findFirst({
-        where: {
-          email: input.email.toLowerCase().trim(),
-          NOT: { id: ngoId },
-        },
-      });
-
-      if (emailTaken) {
-        throw new AppError(
-          'An NGO with this email address already exists.',
-          409
-        );
+  async updateNGO(ngoId: string, body: UpdateNGOInput, requesterId: string, isSuperAdmin = false) {
+    const input = parseNGOInput(body);
+    return db.$transaction(async (tx) => {
+      const existing = await tx.nGO.findUnique({ where: { id: ngoId } });
+      if (!existing) throw new AppError('NGO not found', 404);
+      if (existing.managerId !== requesterId && !isSuperAdmin) {
+        throw new AppError('You are not authorised to update this NGO', 403);
       }
-    }
-
-    const ngo = await db.nGO.update({
-      where: { id: ngoId },
-      data: {
-        ...(input.name && { name: input.name }),
-        ...(input.email && { email: input.email.toLowerCase().trim() }),
-        ...(input.phone !== undefined && { phone: input.phone }),
-        ...(input.description && { description: input.description }),
-        ...(input.mission !== undefined && { mission: input.mission }),
-        ...(input.craNumber !== undefined && { craNumber: input.craNumber }),
-        ...(input.orgType !== undefined && { orgType: input.orgType }),
-        ...(input.primaryContactName !== undefined && {
-          primaryContactName: input.primaryContactName,
-        }),
-        ...(input.primaryContactTitle !== undefined && {
-          primaryContactTitle: input.primaryContactTitle,
-        }),
-        ...(input.category && { category: input.category as NGOCategory }),
-        ...(input.website !== undefined && { website: input.website }),
-        ...(input.address && { address: input.address }),
-        ...(input.city && { city: input.city }),
-        ...(input.province && { province: input.province }),
-        ...(input.country && { country: input.country }),
-        ...(input.postalCode && { postalCode: input.postalCode }),
-        ...(input.logoUrl !== undefined && { logoUrl: input.logoUrl }),
-        ...(input.coverUrl !== undefined && { coverUrl: input.coverUrl }),
-      },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        email: true,
-        description: true,
-        category: true,
-        status: true,
-        updatedAt: true,
-      },
+      validateNGOApplication({ ...existing, ...input } as UpdateNGOInput);
+      const identityChanged = identityFields.some(key =>
+        input[key] !== undefined && input[key] !== (existing[key] ?? '')
+      );
+      const needsReview = existing.status === NGOStatus.APPROVED && identityChanged;
+      const result = await tx.nGO.updateMany({
+        where: { id: ngoId, updatedAt: existing.updatedAt },
+        data: {
+          ...input,
+          ...(needsReview && {
+            status: NGOStatus.PENDING,
+            verifiedAt: null,
+            verifiedById: null,
+            lastSubmittedAt: new Date(),
+          }),
+        } as Prisma.NGOUncheckedUpdateManyInput,
+      });
+      if (result.count !== 1) throw new AppError('Application changed. Reload and try again.', 409);
+      return tx.nGO.findUniqueOrThrow({
+        where: { id: ngoId },
+        select: { id: true, name: true, status: true, updatedAt: true },
+      });
     });
-
-    logger.info(`NGO updated: ${ngoId}`);
-
-    return ngo;
   }
 
   // Resubmit NGO after rejection
@@ -398,6 +390,8 @@ export class NGOService {
     if (ngo.status !== NGOStatus.REJECTED) {
       throw new AppError('Only rejected NGOs can be resubmitted.', 400);
     }
+
+    validateNGOApplication(ngo as UpdateNGOInput);
 
     // Block resubmission after 3 attempts
     if (ngo.resubmissionCount >= 3) {
@@ -464,6 +458,27 @@ export class NGOService {
           name: true,
           slug: true,
           email: true,
+          phone: true,
+          description: true,
+          mission: true,
+          craNumber: true,
+          orgType: true,
+          registrationNumber: true,
+          primaryContactName: true,
+          primaryContactTitle: true,
+          foodDonationDetails: true,
+          website: true,
+          address: true,
+          province: true,
+          country: true,
+          postalCode: true,
+          logoUrl: true,
+          rejectionReason: true,
+          updatedAt: true,
+          reviews: {
+            orderBy: { createdAt: 'desc' },
+            include: { reviewer: { select: { firstName: true, lastName: true } } },
+          },
           category: true,
           status: true,
           city: true,
@@ -488,46 +503,43 @@ export class NGOService {
   }
 
   // Admin — approve an NGO
-  async approveNGO(ngoId: string, adminId: string) {
-    const ngo = await db.nGO.findUnique({
-      where: { id: ngoId },
-      include: {
-        manager: {
-          select: { email: true },
+  async approveNGO(ngoId: string, adminId: string, body: unknown) {
+    const review = parseNGOReview(body);
+    const { updated, email } = await db.$transaction(async (tx) => {
+      const ngo = await tx.nGO.findUnique({
+        where: { id: ngoId },
+        include: { manager: { select: { email: true } } },
+      });
+      if (!ngo) throw new AppError('NGO not found', 404);
+      if (ngo.managerId === adminId) throw new AppError('You cannot approve your own organisation', 403);
+      if (ngo.status !== NGOStatus.PENDING && ngo.status !== NGOStatus.RESUBMITTED) {
+        throw new AppError('Only pending or resubmitted applications can be approved', 409);
+      }
+      validateNGOApplication(ngo as UpdateNGOInput);
+      const result = await tx.nGO.updateMany({
+        where: { id: ngoId, status: ngo.status, updatedAt: new Date(review.applicationUpdatedAt) },
+        data: { status: NGOStatus.APPROVED, verifiedAt: new Date(), verifiedById: adminId, rejectionReason: null },
+      });
+      if (result.count !== 1) throw new AppError('Application changed. Reload and review the latest details.', 409);
+      // Keep the evidence and the exact application together in the approval transaction.
+      const snapshot = Object.fromEntries(
+        ([...identityFields, 'description', 'mission', 'category'] as const).map(key => [key, ngo[key] ?? null])
+      );
+      const { applicationUpdatedAt, ...evidence } = review;
+      await tx.nGOReview.create({
+        data: {
+          ...evidence, ngoId, reviewerId: adminId,
+          contactedAt: new Date(review.contactedAt),
+          applicationSnapshot: { ...snapshot, applicationUpdatedAt },
         },
-      },
+      });
+      const updated = await tx.nGO.findUniqueOrThrow({
+        where: { id: ngoId }, select: { id: true, name: true, status: true, verifiedAt: true },
+      });
+      return { updated, email: ngo.manager.email };
     });
-    if (!ngo) {
-      throw new AppError('NGO not found', 404);
-    }
-    if (ngo.status === NGOStatus.APPROVED) {
-      throw new AppError('This NGO is already approved.', 409);
-    }
-
-    const updated = await db.nGO.update({
-      where: { id: ngoId },
-      data: {
-        status: NGOStatus.APPROVED,
-        verifiedAt: new Date(),
-        verifiedById: adminId,
-        rejectionReason: null,
-      },
-      select: {
-        id: true,
-        name: true,
-        status: true,
-        verifiedAt: true,
-      },
-    });
-
-    // Send approval email after successful update
-
-    if (ngo.manager?.email) {
-      await emailService.sendNGOApproved(ngo.manager.email, ngo.name);
-    }
-
+    await emailService.sendNGOApproved(email, updated.name);
     logger.info(`NGO approved: ${ngoId} by admin: ${adminId}`);
-
     return updated;
   }
 

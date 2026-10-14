@@ -49,6 +49,8 @@ type FormState = {
   orgType: string;
   primaryContactName: string;
   primaryContactTitle: string;
+  registrationNumber: string;
+  foodDonationDetails: string;
   category: string;
   website: string;
   address: string;
@@ -70,6 +72,8 @@ const EMPTY_FORM: FormState = {
   orgType: "",
   primaryContactName: "",
   primaryContactTitle: "",
+  registrationNumber: "",
+  foodDonationDetails: "",
   category: "FOOD_BANK",
   website: "",
   address: "",
@@ -133,6 +137,8 @@ export default function NGOProfilePage() {
         orgType: ngo.orgType ?? "",
         primaryContactName: ngo.primaryContactName ?? "",
         primaryContactTitle: ngo.primaryContactTitle ?? "",
+        registrationNumber: ngo.registrationNumber ?? "",
+        foodDonationDetails: ngo.foodDonationDetails ?? "",
         category: ngo.category,
         website: ngo.website ?? "",
         address: ngo.address,
@@ -182,7 +188,10 @@ export default function NGOProfilePage() {
               updateField={updateField}
               isRegistering={isRegistering}
               isPending={registerMutation.isPending || updateMutation.isPending}
-              isError={registerMutation.isError}
+              errorMessage={
+                ((registerMutation.error ?? updateMutation.error) as { response?: { data?: { message?: string } } } | null)?.response?.data?.message
+                ?? ((registerMutation.isError || updateMutation.isError) ? "Could not save your application. Please try again." : undefined)
+              }
               onCancel={() => {
                 setIsRegistering(false);
                 setIsEditing(false);
@@ -203,6 +212,7 @@ export default function NGOProfilePage() {
                     ngo={ngo}
                     onResubmit={() => resubmitMutation.mutate()}
                     isResubmitting={resubmitMutation.isPending}
+                    errorMessage={(resubmitMutation.error as { response?: { data?: { message?: string } } } | null)?.response?.data?.message}
                   />
                 )}
 
@@ -247,7 +257,7 @@ function ProfileHero({
             </h2>
             {ngo.status === "APPROVED" && (
               <Badge tone="success" size="sm" dot>
-                <ShieldCheck className="w-3 h-3" /> Verified
+                <ShieldCheck className="w-3 h-3" /> Reviewed by GivHive
               </Badge>
             )}
             {ngo.status !== "APPROVED" && (
@@ -284,10 +294,12 @@ function ApplicationStatus({
   ngo,
   onResubmit,
   isResubmitting,
+  errorMessage,
 }: {
   ngo: NGODashboard["ngo"];
   onResubmit: () => void;
   isResubmitting: boolean;
+  errorMessage?: string;
 }) {
   const isRejected = ngo.status === "REJECTED";
   return (
@@ -300,6 +312,9 @@ function ApplicationStatus({
         </Badge>
       </div>
 
+      {(ngo.status === "PENDING" || ngo.status === "RESUBMITTED") && (
+        <p className="text-sm text-ink-soft mb-3">Your application is under review. We may contact your organisation using independently sourced details before approval. Your profile is hidden from donors until approved.</p>
+      )}
       {ngo.rejectionReason && (
         <div className="bg-red-50 border border-red-100 rounded-lg p-3 mb-3">
           <p className="text-xs font-medium text-red-700 mb-1">
@@ -320,6 +335,7 @@ function ApplicationStatus({
           </span>
         </div>
       )}
+      {errorMessage && <p role="alert" className="text-sm text-red-700 mt-3">{errorMessage}</p>}
     </div>
   );
 }
@@ -331,6 +347,8 @@ function ProfileDetails({ ngo }: { ngo: NGODashboard["ngo"] }) {
     { label: "Email", value: ngo.email, icon: Mail },
     { label: "Phone", value: ngo.phone, icon: Phone },
     { label: "Website", value: ngo.website, icon: Globe },
+    { label: "Registration number", value: ngo.registrationNumber, icon: FileText },
+    { label: "Food receiving arrangements", value: ngo.foodDonationDetails, icon: Building2 },
     { label: "CRA Number", value: ngo.craNumber, icon: FileText },
     { label: "Org Type", value: ngo.orgType, icon: Building2 },
     { label: "Primary Contact", value: ngo.primaryContactName, icon: User },
@@ -355,6 +373,9 @@ function ProfileDetails({ ngo }: { ngo: NGODashboard["ngo"] }) {
       <h3 className="text-sm font-semibold text-ink mb-4">
         Organisation details
       </h3>
+      {ngo.status === "APPROVED" && (
+        <p className="text-xs text-ink-subtle mb-4">Reviewed by GivHive means our team checked your organisation&apos;s identity, authorised representative and food receiving arrangements.</p>
+      )}
       <div className="space-y-3">
         {rows.map((row) => (
           <div key={row.label} className="flex items-start gap-3">
@@ -390,7 +411,7 @@ interface ProfileFormProps {
   updateField: (field: keyof FormState, value: string) => void;
   isRegistering: boolean;
   isPending: boolean;
-  isError: boolean;
+  errorMessage?: string;
   onCancel: () => void;
   onSubmit: () => void;
 }
@@ -400,21 +421,25 @@ function ProfileForm({
   updateField,
   isRegistering,
   isPending,
-  isError,
+  errorMessage,
   onCancel,
   onSubmit,
 }: ProfileFormProps) {
   return (
-    <div className="bg-white rounded-xl border border-border-subtle p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+    <form onSubmit={(event) => { event.preventDefault(); onSubmit(); }} className="bg-white rounded-xl border border-border-subtle p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
       <h2 className="text-sm font-semibold text-ink mb-5">
         {isRegistering ? "Register your NGO" : "Update NGO profile"}
       </h2>
 
+      <p className="text-sm text-ink-soft mb-5">
+        We check that your organisation exists, confirm you represent it, and discuss how you receive food.
+        Changes to identity, contact details or food receiving arrangements return an approved profile to review and temporarily hide it from donors.
+      </p>
       <div className="space-y-4">
         <FormSection title="Organisation">
           <div className="grid grid-cols-2 gap-4">
             <TextField
-              label="Organisation name"
+              label="Legal organisation name"
               required
               value={form.name}
               onChange={(e) => updateField("name", e.target.value)}
@@ -431,7 +456,8 @@ function ProfileForm({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <TextField
-              label="Phone"
+              label="Organisation phone"
+              required
               value={form.phone}
               onChange={(e) => updateField("phone", e.target.value)}
               placeholder="+1 204 555 0100"
@@ -489,14 +515,17 @@ function ProfileForm({
 
         <FormSection title="Verification">
           <TextField
-            label="CRA Charity Number"
+            label="CRA Charity Number (registered charities only)"
+            required={form.orgType === "REGISTERED_CHARITY"}
+            hint="Other nonprofits and community groups do not need a CRA charity number."
             value={form.craNumber}
             onChange={(e) => updateField("craNumber", e.target.value)}
             placeholder="e.g. 123456789 RR 0001"
           />
           <div className="grid grid-cols-2 gap-4">
             <TextField
-              label="Primary Contact Name"
+              label="Primary contact name"
+              required
               value={form.primaryContactName}
               onChange={(e) =>
                 updateField("primaryContactName", e.target.value)
@@ -504,7 +533,8 @@ function ProfileForm({
               placeholder="Full name"
             />
             <TextField
-              label="Contact Title"
+              label="Your role or title"
+              required
               value={form.primaryContactTitle}
               onChange={(e) =>
                 updateField("primaryContactTitle", e.target.value)
@@ -517,6 +547,8 @@ function ProfileForm({
               Organisation Type
             </label>
             <select
+              required
+              aria-label="Organisation type"
               value={form.orgType}
               onChange={(e) => updateField("orgType", e.target.value)}
               className="w-full px-3 py-2 text-sm border border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-green bg-white text-ink"
@@ -530,6 +562,24 @@ function ProfileForm({
               <option value="SOCIAL_ENTERPRISE">Social Enterprise</option>
             </select>
           </div>
+          {form.orgType !== "REGISTERED_CHARITY" && (
+            <TextField
+              label="Incorporation or registration number (if applicable)"
+              hint="Informal community groups can leave this blank. We will confirm your activities through an independent source."
+              value={form.registrationNumber}
+              onChange={(e) => updateField("registrationNumber", e.target.value)}
+            />
+          )}
+          <TextareaField
+            label="Food receiving arrangements"
+            required
+            minLength={20}
+            maxLength={5000}
+            rows={4}
+            hint="Include receiving location, hours, accepted food, storage arrangements and the person responsible."
+            value={form.foodDonationDetails}
+            onChange={(e) => updateField("foodDonationDetails", e.target.value)}
+          />
         </FormSection>
 
         <FormSection title="Address">
@@ -573,35 +623,34 @@ function ProfileForm({
       </div>
 
       <div className="flex items-center gap-3 mt-6">
-        <Button onClick={onSubmit} disabled={isPending} size="lg">
+        <Button type="submit" disabled={isPending} size="lg">
           {isPending
             ? "Saving..."
             : isRegistering
               ? "Submit application"
               : "Save changes"}
         </Button>
-        <Button variant="ghost" onClick={onCancel} size="lg">
+        <Button type="button" variant="ghost" onClick={onCancel} size="lg">
           Cancel
         </Button>
       </div>
 
-      {isError && (
+      {errorMessage && (
         <p className="text-xs text-red-600 mt-3">
-          Failed to submit. Please check your details and try again.
+          {errorMessage}
         </p>
       )}
 
       {isRegistering && (
         <p className="text-xs text-ink-subtle mt-4 leading-relaxed">
-          Once submitted, your application will be reviewed by GivHive admins
-          within 1–2 business days. You can resubmit up to 3 times if changes
+          Once submitted, GivHive will review your application and contact your organisation to confirm the details. You can resubmit up to 3 times if changes
           are requested.{" "}
           <Link href="/login" className="text-brand-green hover:underline">
             Need help?
           </Link>
         </p>
       )}
-    </div>
+    </form>
   );
 }
 

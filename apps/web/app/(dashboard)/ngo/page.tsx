@@ -222,7 +222,7 @@ function ApprovedBanner({ onDismiss }: { onDismiss: () => void }) {
       <div className="flex items-center gap-3">
         <CheckCircle className="w-4 h-4 text-brand-green flex-shrink-0" />
         <p className="text-sm text-ink">
-          Your NGO is verified and live on GivHive
+          Your organisation has been reviewed and is live on GivHive
         </p>
       </div>
       <button
@@ -249,7 +249,7 @@ function VerifiedHero({ ngo }: { ngo: NGODashboard["ngo"] }) {
               {ngo.name}
             </h2>
             <Badge tone="success" size="sm">
-              <ShieldCheck className="w-3 h-3" /> Verified
+              <ShieldCheck className="w-3 h-3" /> Reviewed by GivHive
             </Badge>
           </div>
           <p className="text-xs text-ink-muted mt-1.5 flex items-center gap-1.5">
@@ -482,7 +482,7 @@ function DonationRow({ donation }: { donation: Donation }) {
 
 function SetupChecklist({ stats }: { stats?: NGODashboard["stats"] }) {
   const items = [
-    { label: "Profile verified", done: true },
+    { label: "Profile reviewed", done: true },
     {
       label: "Invite at least one team member",
       done: (stats?.totalMembers ?? 0) > 1,

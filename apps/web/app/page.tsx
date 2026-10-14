@@ -107,7 +107,7 @@ export default function LandingPage() {
           Right here.
         </h1>
         <p>
-          GivHive connects Winnipeg food donors with verified local charities,
+          GivHive connects Winnipeg food donors with local organisations reviewed by GivHive,
           making every donation simple, trackable, and impactful.
         </p>
         <div className="hero-actions">
@@ -141,7 +141,7 @@ export default function LandingPage() {
         </div>
         <div className="stat-item">
           <span className="stat-num">12</span>
-          <span className="stat-label">Verified NGOs</span>
+          <span className="stat-label">Reviewed organisations</span>
         </div>
         <div className="stat-item">
           <span className="stat-num">$0</span>
@@ -149,7 +149,7 @@ export default function LandingPage() {
         </div>
         <div className="stat-item">
           <span className="stat-num">100%</span>
-          <span className="stat-label">Verified charities</span>
+          <span className="stat-label">Reviewed organisations</span>
         </div>
       </div> */}
 
@@ -168,10 +168,10 @@ export default function LandingPage() {
             <div className="step">
               <div className="step-num">01</div>
               <div className="step-content">
-                <h3>Browse verified NGOs</h3>
+                <h3>Browse reviewed organisations</h3>
                 <p>
-                  Every partner charity is manually verified by our team — see
-                  their needs, current campaigns, and impact in real time.
+                  Our team checks each partner&apos;s organisation identity, authorised
+                  representative, and food receiving arrangements before listing it.
                 </p>
               </div>
             </div>
@@ -344,7 +344,7 @@ export default function LandingPage() {
             <div className="ngo-type">Food Bank · Founded 1984</div>
             <div className="ngo-badge">
               <span className="verified-dot" />
-              Verified partner
+              Reviewed partner
             </div>
           </div>
           <div className="ngo-card">
@@ -353,7 +353,7 @@ export default function LandingPage() {
             <div className="ngo-type">Shelter &amp; Food Aid</div>
             <div className="ngo-badge">
               <span className="verified-dot" />
-              Verified partner
+              Reviewed partner
             </div>
           </div>
           <div className="ngo-card">
@@ -362,7 +362,7 @@ export default function LandingPage() {
             <div className="ngo-type">Community Meals</div>
             <div className="ngo-badge">
               <span className="verified-dot" />
-              Verified partner
+              Reviewed partner
             </div>
           </div> */}
           <div

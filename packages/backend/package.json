@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "prisma migrate deploy && node dist/server.js",
     "seed": "ts-node src/scripts/seed.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run build && node --test test/*.test.cjs",
+    "test:integration": "npm run build && node --test test/ngo-verification.integration.cjs"
   },
   "keywords": [],
   "author": "",

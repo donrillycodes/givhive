@@ -30,61 +30,7 @@ export class NGOController {
         return;
       }
 
-      const {
-        name,
-        email,
-        phone,
-        description,
-        mission,
-        category,
-        website,
-        address,
-        city,
-        province,
-        country,
-        postalCode,
-      } = req.body;
-
-      // Validate required fields
-      if (
-        !name ||
-        !email ||
-        !description ||
-        !category ||
-        !address ||
-        !postalCode
-      ) {
-        responses.badRequest(
-          res,
-          'Name, email, description, category, address, and postal code are required'
-        );
-        return;
-      }
-
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        responses.badRequest(res, 'Please provide a valid email address');
-        return;
-      }
-
-      const ngo = await ngoService.registerNGO(
-        {
-          name: name.trim(),
-          email,
-          phone,
-          description: description.trim(),
-          mission,
-          category,
-          website,
-          address: address.trim(),
-          city,
-          province,
-          country,
-          postalCode: postalCode.trim(),
-        },
-        req.user.id
-      );
+      const ngo = await ngoService.registerNGO(req.body, req.user.id);
 
       await writeAuditLog(req, {
         action: AuditAction.NGO_SUBMITTED,
@@ -185,7 +131,7 @@ export class NGOController {
       }
 
       const id = getParam(req.params.id);
-      const ngo = await ngoService.updateNGO(id, req.body);
+      const ngo = await ngoService.updateNGO(id, req.body, req.user.id, req.user.role === 'SUPER_ADMIN');
       responses.ok(res, 'NGO updated successfully', { ngo });
     } catch (error) {
       next(error);
@@ -260,7 +206,7 @@ export class NGOController {
 
       const id = getParam(req.params.id);
       const previousNgo = await ngoService.getNGOForAdmin(id);
-      const ngo = await ngoService.approveNGO(id, req.user.id);
+      const ngo = await ngoService.approveNGO(id, req.user.id, req.body);
 
       await writeAuditLog(req, {
         action: AuditAction.NGO_APPROVED,
