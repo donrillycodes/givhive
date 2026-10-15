@@ -13,6 +13,8 @@ Before publishing this policy or submitting the mobile app:
 - On a real iPhone/TestFlight build, open Privacy Policy from sign-in, sign-up, and Profile, return to the app, and check sign-up input is preserved. Test the support link and its no-mail-app fallback.
 - Confirm actual backend and provider log/backup retention and hosting locations. Ensure database restores do not reinstate deleted donor information.
 - Review provider privacy terms and the App Store privacy disclosures against the final shipped SDKs and services. This policy update alone does not complete those disclosures.
-- Complete Terms of Service and a public support page in the next release-preparation step. The previous nonfunctional Terms link was removed from mobile registration until that page exists.
+- Review the Terms of Service at /terms and public help page at /support before publication. Registration notices link the terms and privacy policy from mobile registration, web registration, and invitation account creation. These UI notices do not store a versioned acceptance record in the database.
+- Enter https://givhive.com/support as the App Store Support URL and https://givhive.com/privacy as the Privacy Policy URL after deploying and testing both pages.
+- Add in-app content reporting/blocking and review the moderation workflow separately. An email reporting channel and community rules do not by themselves complete App Store user-generated-content safeguards.
 
 No database migration is introduced by the privacy/support changes. Earlier account-deletion and NGO-review migrations still need deployment. The policy date reflects this source revision, not confirmation of a live deployment.

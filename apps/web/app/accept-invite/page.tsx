@@ -1,5 +1,7 @@
 "use client";
 
+import { RegistrationNotice } from "@/components/auth/RegistrationNotice";
+
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -467,6 +469,7 @@ function AcceptInviteInner() {
               required
               autoComplete="new-password"
             />
+            <RegistrationNotice />
             <div className="flex gap-3">
               <Button type="submit" disabled={submitting} fullWidth size="lg">
                 {submitting ? "Please wait…" : "Create account & accept"}

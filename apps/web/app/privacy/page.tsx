@@ -290,6 +290,10 @@ export default function PrivacyPolicyPage() {
 
         {/* Footer */}
         <div className="mt-16 pt-8 border-t border-[#E8E8E4] text-sm text-[#6B7280]">
+          <nav aria-label="Information pages" className="flex flex-wrap gap-6 mb-6 text-[#1A7A4A]">
+            <Link href="/terms" className="hover:underline">Terms of Service</Link>
+            <Link href="/support" className="hover:underline">Help & Support</Link>
+          </nav>
           <p>
             <strong>GivHive</strong> · Winnipeg, Manitoba, Canada
           </p>

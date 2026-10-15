@@ -6,22 +6,29 @@ export const SUPPORT_EMAIL = "support@givhive.com";
 
 export const PRIVACY_POLICY_URL = "https://givhive.com/privacy";
 
-let openingPrivacyPolicy = false;
+export const TERMS_URL = "https://givhive.com/terms";
+export const SUPPORT_URL = "https://givhive.com/support";
 
-export async function openPrivacyPolicy(): Promise<void> {
-  if (openingPrivacyPolicy) return;
-  openingPrivacyPolicy = true;
+let openingInformationPage = false;
+
+async function openInformationPage(url: string, title: string): Promise<void> {
+  if (openingInformationPage) return;
+  openingInformationPage = true;
   try {
-    await openBrowserAsync(PRIVACY_POLICY_URL);
+    await openBrowserAsync(url);
   } catch {
     Alert.alert(
-      "Could not open the privacy policy",
-      `Please try again, or visit ${PRIVACY_POLICY_URL} in your browser.`,
+      `Could not open ${title}`,
+      `Please try again, or visit ${url} in your browser.`,
     );
   } finally {
-    openingPrivacyPolicy = false;
+    openingInformationPage = false;
   }
 }
+
+export const openPrivacyPolicy = () => openInformationPage(PRIVACY_POLICY_URL, "the privacy policy");
+export const openTerms = () => openInformationPage(TERMS_URL, "the terms of service");
+export const openSupportPage = () => openInformationPage(SUPPORT_URL, "support");
 
 export async function openSupportEmail(): Promise<void> {
   try {

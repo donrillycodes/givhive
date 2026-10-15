@@ -1,5 +1,6 @@
 "use client";
 
+import { RegistrationNotice } from "@/components/auth/RegistrationNotice";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -275,6 +276,7 @@ export default function RegisterPage() {
                   }
                 />
 
+                <RegistrationNotice />
                 <Button type="submit" disabled={loading} fullWidth size="lg">
                   {loading ? "Creating account..." : "Create Account"}
                 </Button>

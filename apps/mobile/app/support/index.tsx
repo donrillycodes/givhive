@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
-import { SUPPORT_EMAIL, openSupportEmail } from "../../lib/legal";
+import { SUPPORT_EMAIL, openSupportEmail, openSupportPage } from "../../lib/legal";
 import { COLORS, FONT } from "../../lib/utils";
 
 export default function SupportScreen() {
@@ -38,6 +38,9 @@ export default function SupportScreen() {
             style={styles.emailLink}
           >
             <Text style={styles.emailText}>{SUPPORT_EMAIL}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={openSupportPage} accessibilityRole="link" style={styles.emailLink}>
+            <Text style={styles.emailText}>Read help and FAQs</Text>
           </TouchableOpacity>
           <Text style={styles.sub}>
             Include a brief description of the issue. Please do not send your password or payment details.

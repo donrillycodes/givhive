@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback } from "react";
-import { openPrivacyPolicy } from "../../lib/legal";
+import { openPrivacyPolicy, openTerms } from "../../lib/legal";
 import { useAuth } from "../../hooks/useAuth";
 import { COLORS, FONT, SPACE, RADII, SHADOW, getInitials } from "../../lib/utils";
 import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
@@ -74,6 +74,11 @@ export default function ProfileScreen() {
       icon: "help-circle-outline",
       label: "Help & Support",
       onPress: () => router.push("/support" as any),
+    },
+    {
+      icon: "reader-outline",
+      label: "Terms of Service",
+      onPress: openTerms,
     },
     {
       icon: "document-text-outline",
