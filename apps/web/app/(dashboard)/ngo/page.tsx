@@ -176,7 +176,7 @@ function StatusBanner({ ngo }: { ngo: NGODashboard["ngo"] }) {
             icon: <AlertTriangle className="w-4 h-4 text-red-500" />,
             wrapper: "bg-red-50 border-red-100",
             title: "Your NGO has been suspended",
-            body: "Please contact support@givhive.ca to resolve this.",
+            body: "Please contact support@givhive.com to resolve this.",
           }
         : {
             icon: <AlertTriangle className="w-4 h-4 text-ink-muted" />,

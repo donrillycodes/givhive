@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, FONT, SPACE, RADII } from "../../lib/utils";
 import { signIn, sendPasswordReset } from "../../lib/firebase";
+import { openPrivacyPolicy } from "../../lib/legal";
 import { authApi } from "../../lib/api";
 import { useRouter } from "expo-router";
 import { useAuthStore } from "../../store/authStore";
@@ -184,6 +185,13 @@ export default function LoginScreen() {
               <Text style={styles.footerCta}>Create one</Text>
             </TouchableOpacity>
           </View>
+          <TouchableOpacity
+            onPress={openPrivacyPolicy}
+            accessibilityRole="link"
+            style={{ alignSelf: "center", padding: SPACE.lg }}
+          >
+            <Text style={styles.footerCta}>Privacy Policy</Text>
+          </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

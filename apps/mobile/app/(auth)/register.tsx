@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, FONT, SPACE, RADII } from "../../lib/utils";
 import { authApi } from "../../lib/api";
+import { openPrivacyPolicy } from "../../lib/legal";
 import { signIn } from "../../lib/firebase";
 import { useAuthStore } from "../../store/authStore";
 import { Input } from "../../components/ui/Input";
@@ -334,11 +335,15 @@ export default function RegisterScreen() {
               style={styles.submitBtn}
             />
 
-            {/* Terms */}
             <Text style={styles.terms}>
-              By creating an account you agree to our{" "}
-              <Text style={styles.termsLink}>Terms of Service</Text> and{" "}
-              <Text style={styles.termsLink}>Privacy Policy</Text>
+              Learn how we handle your information in our{" "}
+              <Text
+                style={styles.termsLink}
+                accessibilityRole="link"
+                onPress={openPrivacyPolicy}
+              >
+                Privacy Policy
+              </Text>.
             </Text>
           </View>
 

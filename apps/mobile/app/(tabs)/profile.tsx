@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback } from "react";
+import { openPrivacyPolicy } from "../../lib/legal";
 import { useAuth } from "../../hooks/useAuth";
 import { COLORS, FONT, SPACE, RADII, SHADOW, getInitials } from "../../lib/utils";
 import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
@@ -77,7 +78,7 @@ export default function ProfileScreen() {
     {
       icon: "document-text-outline",
       label: "Privacy Policy",
-      onPress: () => {},
+      onPress: openPrivacyPolicy,
     },
   ];
 

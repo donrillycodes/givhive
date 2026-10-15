@@ -22,7 +22,7 @@ export default function WrongRoleScreen() {
         <Text style={styles.title}>Wrong app</Text>
         <Text style={styles.message}>
           This app is for donors only. NGO managers and admins should use the
-          GivHive web dashboard at dashboard.givhive.ca
+          GivHive web dashboard at givhive.com/login
         </Text>
         <TouchableOpacity
           style={styles.button}
