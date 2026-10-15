@@ -76,6 +76,11 @@ export default function ProfileScreen() {
       onPress: () => router.push("/support" as any),
     },
     {
+      icon: "ban-outline",
+      label: "Blocked organisations",
+      onPress: () => router.push("/blocked-organisations"),
+    },
+    {
       icon: "reader-outline",
       label: "Terms of Service",
       onPress: openTerms,

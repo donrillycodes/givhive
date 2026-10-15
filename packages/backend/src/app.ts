@@ -89,6 +89,7 @@ app.get('/health', (req: Request, res: Response) => {
 
 // ── API routes ─────────────────────────────────────────────────────────────────
 import authRoutes from './routes/auth.routes';
+import safetyRoutes from './routes/safety.routes';
 import userRoutes from './routes/user.routes';
 import ngoRoutes from './routes/ngo.routes';
 import donationRoutes from './routes/donation.routes';
@@ -102,6 +103,7 @@ import invitationRoutes from './routes/invitation.routes';
 
 app.use('/api/stripe-connect', stripeConnectRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/safety', safetyRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/ngos', ngoRoutes);
 app.use('/api/donations', donationRoutes);

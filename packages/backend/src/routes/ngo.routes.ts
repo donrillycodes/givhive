@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import ngoController from '../controllers/ngo.controller';
-import { authenticate } from '../middleware/auth';
+import { authenticate, optionalAuthenticate } from '../middleware/auth';
 import { requirePermission, requireRole } from '../middleware/rbac';
 import { Role } from '@prisma/client';
 
@@ -10,7 +10,7 @@ const router = Router();
 
 // Browse all approved NGOs
 // GET /api/ngos
-router.get('/', ngoController.getAllNGOs.bind(ngoController));
+router.get('/', optionalAuthenticate, ngoController.getAllNGOs.bind(ngoController));
 
 // ── Specific named routes MUST come before /:identifier ────────────────────────
 
@@ -45,7 +45,7 @@ router.post(
 
 // Get a single NGO by ID or slug — must come AFTER all named routes
 // GET /api/ngos/:identifier
-router.get('/:identifier', ngoController.getNGO.bind(ngoController));
+router.get('/:identifier', optionalAuthenticate, ngoController.getNGO.bind(ngoController));
 
 // Update NGO profile
 // PATCH /api/ngos/:id

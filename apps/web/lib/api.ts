@@ -146,3 +146,10 @@ export const invitationApi = {
 };
 
 export default apiClient;
+
+export const safetyApi = {
+  pending: () => apiClient.get('/api/safety/pending'),
+  reviewPending: (type: string, id: string, action: string, version: string, notes: string) => apiClient.patch(`/api/safety/pending/${type}/${id}`, { action, version, notes }),
+  reports: (params: { status: string; page: number }) => apiClient.get('/api/safety/reports', { params }),
+  review: (id: string, action: string, notes: string) => apiClient.patch(`/api/safety/reports/${id}`, { action, notes }),
+};

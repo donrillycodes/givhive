@@ -1,3 +1,4 @@
+import { SafetyActions } from "../../components/safety/SafetyActions";
 import {
   View,
   Text,
@@ -127,6 +128,7 @@ export default function UpdateScreen() {
             </Text>
           </View>
 
+          <SafetyActions targetType="UPDATE" targetId={update.id} ngoId={update.ngo.id} />
           <View style={styles.bottomPadding} />
         </ScrollView>
       </SafeAreaView>

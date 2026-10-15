@@ -33,7 +33,7 @@ const TYPE_OPTIONS = [
 
 const STATUS_PILLS: { value: UpdateStatus; label: string }[] = [
   { value: "DRAFT", label: "Drafts" },
-  { value: "PUBLISHED", label: "Published" },
+  { value: "PUBLISHED", label: "Submitted" },
   { value: "ARCHIVED", label: "Archived" },
 ];
 
@@ -132,7 +132,7 @@ export default function NGOUpdatesPage() {
       <Header
         title="Share an update"
         accent="update"
-        subtitle="Tell donors what their support has made possible. Pinned updates appear at the top of your public NGO profile."
+        subtitle="Submit updates for moderator review before they appear to donors. Approved pinned updates appear at the top of your public NGO profile."
       />
 
       <div className="space-y-5">
@@ -176,7 +176,7 @@ export default function NGOUpdatesPage() {
               statusFilter === "DRAFT"
                 ? "Drafts you save will appear here. Write something donors will care about — an impact story, a thank-you, a milestone."
                 : statusFilter === "PUBLISHED"
-                  ? "Published updates appear in the donor home feed."
+                  ? "Submitted updates appear in the donor home feed after moderator approval."
                   : "Archived updates are hidden from donors but stay in your records."
             }
             action={
@@ -308,7 +308,7 @@ function UpdateComposer({
               size="lg"
             >
               <Send className="w-3.5 h-3.5" />
-              {isPublishing ? "Publishing..." : "Publish now"}
+              {isPublishing ? "Submitting..." : "Submit for review"}
             </Button>
             <Button
               variant="secondary"
@@ -424,7 +424,7 @@ function UpdateCard({
               <Pin className="w-3 h-3 text-brand-green-dk" />
             )}
             <Badge tone={statusToTone(item.status)} size="sm">
-              {item.status}
+              {item.moderationStatus === "PENDING" && item.status === "PUBLISHED" ? "Awaiting review" : item.moderationStatus === "REJECTED" ? "Review rejected" : item.status}
             </Badge>
             <Badge tone="brand" size="sm">
               {typeLabel}
@@ -456,7 +456,7 @@ function UpdateCard({
         <div className="flex flex-col gap-2 flex-shrink-0">
           {item.status === "DRAFT" && (
             <Button size="sm" onClick={onPublish} disabled={isPublishing}>
-              <Send className="w-3.5 h-3.5" /> Publish
+              <Send className="w-3.5 h-3.5" /> Submit for review
             </Button>
           )}
           {item.status !== "ARCHIVED" && (

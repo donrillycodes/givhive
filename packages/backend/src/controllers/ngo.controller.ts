@@ -54,7 +54,7 @@ export class NGOController {
   async getNGO(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const identifier = getParam(req.params.identifier);
-      const ngo = await ngoService.getNGO(identifier);
+      const ngo = await ngoService.getNGO(identifier, req.user?.id);
       responses.ok(res, 'NGO retrieved successfully', { ngo });
     } catch (error) {
       next(error);
@@ -78,7 +78,7 @@ export class NGOController {
         limit: req.query.limit
           ? parseInt(getQuery(req.query.limit) ?? '20')
           : undefined,
-      });
+      }, req.user?.id);
 
       responses.ok(res, 'NGOs retrieved successfully', result);
     } catch (error) {

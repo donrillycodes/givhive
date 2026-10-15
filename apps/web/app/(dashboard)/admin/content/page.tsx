@@ -1,5 +1,7 @@
 "use client";
 
+import { PendingContent } from "@/components/admin/PendingContent";
+import { SafetyReports } from "@/components/admin/SafetyReports";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
@@ -69,6 +71,8 @@ export default function ContentPage() {
       />
 
       <div className="space-y-5">
+        <PendingContent />
+        <SafetyReports />
         <FilterPills
               options={STATUS_PILLS}
               value={statusFilter}

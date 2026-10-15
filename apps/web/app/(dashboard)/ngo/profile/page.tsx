@@ -433,7 +433,7 @@ function ProfileForm({
 
       <p className="text-sm text-ink-soft mb-5">
         We check that your organisation exists, confirm you represent it, and discuss how you receive food.
-        Changes to identity, contact details or food receiving arrangements return an approved profile to review and temporarily hide it from donors.
+        Changes to public profile text, images, identity, contact details or food receiving arrangements return an approved profile to review and temporarily hide it from donors.
       </p>
       <div className="space-y-4">
         <FormSection title="Organisation">

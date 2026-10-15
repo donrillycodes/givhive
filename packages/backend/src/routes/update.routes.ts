@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import updateController from '../controllers/update.controller';
-import { authenticate } from '../middleware/auth';
+import { authenticate, optionalAuthenticate } from '../middleware/auth';
 import { requirePermission, requireRole } from '../middleware/rbac';
 import { Role } from '@prisma/client';
 
@@ -10,11 +10,11 @@ const router = Router();
 
 // Get all published updates — donor home feed
 // GET /api/updates
-router.get('/', updateController.getPublishedUpdates.bind(updateController));
+router.get('/', optionalAuthenticate, updateController.getPublishedUpdates.bind(updateController));
 
 // Get a single update by ID
 // GET /api/updates/:id
-router.get('/:id', updateController.getUpdateById.bind(updateController));
+router.get('/:id', optionalAuthenticate, updateController.getUpdateById.bind(updateController));
 
 // ── NGO routes ─────────────────────────────────────────────────────────────────
 

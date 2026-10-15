@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useAuthStore } from "../store/authStore";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -14,6 +16,10 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
+  useEffect(() => useAuthStore.subscribe((state, previous) => {
+    if (state.user?.id !== previous.user?.id) queryClient.clear();
+  }), []);
+
   // Whichever tab was last focused — used so a screen pushed on top of the
   // tab navigator (e.g. a food need opened from Home) shows that tab's name
   // as its native back-button label instead of a generic one.

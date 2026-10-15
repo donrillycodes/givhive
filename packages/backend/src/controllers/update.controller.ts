@@ -92,10 +92,10 @@ export class UpdateController {
         entityId: id,
         previousState: { status: previous.status },
         newState: { status: update.status },
-        notes: 'Update published to donor feed',
+        notes: 'Update submitted for content review',
       });
 
-      responses.ok(res, 'Update published successfully', { update });
+      responses.ok(res, 'Update submitted for review. It will appear after moderator approval.', { update });
     } catch (error) {
       next(error);
     }
@@ -129,7 +129,8 @@ export class UpdateController {
         getQuery(req.query.limit),
         getQuery(req.query.type),
         getQuery(req.query.ngoId),
-        getQuery(req.query.search)
+        getQuery(req.query.search),
+        req.user?.id
       );
 
       responses.ok(res, 'Updates retrieved successfully', result);

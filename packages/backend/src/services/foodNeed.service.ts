@@ -1,4 +1,5 @@
 import db from '../config/database';
+import { visibleOrganisation } from './safety.service';
 import { AppError } from '../middleware/error';
 import logger from '../utils/logger';
 import {
@@ -128,6 +129,7 @@ export class FoodNeedService {
         quantityRequired: true,
         quantityFulfilled: true,
         status: true,
+        moderationStatus: true,
         isUrgent: true,
         dropOffAddress: true,
         dropOffInstructions: true,
@@ -151,9 +153,9 @@ export class FoodNeedService {
   }
 
   // Get a single food need by ID — public
-  async getFoodNeedById(foodNeedId: string) {
-    const foodNeed = await db.foodNeed.findUnique({
-      where: { id: foodNeedId },
+  async getFoodNeedById(foodNeedId: string, userId?: string) {
+    const foodNeed = await db.foodNeed.findFirst({
+      where: { id: foodNeedId, isSafetyHidden: false, moderationStatus: 'APPROVED', ngo: { status: 'APPROVED', isActive: true, ...visibleOrganisation(userId) } },
       select: {
         id: true,
         title: true,
@@ -164,6 +166,7 @@ export class FoodNeedService {
         quantityRequired: true,
         quantityFulfilled: true,
         status: true,
+        moderationStatus: true,
         isUrgent: true,
         dropOffAddress: true,
         dropOffInstructions: true,
@@ -205,15 +208,19 @@ export class FoodNeedService {
     category?: string,
     ngoId?: string,
     isUrgent?: string,
-    search?: string
+    search?: string,
+    userId?: string
   ) {
     const params = getPaginationParams(page, limit);
 
     const where: any = {
       status: FoodNeedStatus.OPEN,
+      isSafetyHidden: false,
+      moderationStatus: 'APPROVED',
       ngo: {
         status: NGOStatus.APPROVED,
         isActive: true,
+        ...visibleOrganisation(userId),
       },
     };
 
@@ -253,6 +260,7 @@ export class FoodNeedService {
           quantityRequired: true,
           quantityFulfilled: true,
           status: true,
+        moderationStatus: true,
           isUrgent: true,
           deadline: true,
           imageUrl: true,
@@ -286,6 +294,7 @@ export class FoodNeedService {
         id: true,
         ngoId: true,
         status: true,
+        moderationStatus: true,
         isUrgent: true,
         postedById: true,
       },
@@ -348,7 +357,7 @@ export class FoodNeedService {
 
     const updated = await db.foodNeed.update({
       where: { id: foodNeedId },
-      data: {
+      data: { moderationStatus: 'PENDING',
         ...(input.title && { title: input.title.trim() }),
         ...(input.description !== undefined && {
           description: input.description?.trim(),
@@ -379,6 +388,7 @@ export class FoodNeedService {
         quantityRequired: true,
         quantityFulfilled: true,
         status: true,
+        moderationStatus: true,
         isUrgent: true,
         deadline: true,
         updatedAt: true,
@@ -398,6 +408,7 @@ export class FoodNeedService {
         id: true,
         ngoId: true,
         status: true,
+        moderationStatus: true,
       },
     });
 
@@ -433,6 +444,7 @@ export class FoodNeedService {
         id: true,
         title: true,
         status: true,
+        moderationStatus: true,
         updatedAt: true,
       },
     });
@@ -472,6 +484,7 @@ export class FoodNeedService {
           quantityRequired: true,
           quantityFulfilled: true,
           status: true,
+        moderationStatus: true,
           isUrgent: true,
           deadline: true,
           createdAt: true,
@@ -512,6 +525,7 @@ export class FoodNeedService {
           itemName: true,
           itemCategory: true,
           status: true,
+        moderationStatus: true,
           isUrgent: true,
           quantityRequired: true,
           quantityFulfilled: true,
@@ -535,6 +549,7 @@ export class FoodNeedService {
         id: true,
         title: true,
         status: true,
+        moderationStatus: true,
         isUrgent: true,
         ngoId: true,
       },

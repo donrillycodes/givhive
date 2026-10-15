@@ -77,7 +77,11 @@ export default function PrivacyPolicyPage() {
               <li>
                 <strong>Food pledges:</strong> the recipient organisation, food item,
                 quantity, planned drop-off date, notes, status, cancellation reason,
-                and relevant dates. We also store notification records and the
+                and relevant dates. If you report content, we store the reason,
+                details, content reference and a copy of the reported content for
+                authorised moderators, together with their review decision. Reports
+                are not shared with the reported organisation. We store organisations
+                you block to hide their browsing content. We also store notification records and the
                 preferences you save, such as causes and notification choices.
               </li>
               <li>
@@ -221,7 +225,8 @@ export default function PrivacyPolicyPage() {
             </p>
             <p>
               Once accepted, deletion removes your GivHive account, personal pledge
-              history and notes, saved preferences, notifications, and linked account
+              history and notes, saved preferences, notifications, safety reports,
+              organisation blocks, and linked account
               audit entries. Outstanding pledges are cancelled and their reserved
               quantities released where the need remains open. Aggregate quantities
               already delivered remain in the organisation&apos;s food need totals.

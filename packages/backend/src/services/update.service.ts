@@ -1,4 +1,5 @@
 import db from '../config/database';
+import { visibleOrganisation } from './safety.service';
 import { AppError } from '../middleware/error';
 import logger from '../utils/logger';
 import {
@@ -106,6 +107,7 @@ export class UpdateService {
         ngoId: true,
         status: true,
         isFlagged: true,
+        moderationStatus: true,
       },
     });
 
@@ -163,8 +165,8 @@ export class UpdateService {
 
   // Get a single update by ID — public if published
   async getUpdateById(updateId: string, requesterId?: string) {
-    const update = await db.update.findUnique({
-      where: { id: updateId },
+    const update = await db.update.findFirst({
+      where: { id: updateId, status: 'PUBLISHED', isFlagged: false, moderationStatus: 'APPROVED', ngo: { status: 'APPROVED', isActive: true, ...visibleOrganisation(requesterId) } },
       select: {
         id: true,
         title: true,
@@ -174,6 +176,7 @@ export class UpdateService {
         status: true,
         isPinned: true,
         isFlagged: true,
+        moderationStatus: true,
         coverImageUrl: true,
         viewsCount: true,
         publishedAt: true,
@@ -222,16 +225,19 @@ export class UpdateService {
     limit?: string,
     type?: string,
     ngoId?: string,
-    search?: string
+    search?: string,
+    userId?: string
   ) {
     const params = getPaginationParams(page, limit);
 
     const where: any = {
       status: UpdateStatus.PUBLISHED,
       isFlagged: false,
+      moderationStatus: 'APPROVED',
       ngo: {
         status: NGOStatus.APPROVED,
         isActive: true,
+        ...visibleOrganisation(userId),
       },
     };
 
@@ -336,6 +342,7 @@ export class UpdateService {
     const updated = await db.update.update({
       where: { id: updateId },
       data: {
+        moderationStatus: 'PENDING',
         ...(input.title && { title: input.title.trim() }),
         ...(input.body && { body: input.body.trim() }),
         ...(input.summary !== undefined && {
@@ -439,6 +446,7 @@ export class UpdateService {
           status: true,
           isPinned: true,
           isFlagged: true,
+        moderationStatus: true,
           viewsCount: true,
           publishedAt: true,
           createdAt: true,
@@ -458,6 +466,7 @@ export class UpdateService {
         id: true,
         status: true,
         isFlagged: true,
+        moderationStatus: true,
       },
     });
 
@@ -483,6 +492,7 @@ export class UpdateService {
         id: true,
         title: true,
         isFlagged: true,
+        moderationStatus: true,
         flaggedReason: true,
         flaggedAt: true,
         status: true,
@@ -505,6 +515,7 @@ export class UpdateService {
         title: true,
         status: true,
         isFlagged: true,
+        moderationStatus: true,
         ngoId: true,
       },
     });
@@ -542,6 +553,7 @@ export class UpdateService {
           type: true,
           status: true,
           isFlagged: true,
+        moderationStatus: true,
           flaggedReason: true,
           viewsCount: true,
           publishedAt: true,

@@ -56,7 +56,14 @@ export default function SupportPage() {
       </InfoSection>
       <InfoSection title="Report content, an organisation, or abusive behaviour">
         <p>
-          Email support with the subject “Content or safety report”. Include the
+          In the mobile app, open an organisation profile, update, or food need
+          and choose Report. Select a reason, describe your concern, and send it
+          privately to GivHive. You can also choose Block organisation to hide its
+          browsing content. Manage blocks from Profile → Blocked organisations.
+          Existing pledges stay in Activity so you can manage them.
+        </p>
+        <p>
+          You can also email support with the subject “Content or safety report”. Include the
           organisation or post name, a link or reference if available, what happened,
           and when. Share only the information needed to investigate. You can also
           report suspected fraud, impersonation, harassment, or an unsafe donation

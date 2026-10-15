@@ -88,3 +88,11 @@ export const updateApi = {
 };
 
 export default apiClient;
+
+export const safetyApi = {
+  report: (data: { targetType: string; targetId: string; reason: string; details: string }) =>
+    apiClient.post('/api/safety/reports', data),
+  blocks: () => apiClient.get<{ data: { items: { ngoId: string; ngo: { name: string } }[] } }>('/api/safety/blocks'),
+  block: (ngoId: string) => apiClient.post('/api/safety/blocks', { ngoId }),
+  unblock: (ngoId: string) => apiClient.delete(`/api/safety/blocks/${ngoId}`),
+};

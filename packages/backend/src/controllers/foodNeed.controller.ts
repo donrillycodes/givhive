@@ -101,7 +101,7 @@ export class FoodNeedController {
   ): Promise<void> {
     try {
       const id = getParam(req.params.id);
-      const foodNeed = await foodNeedService.getFoodNeedById(id);
+      const foodNeed = await foodNeedService.getFoodNeedById(id, req.user?.id);
       responses.ok(res, 'Food need retrieved successfully', { foodNeed });
     } catch (error) {
       next(error);
@@ -121,7 +121,8 @@ export class FoodNeedController {
         getQuery(req.query.category),
         getQuery(req.query.ngoId),
         getQuery(req.query.isUrgent),
-        getQuery(req.query.search)
+        getQuery(req.query.search),
+        req.user?.id
       );
 
       responses.ok(res, 'Food needs retrieved successfully', result);

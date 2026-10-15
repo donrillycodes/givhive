@@ -1,3 +1,4 @@
+import { SafetyActions } from "../../components/safety/SafetyActions";
 import { CASH_DONATIONS_ENABLED } from "../../lib/features";
 import {
   View,
@@ -191,6 +192,7 @@ export default function NGOProfileScreen() {
             )}
           </View>
 
+          <SafetyActions targetType="NGO" targetId={ngo.id} ngoId={ngo.id} />
           <View style={styles.bottomPadding} />
         </ScrollView>
       </SafeAreaView>

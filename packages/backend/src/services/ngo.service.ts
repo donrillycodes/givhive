@@ -1,4 +1,5 @@
 import db from '../config/database';
+import { visibleOrganisation } from './safety.service';
 import { AppError } from '../middleware/error';
 import logger from '../utils/logger';
 import { generateUniqueSlug } from '../utils/slugify';
@@ -130,11 +131,12 @@ export class NGOService {
   }
 
   // Get a single NGO by ID or slug
-  async getNGO(identifier: string) {
+  async getNGO(identifier: string, userId?: string) {
     // Try to find by ID first, then by slug
     const ngo = await db.nGO.findFirst({
       where: {
         OR: [{ id: identifier }, { slug: identifier }],
+        ...visibleOrganisation(userId),
         status: NGOStatus.APPROVED,
         isActive: true,
       },
@@ -164,7 +166,7 @@ export class NGOService {
         createdAt: true,
         // Include recent updates
         updates: {
-          where: { status: 'PUBLISHED' },
+          where: { status: 'PUBLISHED', isFlagged: false, moderationStatus: 'APPROVED' },
           orderBy: { publishedAt: 'desc' },
           take: 5,
           select: {
@@ -178,7 +180,7 @@ export class NGOService {
         },
         // Include active food needs
         foodNeeds: {
-          where: { status: 'OPEN' },
+          where: { status: 'OPEN', isSafetyHidden: false, moderationStatus: 'APPROVED' },
           orderBy: [{ isUrgent: 'desc' }, { createdAt: 'desc' }],
           take: 10,
           select: {
@@ -204,7 +206,7 @@ export class NGOService {
   }
 
   // Get all approved NGOs with filters
-  async getAllNGOs(filters: NGOQueryFilters) {
+  async getAllNGOs(filters: NGOQueryFilters, userId?: string) {
     const params = getPaginationParams(
       filters.page?.toString(),
       filters.limit?.toString()
@@ -213,6 +215,7 @@ export class NGOService {
     const where: any = {
       status: NGOStatus.APPROVED,
       isActive: true,
+      ...visibleOrganisation(userId),
     };
 
     if (filters.category) {
@@ -254,7 +257,7 @@ export class NGOService {
           _count: {
             select: {
               foodNeeds: {
-                where: { status: 'OPEN' },
+                where: { status: 'OPEN', isSafetyHidden: false, moderationStatus: 'APPROVED' },
               },
             },
           },

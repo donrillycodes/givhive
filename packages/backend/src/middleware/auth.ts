@@ -108,3 +108,10 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
 // accounts to remove their data instead of treating suspension as a retention rule.
 export const authenticateForAccountDeletion = (req: Request, res: Response, next: NextFunction) =>
   authenticateUser(req, res, next, true);
+
+// Public browsing stays available without a token; supplied tokens must be valid.
+export const optionalAuthenticate = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.headers.authorization) return next();
+  res.set('Cache-Control', 'private, no-store');
+  return authenticate(req, res, next);
+};

@@ -1,3 +1,4 @@
+import { SafetyActions } from "../../components/safety/SafetyActions";
 import {
   View,
   Text,
@@ -340,7 +341,8 @@ export default function FoodNeedScreen() {
               </View>
             )}
 
-            <View style={styles.bottomPadding} />
+            <SafetyActions targetType="FOOD_NEED" targetId={need.id} ngoId={need.ngo.id} />
+          <View style={styles.bottomPadding} />
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>

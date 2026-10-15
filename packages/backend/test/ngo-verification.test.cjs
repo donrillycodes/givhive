@@ -103,10 +103,10 @@ test('identity changes remove current approval and return the organisation to re
   assert.equal(state.current().verifiedById, null);
 });
 
-test('ordinary description edits and unchanged identity fields preserve approval', async () => {
+test('public description edits return an approved profile to review', async () => {
   const state = setup({ status: 'APPROVED' });
   await service.updateNGO('ngo-1', { ...application, description: 'Updated description' }, 'owner-1');
-  assert.equal(state.current().status, 'APPROVED');
+  assert.equal(state.current().status, 'PENDING');
 });
 
 test('applicants cannot restore their own approval or edit review evidence', async () => {
@@ -151,4 +151,10 @@ test('evidence storage failure prevents a success response or approval email', a
   db.nGOReview.create = async () => { throw new Error('Storage unavailable'); };
   await assert.rejects(service.approveNGO('ngo-1', 'admin-1', review), /Storage unavailable/);
   assert.equal(emails.length, 0);
+});
+
+test('unchanged profile values preserve approval', async () => {
+  const state = setup({ status: 'APPROVED' });
+  await service.updateNGO('ngo-1', { ...application }, 'owner-1');
+  assert.equal(state.current().status, 'APPROVED');
 });

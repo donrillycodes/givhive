@@ -128,6 +128,7 @@ export type FoodItemCategory =
   | "OTHER";
 
 export interface FoodNeed {
+  moderationStatus?: "PENDING" | "APPROVED" | "REJECTED";
   id: string;
   title: string;
   description?: string;
@@ -182,6 +183,7 @@ export type UpdateType =
 export type UpdateStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
 
 export interface NGOUpdate {
+  moderationStatus?: "PENDING" | "APPROVED" | "REJECTED";
   id: string;
   title: string;
   body: string;

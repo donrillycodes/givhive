@@ -5,9 +5,10 @@ export const identityFields = [
   'name', 'email', 'phone', 'craNumber', 'orgType', 'registrationNumber',
   'primaryContactName', 'primaryContactTitle', 'website', 'address',
   'city', 'province', 'country', 'postalCode', 'foodDonationDetails',
+  'description', 'mission', 'category', 'logoUrl', 'coverUrl',
 ] as const;
 
-const textFields = [...identityFields, 'description', 'mission', 'category', 'logoUrl', 'coverUrl'] as const;
+const textFields = identityFields;
 const orgTypes = ['REGISTERED_CHARITY', 'NON_PROFIT', 'COMMUNITY_GROUP', 'SOCIAL_ENTERPRISE'];
 const fieldLabels: Record<string, string> = {
   name: 'organisation name', email: 'contact email', phone: 'organisation phone',

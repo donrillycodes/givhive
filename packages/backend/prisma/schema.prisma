@@ -145,6 +145,7 @@ enum AdminDepartment {
 }
 
 enum AuditAction {
+  SAFETY_REPORT_REVIEWED
   USER_CREATED
   USER_SUSPENDED
   USER_REACTIVATED
@@ -241,6 +242,8 @@ model User {
   sentInvitesAdmin AdminMember[] @relation("AdminMemberInviter")
   sentInvitations     Invitation[] @relation("InvitationInviter")
   acceptedInvitations Invitation[] @relation("InvitationAcceptedBy")
+  safetyReports SafetyReport[]
+  blockedOrganisations BlockedOrganisation[]
   donorPreference DonorPreference?
 
   createdAt DateTime @default(now())
@@ -296,6 +299,7 @@ model NGO {
   verifiedById String?
   verifiedBy   User?   @relation("NGOVerifier", fields: [verifiedById], references: [id])
   reviews      NGOReview[]
+  blockedBy BlockedOrganisation[]
 
   members     NGOMember[]
   invitations Invitation[]
@@ -450,6 +454,8 @@ model NGOReview {
 }
 
 model FoodNeed {
+  moderationStatus String @default("PENDING")
+  isSafetyHidden Boolean @default(false)
   id          String           @id @default(uuid())
   title       String
   description String?
@@ -538,6 +544,7 @@ model FoodPledge {
 }
 
 model Update {
+  moderationStatus String @default("PENDING")
   id          String       @id @default(uuid())
   title       String
   body        String
@@ -722,3 +729,37 @@ model Invitation {
 // Notifications - fast unread count and feed queries
 // AuditLog - fast entity history lookups
 // AuditLog - fast actor history for security reviews
+
+model SafetyReport {
+  id String @id @default(uuid())
+  reporterId String
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  targetType String
+  targetId String
+  ngoId String
+  reason String
+  details String
+  snapshot Json
+  status String @default("OPEN")
+  resolution String?
+  reviewedById String?
+  reviewedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@unique([reporterId, targetType, targetId])
+  @@index([status, createdAt])
+  @@map("safety_reports")
+}
+
+model BlockedOrganisation {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ngoId String
+  ngo NGO @relation(fields: [ngoId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, ngoId])
+  @@index([ngoId])
+  @@map("blocked_organisations")
+}

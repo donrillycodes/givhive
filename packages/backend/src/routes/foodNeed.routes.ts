@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import foodNeedController from '../controllers/foodNeed.controller';
-import { authenticate } from '../middleware/auth';
+import { authenticate, optionalAuthenticate } from '../middleware/auth';
 import { requirePermission, requireRole } from '../middleware/rbac';
 import { Role } from '@prisma/client';
 
@@ -10,11 +10,11 @@ const router = Router();
 
 // Browse all open food needs
 // GET /api/food-needs
-router.get('/', foodNeedController.getAllFoodNeeds.bind(foodNeedController));
+router.get('/', optionalAuthenticate, foodNeedController.getAllFoodNeeds.bind(foodNeedController));
 
 // Get a single food need by ID
 // GET /api/food-needs/:id
-router.get('/:id', foodNeedController.getFoodNeedById.bind(foodNeedController));
+router.get('/:id', optionalAuthenticate, foodNeedController.getFoodNeedById.bind(foodNeedController));
 
 // ── NGO routes ─────────────────────────────────────────────────────────────────
 
