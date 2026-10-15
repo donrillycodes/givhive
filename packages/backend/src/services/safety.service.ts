@@ -36,7 +36,7 @@ export class SafetyService {
       if (!update) throw new AppError('Update not found', 404);
       ngoId = update.ngoId; snapshot = update;
     } else {
-      const need = await db.foodNeed.findFirst({ where: { id: data.targetId, isSafetyHidden: false, moderationStatus: 'APPROVED', ngo: { status: 'APPROVED', isActive: true } },
+      const need = await db.foodNeed.findFirst({ where: { id: data.targetId, isSafetyHidden: false, ngo: { status: 'APPROVED', isActive: true } },
         select: { id: true, ngoId: true, title: true, description: true, itemName: true, dropOffInstructions: true, imageUrl: true, postedById: true } });
       if (!need) throw new AppError('Food need not found', 404);
       ngoId = need.ngoId; snapshot = need;
@@ -66,26 +66,20 @@ export class SafetyService {
 
   async pending() {
     const ngo = { status: 'APPROVED' as const, isActive: true };
-    const [updates, needs] = await Promise.all([
-      db.update.findMany({ where: { moderationStatus: 'PENDING', status: 'PUBLISHED', isFlagged: false, ngo },
-        orderBy: { updatedAt: 'asc' }, take: 25, select: { id: true, title: true, body: true, summary: true, type: true, coverImageUrl: true, updatedAt: true, ngo: { select: { name: true } } } }),
-      db.foodNeed.findMany({ where: { moderationStatus: 'PENDING', status: 'OPEN', isSafetyHidden: false, ngo },
-        orderBy: { updatedAt: 'asc' }, take: 25, select: { id: true, title: true, description: true, itemName: true, itemCategory: true, unit: true, quantityRequired: true, isUrgent: true, deadline: true, dropOffAddress: true, dropOffInstructions: true, imageUrl: true, updatedAt: true, ngo: { select: { name: true } } } }),
-    ]);
-    return [...updates.map(item => ({ ...item, targetType: 'UPDATE' })), ...needs.map(item => ({ ...item, targetType: 'FOOD_NEED' }))];
+    const updates = await db.update.findMany({ where: { moderationStatus: 'PENDING', status: 'PUBLISHED', isFlagged: false, ngo },
+      orderBy: { updatedAt: 'asc' }, take: 25, select: { id: true, title: true, body: true, summary: true, type: true, coverImageUrl: true, updatedAt: true, ngo: { select: { name: true } } } });
+    return updates.map(item => ({ ...item, targetType: 'UPDATE' }));
   }
 
   async reviewPending(targetType: string, targetId: string, actorId: string, action: unknown, version: unknown, notes: unknown) {
-    if (!['UPDATE', 'FOOD_NEED'].includes(targetType) || !['APPROVE', 'REJECT'].includes(String(action)) ||
+    if (targetType !== 'UPDATE' || !['APPROVE', 'REJECT'].includes(String(action)) ||
         typeof version !== 'string' || !Number.isFinite(Date.parse(version)) || typeof notes !== 'string' || notes.trim().length < 5 || notes.trim().length > 1000) {
       throw new AppError('A valid content version, decision, and 5–1000 characters of review notes are required.', 400);
     }
     return db.$transaction(async tx => {
       const where = { id: targetId, updatedAt: new Date(version), moderationStatus: 'PENDING', ngo: { status: 'APPROVED' as const, isActive: true } };
       const moderationStatus = action === 'APPROVE' ? 'APPROVED' : 'REJECTED';
-      const result = targetType === 'UPDATE'
-        ? await tx.update.updateMany({ where: { ...where, status: 'PUBLISHED', isFlagged: false }, data: { moderationStatus, ...(action === 'REJECT' ? { status: 'DRAFT' as const } : {}) } })
-        : await tx.foodNeed.updateMany({ where: { ...where, status: 'OPEN', isSafetyHidden: false }, data: { moderationStatus } });
+      const result = await tx.update.updateMany({ where: { ...where, status: 'PUBLISHED', isFlagged: false }, data: { moderationStatus, ...(action === 'REJECT' ? { status: 'DRAFT' as const } : {}) } });
       if (!result.count) throw new AppError('Content changed or was already reviewed. Refresh before deciding.', 409);
       await tx.auditLog.create({ data: { action: 'SAFETY_REPORT_REVIEWED', actorId, actorRole: 'ADMIN', entityType: targetType === 'UPDATE' ? 'UPDATE' : 'FOOD_NEED', entityId: targetId,
         notes: `Pre-publication ${String(action)}: ${notes.trim()}` } });

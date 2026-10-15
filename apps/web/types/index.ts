@@ -128,7 +128,6 @@ export type FoodItemCategory =
   | "OTHER";
 
 export interface FoodNeed {
-  moderationStatus?: "PENDING" | "APPROVED" | "REJECTED";
   id: string;
   title: string;
   description?: string;

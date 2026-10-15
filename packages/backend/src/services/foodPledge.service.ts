@@ -16,7 +16,7 @@ export class FoodPledgeService {
   async createFoodPledge(input: CreateFoodPledgeInput, donorId: string) {
     // Verify the food need exists and is open
     const foodNeed = await db.foodNeed.findFirst({
-      where: { id: input.foodNeedId, isSafetyHidden: false, moderationStatus: 'APPROVED', ngo: visibleOrganisation(donorId) },
+      where: { id: input.foodNeedId, isSafetyHidden: false, ngo: visibleOrganisation(donorId) },
       select: {
         id: true,
         title: true,

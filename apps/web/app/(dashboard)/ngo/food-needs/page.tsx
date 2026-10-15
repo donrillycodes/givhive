@@ -140,7 +140,7 @@ export default function NGOFoodNeedsPage() {
       <Header
         title="Food Needs"
         accent="Needs"
-        subtitle="Submit food requests for moderator review. New or edited needs appear to donors after approval."
+        subtitle="Post and manage food requests. Food needs from approved organisations appear to donors immediately."
       />
 
       <div className="space-y-5">
@@ -429,7 +429,7 @@ function FoodNeedCard({
           <div className="flex items-center gap-2 flex-wrap">
             <p className="text-sm font-semibold text-ink">{need.title}</p>
             <Badge tone={statusToTone(need.status)} size="sm">
-              {need.moderationStatus === "PENDING" ? "Awaiting review" : need.moderationStatus === "REJECTED" ? "Review rejected" : need.status}
+              {need.status}
             </Badge>
             {need.isUrgent && (
               <Badge tone="danger" size="sm">

@@ -34,7 +34,7 @@ test('reports, permissions, persistent blocks, publication review, removal and d
   let server;
   try {
     await db.nGOMember.create({ data: { userId: owner.id, invitedById: owner.id, ngoId: ngo.id, role: 'MANAGER', canPostNeeds: true, canPostUpdates: true, status: 'ACTIVE' } });
-    const makeNeed = (org, author, moderationStatus = 'APPROVED') => db.foodNeed.create({ data: { title: `Rice ${suffix}`, itemName: 'Rice', itemCategory: 'GRAINS', unit: 'bags', quantityRequired: 10, ngoId: org.id, postedById: author.id, moderationStatus } });
+    const makeNeed = (org, author) => db.foodNeed.create({ data: { title: `Rice ${suffix}`, itemName: 'Rice', itemCategory: 'GRAINS', unit: 'bags', quantityRequired: 10, ngoId: org.id, postedById: author.id } });
     const need = await makeNeed(ngo, owner), need2 = await makeNeed(ngo2, owner2);
     const update = await db.update.create({ data: { ngoId: ngo.id, postedById: owner.id, title: `Update ${suffix}`, body: 'Food distribution update for the community.', type: 'ANNOUNCEMENT', status: 'PUBLISHED', moderationStatus: 'APPROVED' } });
     const input = { targetType: 'UPDATE', targetId: update.id, reason: 'OTHER', details: 'Please investigate this update.', ngoId: ngo2.id };
@@ -61,22 +61,23 @@ test('reports, permissions, persistent blocks, publication review, removal and d
     await safety.unblock(donor.id, ngo.id);
     assert.equal((await ngos.getAllNGOs({ search: suffix }, donor.id)).items.length, 2);
 
-    const pending = await makeNeed(ngo, owner, 'PENDING');
-    await assert.rejects(() => needs.getFoodNeedById(pending.id), error => error.statusCode === 404);
-    await assert.rejects(() => safety.report(donor.id, { ...input, targetType: 'FOOD_NEED', targetId: pending.id }), error => error.statusCode === 404);
-    const oldVersion = pending.updatedAt.toISOString();
-    const edited = await db.foodNeed.update({ where: { id: pending.id }, data: { title: 'Changed content', updatedAt: new Date(pending.updatedAt.getTime() + 1000) } });
-    await assert.rejects(() => safety.reviewPending('FOOD_NEED', pending.id, admin.id, 'APPROVE', oldVersion, 'Reviewed text'), error => error.statusCode === 409);
-    await safety.reviewPending('FOOD_NEED', pending.id, admin.id, 'APPROVE', edited.updatedAt.toISOString(), 'Reviewed text and arrangements');
-    assert.equal((await needs.getFoodNeedById(pending.id)).id, pending.id);
-    await needs.updateFoodNeed(pending.id, { description: 'New content that needs another review' }, owner.id);
-    await assert.rejects(() => needs.getFoodNeedById(pending.id), error => error.statusCode === 404);
+    const immediate = await needs.createFoodNeed({ title: 'New immediately visible food need', itemName: 'Rice', itemCategory: 'GRAINS', unit: 'bags', quantityRequired: 10 }, owner.id);
+    assert.equal((await needs.getFoodNeedById(immediate.id)).id, immediate.id);
+    assert.ok((await needs.getAllFoodNeeds('1', '20', undefined, ngo.id)).items.some(item => item.id === immediate.id));
+    assert.equal((await safety.pending()).some(item => item.id === immediate.id), false);
+    await needs.updateFoodNeed(immediate.id, { description: 'Edited food need remains immediately visible' }, owner.id);
+    assert.equal((await needs.getFoodNeedById(immediate.id)).description, 'Edited food need remains immediately visible');
+    await assert.rejects(() => safety.reviewPending('FOOD_NEED', immediate.id, admin.id, 'REJECT', new Date().toISOString(), 'No review gate for food needs'), error => error.statusCode === 400);
+    await safety.report(donor.id, { ...input, targetType: 'FOOD_NEED', targetId: immediate.id });
 
     const draft = await db.update.create({ data: { ngoId: ngo.id, postedById: owner.id, title: 'Draft for review', body: 'A new update awaiting moderator approval.', type: 'ANNOUNCEMENT' } });
     await updates.publishUpdate(draft.id, owner.id);
     await assert.rejects(() => updates.getUpdateById(draft.id), error => error.statusCode === 404);
     const submitted = (await safety.pending()).find(item => item.id === draft.id);
-    await safety.reviewPending('UPDATE', draft.id, admin.id, 'REJECT', submitted.updatedAt.toISOString(), 'Needs a clearer description');
+    await db.update.update({ where: { id: draft.id }, data: { updatedAt: new Date(submitted.updatedAt.getTime() + 1000) } });
+    await assert.rejects(() => safety.reviewPending('UPDATE', draft.id, admin.id, 'APPROVE', submitted.updatedAt.toISOString(), 'Stale review must fail'), error => error.statusCode === 409);
+    const currentDraft = await db.update.findUniqueOrThrow({ where: { id: draft.id } });
+    await safety.reviewPending('UPDATE', draft.id, admin.id, 'REJECT', currentDraft.updatedAt.toISOString(), 'Needs a clearer description');
     assert.equal((await db.update.findUniqueOrThrow({ where: { id: draft.id } })).status, 'DRAFT');
     await updates.updateContent(draft.id, { body: 'Corrected update for the community.' }, owner.id);
     await updates.publishUpdate(draft.id, owner.id);

@@ -82,8 +82,10 @@ export default function TermsPage() {
         <p>
           Report concerning content or conduct using the instructions on our
           <Link href="/support" className="underline"> support page</Link>.
-          New updates and food needs need moderator approval before appearing
-          publicly; editing them requires another review. Public profile changes
+          Food needs from approved organisations appear immediately, including
+          edits, and can be reported or removed after publication. Updates need
+          moderator approval before appearing publicly; editing updates requires
+          another review. Public profile changes
           can also return an approved organisation to review. Donors can report
           content and block an organisation in the app.
           We may review reports, remove content, restrict access, or suspend

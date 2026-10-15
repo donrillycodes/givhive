@@ -454,7 +454,6 @@ model NGOReview {
 }
 
 model FoodNeed {
-  moderationStatus String @default("PENDING")
   isSafetyHidden Boolean @default(false)
   id          String           @id @default(uuid())
   title       String

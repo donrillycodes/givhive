@@ -180,7 +180,7 @@ export class NGOService {
         },
         // Include active food needs
         foodNeeds: {
-          where: { status: 'OPEN', isSafetyHidden: false, moderationStatus: 'APPROVED' },
+          where: { status: 'OPEN', isSafetyHidden: false },
           orderBy: [{ isUrgent: 'desc' }, { createdAt: 'desc' }],
           take: 10,
           select: {
@@ -257,7 +257,7 @@ export class NGOService {
           _count: {
             select: {
               foodNeeds: {
-                where: { status: 'OPEN', isSafetyHidden: false, moderationStatus: 'APPROVED' },
+                where: { status: 'OPEN', isSafetyHidden: false },
               },
             },
           },
