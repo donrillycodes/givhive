@@ -16,7 +16,7 @@ import Animated, {
   ZoomIn,
   ZoomOut,
 } from "react-native-reanimated";
-import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import type { BottomTabBarProps } from "expo-router/js-tabs";
 import { COLORS, FONT, SPACE, RADII } from "../../lib/utils";
 import {
   TabBarCollapseProvider,
@@ -110,11 +110,11 @@ function FloatingTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           <BlurView
             intensity={scheme === "dark" ? 45 : 65}
             tint={theme.tint}
-            style={StyleSheet.absoluteFillObject}
+            style={StyleSheet.absoluteFill}
           />
           <View
             style={[
-              StyleSheet.absoluteFillObject,
+              StyleSheet.absoluteFill,
               { backgroundColor: theme.overlay },
             ]}
           />
