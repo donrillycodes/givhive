@@ -11,7 +11,7 @@ From this directory, with nvm installed:
 nvm install
 nvm use
 npm ci
-npm start -- --port 8082
+npm start
 ```
 
 The `.nvmrc` selects Node 22; Node 22.13 or newer is required. Node 22.23.3
@@ -19,9 +19,10 @@ was used for validation. Keep the ignored `.env` file configured with the
 existing API URL and Firebase public client settings. Never commit it.
 
 Scan this server's QR code using SDK 57 Expo Go on a phone on the same network.
-For isolated testing, port 8082 avoids the SDK 54 server on port 8081. The
-separate simulator is named **GivHive SDK 57**. Select it with Shift+i in Expo
-or open it through Device Hub.
+The main project uses port 8081 by default. If the isolated upgrade worktree
+is also running, it uses port 8082 (`npm start -- --port 8082`). Both copies
+now use SDK 57. The separate test simulator is named **GivHive SDK 57**.
+Select it with Shift+i in Expo or open it through Device Hub.
 
 ## Upgrade notes
 
@@ -51,8 +52,9 @@ project generation, and both production JavaScript exports passed during the
 upgrade. SDK 57 Expo Go startup, onboarding, registration-screen navigation,
 and sign-in-screen navigation also passed in the dedicated iOS 27 simulator.
 Native project generation is not an Xcode archive or TestFlight build.
-Physical-device login and the full donor workflow still require manual testing
-before merging the upgrade into main.
+The owner also verified sign-in on a physical iPhone 14 before approving the
+merge into main. Full donor workflows and a native release build still require
+verification before release.
 
 `npm audit` reported 34 advisories (23 high, 11 moderate, zero critical) on
 2026-10-15. Several are inherited from Expo/React Native build tooling; Firebase
