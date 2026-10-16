@@ -5,6 +5,7 @@ import { AppError } from '../middleware/error';
 import { assertRecentAuthentication } from '../utils/recentAuthentication';
 import emailService from './email.service';
 import logger from '../utils/logger';
+import profilePhotos from './profilePhoto.service';
 
 export class AccountDeletionService {
   private processingQueue = false;
@@ -77,7 +78,9 @@ export class AccountDeletionService {
             { entityType: 'DONATION', entityId: { in: donations.map(donation => donation.id) } },
           ] } });
 
-          const deletion = await tx.accountDeletion.create({ data: { firebaseUid, email: user.email } });
+          const avatarPublicId = profilePhotos.isConfigured() || profilePhotos.isManagedPhoto(user.avatarUrl, firebaseUid)
+            ? profilePhotos.publicId(firebaseUid) : null;
+          const deletion = await tx.accountDeletion.create({ data: { firebaseUid, email: user.email, avatarPublicId } });
           await tx.user.delete({ where: { id: userId } });
           await tx.auditLog.create({ data: {
             action: 'USER_DELETED', actorRole: 'SYSTEM', entityType: 'USER',
@@ -101,6 +104,10 @@ export class AccountDeletionService {
 
   private async finishDeletion(job: AccountDeletion, notify: boolean): Promise<boolean> {
     try {
+      if (job.avatarPublicId) {
+        await profilePhotos.remove(job.avatarPublicId);
+        await db.accountDeletion.updateMany({ where: { id: job.id }, data: { avatarPublicId: null } });
+      }
       if (job.firebaseUid) {
         try {
           await admin.auth().deleteUser(job.firebaseUid);

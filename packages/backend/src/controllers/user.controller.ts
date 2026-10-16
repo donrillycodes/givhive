@@ -46,21 +46,7 @@ export class UserController {
         return;
       }
 
-      const { firstName, lastName, avatarUrl } = req.body;
-
-      if (!firstName && !lastName && !avatarUrl) {
-        responses.badRequest(
-          res,
-          'At least one field must be provided to update'
-        );
-        return;
-      }
-
-      const user = await userService.updateProfile(req.user.id, {
-        firstName,
-        lastName,
-        avatarUrl,
-      });
+      const user = await userService.updateProfile(req.user.id, req.body);
 
       responses.ok(res, 'Profile updated successfully', { user });
     } catch (error) {

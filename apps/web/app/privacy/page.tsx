@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 const LAST_UPDATED =
-  "Last updated: October 14, 2026";
+  "Last updated: October 15, 2026";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -68,7 +68,8 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc pl-6 space-y-3">
               <li>
                 <strong>Accounts:</strong> your name, email address, account role,
-                Firebase account identifier, and any profile image URL you provide.
+                Firebase account identifier, and an optional profile photo and its URL.
+                Selected profile photos are resized and uploaded only when you save.
                 When you register through our API, your password is passed to Firebase
                 Authentication to create your account. We do not store passwords in
                 our application database. Sign-in, password resets, and the password
@@ -186,6 +187,7 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc pl-6 space-y-2">
               <li><strong>Google Firebase:</strong> account authentication and password-reset messages.</li>
               <li><strong>Railway:</strong> backend application and PostgreSQL database hosting.</li>
+              <li><strong>Cloudinary:</strong> storage, resizing, and delivery of optional profile photos. Photo URLs can be retrieved by anyone who has the URL.</li>
               <li><strong>Vercel:</strong> website delivery and website analytics.</li>
               <li><strong>Resend:</strong> transactional emails, including pledge and account-deletion notices.</li>
               <li><strong>Stripe:</strong> historical payment processing and related payment records while new payments are paused.</li>
@@ -238,9 +240,11 @@ export default function PrivacyPolicyPage() {
               deletion audit event is kept without your account identifier.
             </p>
             <p>
-              Firebase account removal is attempted immediately and retried in the
-              background if the provider is unavailable. We temporarily retain your
-              Firebase identifier and email address until that removal succeeds.
+              Profile-photo and Firebase account removal are attempted immediately
+              and retried in the background if a provider is unavailable. We temporarily
+              retain the photo asset identifier, Firebase identifier and email address
+              until that removal succeeds. Cached photo copies may take a short time
+              to clear after removal.
               After removal, completion-email delivery is retried only within seven
               days of the original request; the address is cleared when delivery
               succeeds or that retry period has expired. You are signed out when

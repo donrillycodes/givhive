@@ -12,7 +12,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCallback } from "react";
 import { openPrivacyPolicy, openTerms } from "../../lib/legal";
 import { useAuth } from "../../hooks/useAuth";
-import { COLORS, FONT, SPACE, RADII, SHADOW, getInitials } from "../../lib/utils";
+import { COLORS, FONT, SPACE, RADII, SHADOW } from "../../lib/utils";
+import { UserAvatar } from "../../components/shared/UserAvatar";
 import { useTabBarScrollHandler } from "../../lib/tabBarScroll";
 import { useNavigationStore } from "../../store/authStore";
 
@@ -106,11 +107,7 @@ export default function ProfileScreen() {
 
         {/* User card */}
         <View style={styles.userCard}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {user ? getInitials(user.firstName, user.lastName) : "U"}
-            </Text>
-          </View>
+          <UserAvatar user={user} />
           <View style={styles.userInfo}>
             <Text style={styles.userName}>
               {user?.firstName} {user?.lastName}
@@ -122,7 +119,8 @@ export default function ProfileScreen() {
               </Text>
             </View>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/edit-profile')}
+            accessibilityRole="button" accessibilityLabel="Edit profile" hitSlop={12}>
             <Ionicons name="create-outline" size={20} color={COLORS.textSub} />
           </TouchableOpacity>
         </View>
@@ -198,20 +196,6 @@ const styles = StyleSheet.create({
     gap: SPACE.lg,
     ...SHADOW.card,
     marginBottom: SPACE["2xl"],
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: RADII.full,
-    backgroundColor: COLORS.primaryLight,
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-  },
-  avatarText: {
-    fontSize: FONT.xl,
-    fontWeight: "800",
-    color: COLORS.primary,
   },
   userInfo: {
     flex: 1,

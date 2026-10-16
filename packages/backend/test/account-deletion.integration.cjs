@@ -12,6 +12,7 @@ let providerFails = false;
 const firebaseCalls = [];
 const mailCalls = [];
 stub('../dist/config/database', db);
+stub('../dist/services/profilePhoto.service', { isConfigured: () => false, isManagedPhoto: () => false });
 stub('../dist/config/firebase', { auth: () => ({ async deleteUser(uid) {
   firebaseCalls.push(uid);
   if (providerFails) throw new Error('Temporary provider outage');

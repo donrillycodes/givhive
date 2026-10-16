@@ -33,6 +33,18 @@ export const authLimiter = rateLimit({
     },
     });
 
+// Applied after authentication and only when a profile photo is changed.
+export const profilePhotoLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 10,
+    keyGenerator: req => req.user!.id,
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (_req, res) => {
+        sendError({ res, statusCode: 429, message: 'Too many photo changes. Please try again in an hour.' });
+    },
+});
+
 // Donation rate limiter — applies to payment routes
 // 20 requests per hour per IP address
 export const donationLimiter = rateLimit({

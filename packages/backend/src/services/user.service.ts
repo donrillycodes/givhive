@@ -4,6 +4,8 @@ import { AppError } from '../middleware/error';
 import logger from '../utils/logger';
 import { getPaginationParams, buildPaginatedResponse } from '../utils/pagination';
 import { Role } from '@prisma/client';
+import { parseProfileUpdate } from '../utils/userProfile';
+import profilePhotos from './profilePhoto.service';
 
 export class UserService {
     // Get a user's public profile by ID
@@ -32,55 +34,46 @@ export class UserService {
     // Update a user's profile
     async updateProfile(
         userId: string,
-        data: {
-        firstName?: string;
-        lastName?: string;
-        avatarUrl?: string;
-        }
+        data: unknown
     ) {
-        // Validate name fields if provided
-        if (data.firstName && data.firstName.trim().length < 2) {
-        throw new AppError(
-            'First name must be at least 2 characters long',
-            400
-        );
-        }
+        const update = parseProfileUpdate(data);
+        const { photoBase64, ...names } = update;
 
-        if (data.lastName && data.lastName.trim().length < 2) {
-        throw new AppError(
-            'Last name must be at least 2 characters long',
-            400
-        );
-        }
-
-        const updatedUser = await db.user.update({
+        const select = {
+            id: true, email: true, firstName: true, lastName: true, role: true,
+            avatarUrl: true, isActive: true, createdAt: true, updatedAt: true, firebaseUid: true,
+        } as const;
+        const savedUser = photoBase64 === undefined ? await db.user.update({
         where: { id: userId },
-        data: {
-            ...(data.firstName && { firstName: data.firstName.trim() }),
-            ...(data.lastName && { lastName: data.lastName.trim() }),
-            ...(data.avatarUrl && { avatarUrl: data.avatarUrl }),
-        },
-        select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-            role: true,
-            avatarUrl: true,
-            updatedAt: true,
-        },
-    });
+        data: names, select,
+    }) : await db.$transaction(async (tx) => {
+        // Serialize photo changes with each other and account deletion.
+        await tx.$queryRaw`SELECT id FROM users WHERE id = ${userId} FOR UPDATE`;
+        const owner = await tx.user.findUnique({ where: { id: userId }, select: { firebaseUid: true, avatarUrl: true, isActive: true } });
+        if (!owner) throw new AppError('User not found', 404);
+        if (!owner.isActive) throw new AppError('Your account is not active', 403);
+        let avatarUrl: string | null = null;
+        if (photoBase64 !== null) {
+            avatarUrl = await profilePhotos.upload(owner.firebaseUid, photoBase64);
+        } else if (profilePhotos.isConfigured() || profilePhotos.isManagedPhoto(owner.avatarUrl, owner.firebaseUid)) {
+            await profilePhotos.remove(profilePhotos.publicId(owner.firebaseUid));
+        }
+        return tx.user.update({ where: { id: userId }, data: { ...names, avatarUrl }, select });
+    }, { timeout: 25000 });
 
-    // Keep Firebase display name in sync
-    const user = await db.user.findUnique({
-        where: { id: userId },
-        select: { firebaseUid: true },
-    });
+    const { firebaseUid, ...updatedUser } = savedUser;
 
-    if (user) {
-        await admin.auth().updateUser(user.firebaseUid, {
-            displayName: `${updatedUser.firstName} ${updatedUser.lastName}`,
-        });
+    // Keep Firebase's display name in sync without exposing its ID to callers.
+    if (update.firstName !== undefined || update.lastName !== undefined) {
+        try {
+            await admin.auth().updateUser(firebaseUid, {
+                displayName: `${updatedUser.firstName} ${updatedUser.lastName}`,
+            });
+        } catch (error) {
+            // The database is the app's profile source. Do not report a failed
+            // save after the new name has already been persisted there.
+            logger.warn('Profile saved; Firebase display-name sync failed', { userId, error });
+        }
     }
 
     logger.info(`Profile updated for user: ${userId}`);

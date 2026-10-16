@@ -1,5 +1,6 @@
 import axios, { type AxiosInstance, type AxiosError } from "axios";
 import { getToken } from "./firebase";
+import type { User } from "../types";
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
@@ -36,6 +37,11 @@ export const authApi = {
   deleteAccount: () => apiClient.delete<{ data: { status: "completed" | "pending" } }>(
     "/api/auth/account", { timeout: 30000 },
   ),
+};
+
+export const userApi = {
+  updateProfile: (data: { firstName: string; lastName: string; photoBase64?: string | null }) =>
+    apiClient.patch<{ data: { user: User } }>("/api/users/profile", data, { timeout: 40000 }),
 };
 
 // ── NGO ────────────────────────────────────────────────────────────────────────

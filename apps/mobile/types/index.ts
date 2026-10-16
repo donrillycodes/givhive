@@ -5,7 +5,7 @@ export interface User {
   firstName: string;
   lastName: string;
   role: "DONOR" | "NGO" | "ADMIN" | "SUPER_ADMIN";
-  avatarUrl?: string;
+  avatarUrl?: string | null;
   isActive: boolean;
   createdAt: string;
 }

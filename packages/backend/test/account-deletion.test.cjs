@@ -7,6 +7,7 @@ function stub(path, value) {
 const db = {};
 let firebaseCalls, mailCalls, providerFailure, mailSuccess;
 let decodedUser, revocationChecks;
+let photoCalls, photoFailure, photosConfigured;
 stub('../dist/config/database', db);
 stub('../dist/config/firebase', { auth: () => ({ async deleteUser(uid) {
   firebaseCalls.push(uid);
@@ -16,6 +17,12 @@ stub('../dist/utils/logger', { info() {}, warn() {}, error() {}, debug() {} });
 stub('../dist/services/email.service', { async sendAccountDeletionConfirmation(...args) {
   mailCalls.push(args); return mailSuccess;
 } });
+stub('../dist/services/profilePhoto.service', {
+  isConfigured: () => photosConfigured,
+  isManagedPhoto: () => false,
+  publicId: () => 'givhive/avatars/test-owner',
+  async remove(id) { photoCalls.push(id); if (photoFailure) throw new Error('Storage unavailable'); },
+});
 const { AccountDeletionService } = require('../dist/services/accountDeletion.service');
 const { assertRecentAuthentication } = require('../dist/utils/recentAuthentication');
 const service = new AccountDeletionService();
@@ -24,6 +31,7 @@ const { AuthController } = require('../dist/controllers/auth.controller');
 const now = () => Math.floor(Date.now() / 1000);
 
 function setup(overrides = {}) {
+  photoCalls = []; photoFailure = false; photosConfigured = false;
   firebaseCalls = []; mailCalls = []; providerFailure = null; mailSuccess = true;
   decodedUser = { uid: 'firebase-1', auth_time: now() }; revocationChecks = [];
   const calls = [];
@@ -67,6 +75,20 @@ function setup(overrides = {}) {
   db.$transaction = async (callback) => callback(db);
   return { calls, jobs, user };
 }
+
+test('account deletion durably retries photo cleanup before removing the provider identity', async () => {
+  const state = setup();
+  photosConfigured = true;
+  photoFailure = true;
+  assert.deepEqual(await service.deleteAccount('donor-1', 'firebase-1', now()), { status: 'pending' });
+  assert.equal(state.jobs.get('deletion-1').avatarPublicId, 'givhive/avatars/test-owner');
+  assert.equal(firebaseCalls.length, 0);
+  photoFailure = false;
+  await service.processPendingDeletions();
+  assert.equal(state.jobs.size, 0);
+  assert.deepEqual(photoCalls, ['givhive/avatars/test-owner', 'givhive/avatars/test-owner']);
+  assert.deepEqual(firebaseCalls, ['firebase-1']);
+});
 
 test('fresh authentication is required and future/invalid timestamps cannot bypass it', () => {
   for (const time of [undefined, NaN, Infinity, now() - 301, now() + 61]) {

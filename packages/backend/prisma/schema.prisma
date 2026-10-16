@@ -424,6 +424,7 @@ model AccountDeletion {
   id String @id @default(uuid())
   firebaseUid String? @unique
   email String
+  avatarPublicId String?
   requestedAt DateTime @default(now())
   attempts Int @default(0)
   lastAttemptAt DateTime?

@@ -7,6 +7,7 @@ import {
   superAdminOnly,
 } from '../middleware/rbac';
 import { Role } from '@prisma/client';
+import { profilePhotoLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
@@ -33,6 +34,8 @@ router.get(
 router.patch(
   '/profile',
   authenticate,
+  (req, res, next) => Object.prototype.hasOwnProperty.call(req.body ?? {}, 'photoBase64')
+    ? profilePhotoLimiter(req, res, next) : next(),
   userController.updateProfile.bind(userController)
 );
 
